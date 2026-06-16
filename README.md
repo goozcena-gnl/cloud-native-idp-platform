@@ -35,7 +35,14 @@ Cloud resources are optional and may generate costs.
 
 ## Status
 
-Current phase: Phase 0 — Project foundation.
+Current phase: GitOps foundation.
+
+**Latest milestone (2026-06-17):** Platform namespaces are reconciled through
+GitOps. ArgoCD runs locally against the private repository, with `idp-root` and
+`platform-namespaces` both **Synced** and **Healthy**. Git is the source of
+truth for namespace state.
+
+See [docs/MILESTONES.md](docs/MILESTONES.md).
 
 ## Local environment
 
@@ -132,6 +139,11 @@ Validate without printing the token:
 ./scripts/check-argocd-repo-secret.sh
 ```
 
+The MVP uses a temporary, short-lived PAT with repository read access only,
+stored solely in a Kubernetes Secret and never committed to Git. The advanced
+target is a read-only deploy key, a GitHub App, or a Vault-managed credential.
+See [docs/security/GITHUB_TOKEN_STRATEGY.md](docs/security/GITHUB_TOKEN_STRATEGY.md).
+
 After committing and pushing the ArgoCD bootstrap manifests, create the root
 GitOps Application:
 
@@ -152,5 +164,14 @@ Access the UI locally via port-forward:
 # then open http://localhost:8081
 ```
 
-See [docs/GITOPS.md](docs/GITOPS.md) and
-[docs/GITOPS_REPOSITORY.md](docs/GITOPS_REPOSITORY.md).
+Validated ArgoCD Applications:
+
+```text
+idp-root              Synced   Healthy
+platform-namespaces   Synced   Healthy
+```
+
+See [docs/GITOPS.md](docs/GITOPS.md),
+[docs/GITOPS_REPOSITORY.md](docs/GITOPS_REPOSITORY.md),
+[docs/MILESTONES.md](docs/MILESTONES.md), and
+[docs/security/GITHUB_TOKEN_STRATEGY.md](docs/security/GITHUB_TOKEN_STRATEGY.md).

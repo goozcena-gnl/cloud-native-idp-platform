@@ -107,7 +107,17 @@ Validate the Secret structure without printing the token:
 ./scripts/check-argocd-repo-secret.sh
 ```
 
-The GitHub token must never be committed to Git.
+The GitHub token must never be committed to Git. For the MVP this is a
+**temporary, short-lived** Personal Access Token (PAT) with repository
+**read** access only. The PAT is a deliberate bootstrap shortcut; the advanced
+target is a read-only deploy key, a GitHub App, or a Vault-managed credential.
+See [security/GITHUB_TOKEN_STRATEGY.md](security/GITHUB_TOKEN_STRATEGY.md).
+
+> If ArgoCD reports `failed to list refs: authorization failed: Write access
+> to repository not granted`, the credential cannot **read** the private repo.
+> ArgoCD only reads; this is a missing read permission or an expired token,
+> not a need for write access. Fix the token scope, re-run the configure
+> script, then refresh `idp-root`.
 
 ## Bootstrap GitOps Applications
 
@@ -166,6 +176,31 @@ Do not store repository credentials or generated Secret YAML in Git.
 After the root app is active, new platform components should be added as child
 Applications under `platform/argocd/apps/`. Manual `kubectl apply` should be
 limited to bootstrap, emergency debugging, or documented exceptions.
+
+## Milestone: Namespaces Reconciled via GitOps
+
+This milestone is achieved and validated:
+
+- `idp-root` is **Synced** and **Healthy**.
+- `platform-namespaces` is **Synced** and **Healthy**.
+- Platform namespaces are reconciled through GitOps from `platform/namespaces`.
+- Git is the source of truth; ArgoCD prunes and self-heals drift.
+
+The current app-of-apps flow is:
+
+```text
+idp-root
+  -> platform/argocd/apps
+  -> platform-namespaces
+  -> platform/namespaces
+```
+
+What is still manual: cluster creation, ArgoCD install, the one-time repository
+credential Secret, the one-time root-app bootstrap, and PAT rotation.
+
+See [MILESTONES.md](MILESTONES.md) for the full record and validation evidence,
+and [security/GITHUB_TOKEN_STRATEGY.md](security/GITHUB_TOKEN_STRATEGY.md) for
+the credential strategy.
 
 ## Local Access
 
