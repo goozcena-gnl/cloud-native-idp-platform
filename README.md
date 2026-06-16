@@ -175,3 +175,23 @@ See [docs/GITOPS.md](docs/GITOPS.md),
 [docs/GITOPS_REPOSITORY.md](docs/GITOPS_REPOSITORY.md),
 [docs/MILESTONES.md](docs/MILESTONES.md), and
 [docs/security/GITHUB_TOKEN_STRATEGY.md](docs/security/GITHUB_TOKEN_STRATEGY.md).
+
+## Go gRPC reference service
+
+A minimal Go gRPC service is the first real application workload.
+
+```bash
+# Run the server (from services/demo-grpc):
+go run ./cmd/server
+
+# Healthcheck in a second terminal:
+go run ./cmd/healthcheck -addr localhost:50051
+```
+
+Local integration test (build, start, healthcheck, stop):
+
+```bash
+./scripts/test-demo-grpc.sh
+```
+
+See [services/demo-grpc/README.md](services/demo-grpc/README.md).
