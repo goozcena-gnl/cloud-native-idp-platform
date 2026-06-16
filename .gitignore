@@ -1,0 +1,44 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.kubeconfig
+kubeconfig*
+secrets/
+*.tfvars
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfplan
+crash.log
+crash.*.log
+
+# Ansible
+*.retry
+
+# Go
+bin/
+coverage.out
+
+# Kubernetes local artifacts
+.kube/
+.kind/
+.k3d/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+.cache/
