@@ -69,6 +69,27 @@ Expected results:
 - The `argocd-server` service type is `ClusterIP`.
 - No LoadBalancer or NodePort services exist in the namespace.
 
+## Repository Access Check
+
+Before creating ArgoCD `Application` resources, confirm the Git repository URL
+and visibility:
+
+```bash
+./scripts/check-gitops-repo.sh
+```
+
+Use the printed recommended `repoURL` for future Applications. If the
+repository is private, configure ArgoCD credentials outside Git before creating
+Applications. Do not commit repository credentials or ArgoCD repo Secret
+manifests containing secret material.
+
+For the MVP, the preferred model is a public GitHub repository, an HTTPS
+`repoURL`, and no committed credentials. If the repository is private, stop
+before creating ArgoCD Applications and configure repository credentials
+securely outside Git.
+
+See [GITOPS_REPOSITORY.md](GITOPS_REPOSITORY.md).
+
 ## Local Access
 
 Start a local port-forward in a dedicated terminal:

@@ -111,6 +111,15 @@ Install ArgoCD (local, private, ClusterIP only):
 ./scripts/install-argocd.sh
 ```
 
+Check the Git repository URL and visibility before creating ArgoCD Applications:
+
+```bash
+./scripts/check-gitops-repo.sh
+```
+
+The preferred MVP model is a public GitHub repository with an HTTPS `repoURL`
+and no committed credentials.
+
 Access the UI locally via port-forward:
 
 ```bash
@@ -118,4 +127,5 @@ Access the UI locally via port-forward:
 # then open http://localhost:8081
 ```
 
-See [docs/GITOPS.md](docs/GITOPS.md).
+See [docs/GITOPS.md](docs/GITOPS.md) and
+[docs/GITOPS_REPOSITORY.md](docs/GITOPS_REPOSITORY.md).
