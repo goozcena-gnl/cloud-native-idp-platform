@@ -52,3 +52,14 @@ For PowerShell users:
 ```
 
 See [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
+
+## Local execution strategy
+
+The MVP uses a Windows/Git Bash-first workflow with Docker Desktop and kind.
+
+See:
+
+- [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md)
+- [`docs/adr/0004-local-execution-strategy.md`](docs/adr/0004-local-execution-strategy.md)
+
+Ansible is deferred to an advanced phase unless Linux host configuration becomes necessary.

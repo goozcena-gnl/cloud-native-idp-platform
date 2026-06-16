@@ -101,3 +101,47 @@ If a tool is found but behaves incorrectly:
 2. Confirm whether it is a Windows, WSL, or Git Bash/MSYS path.
 3. Open a fresh terminal after changing `PATH`.
 4. Prefer one toolchain source per environment, such as WSL packages inside WSL and Windows binaries inside PowerShell/Git Bash.
+
+## Docker Context
+
+The expected Docker context is usually:
+
+```
+desktop-linux
+```
+
+This is the default context created when Docker Desktop is installed on Windows. If you see a different context (such as `default` or `colima`), verify that your Docker setup matches the platform's assumptions, or update the context explicitly:
+
+```bash
+docker context use desktop-linux
+```
+
+## Local execution decision
+
+For the MVP, this project uses a Windows/Git Bash-first workflow.
+
+Primary tools:
+
+| Tool | Execution mode |
+|---|---|
+| Shell | Git Bash / MSYS |
+| Docker | Docker Desktop |
+| Kubernetes runtime | kind on Windows |
+| kubectl | Windows binary |
+| Helm | Windows binary |
+| Go | Windows binary |
+| Terraform | Windows binary |
+| GitHub CLI | Windows binary |
+| Ansible | Deferred / advanced phase |
+
+## Docker Desktop requirement
+
+Before creating a kind cluster, Docker Desktop must be running and reachable.
+
+Validation commands:
+
+```bash
+docker info
+docker context ls
+docker ps
+```

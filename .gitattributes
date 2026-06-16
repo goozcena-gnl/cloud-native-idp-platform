@@ -1,0 +1,33 @@
+# Normalize text files
+* text=auto
+
+# Shell scripts must use LF
+*.sh text eol=lf
+
+# PowerShell scripts should use CRLF on Windows
+*.ps1 text eol=crlf
+
+# YAML / JSON / Markdown
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Terraform / Helm / Kubernetes
+*.tf text eol=lf
+*.tfvars text eol=lf
+*.tpl text eol=lf
+
+# Go
+*.go text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
