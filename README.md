@@ -132,6 +132,19 @@ Validate without printing the token:
 ./scripts/check-argocd-repo-secret.sh
 ```
 
+After committing and pushing the ArgoCD bootstrap manifests, create the root
+GitOps Application:
+
+```bash
+./scripts/bootstrap-argocd-apps.sh
+```
+
+Validate ArgoCD Applications:
+
+```bash
+./scripts/check-argocd-apps.sh
+```
+
 Access the UI locally via port-forward:
 
 ```bash

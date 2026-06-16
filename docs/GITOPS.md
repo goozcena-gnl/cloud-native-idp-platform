@@ -109,6 +109,64 @@ Validate the Secret structure without printing the token:
 
 The GitHub token must never be committed to Git.
 
+## Bootstrap GitOps Applications
+
+Task 1.6 transitions the platform from manual bootstrap toward GitOps with an
+app-of-apps layout:
+
+- AppProject: `idp-platform`
+- Root Application: `idp-root`
+- Child Application: `platform-namespaces`
+
+The root Application reads child Applications from `platform/argocd/apps`.
+The `platform-namespaces` child Application reads namespace manifests from
+`platform/namespaces`.
+
+Child applications live under:
+
+```text
+platform/argocd/apps/
+```
+
+Current child application:
+
+```text
+platform-namespaces -> platform/namespaces
+```
+
+Commit and push the ArgoCD manifests before running the bootstrap script,
+because ArgoCD reconciles from GitHub `main`, not from your local working tree.
+
+Bootstrap the root app:
+
+```bash
+./scripts/bootstrap-argocd-apps.sh
+```
+
+Validate:
+
+```bash
+./scripts/check-argocd-apps.sh
+kubectl -n argocd get appprojects.argoproj.io idp-platform
+kubectl -n argocd get applications.argoproj.io idp-root platform-namespaces
+```
+
+Troubleshoot:
+
+```bash
+kubectl -n argocd describe application idp-root
+kubectl -n argocd describe application platform-namespaces
+kubectl -n argocd logs deploy/argocd-repo-server
+kubectl -n argocd logs statefulset/argocd-application-controller
+./scripts/check-argocd-repo-secret.sh
+```
+
+Do not store repository credentials or generated Secret YAML in Git.
+
+After the root app is active, new platform components should be added as child
+Applications under `platform/argocd/apps/`. Manual `kubectl apply` should be
+limited to bootstrap, emergency debugging, or documented exceptions.
+
 ## Local Access
 
 Start a local port-forward in a dedicated terminal:

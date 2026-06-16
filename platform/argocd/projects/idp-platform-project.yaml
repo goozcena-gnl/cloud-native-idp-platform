@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: idp-platform
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: gitops
+spec:
+  description: Local-first IDP platform GitOps project
+  sourceRepos:
+    - https://github.com/goozdu12/cloud-native-idp-platform.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: '*'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
