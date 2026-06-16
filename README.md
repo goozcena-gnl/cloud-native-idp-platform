@@ -102,3 +102,20 @@ kubectl get namespaces argocd platform-system apps observability security --show
 ```
 
 See [docs/NAMESPACES.md](docs/NAMESPACES.md).
+
+## GitOps (ArgoCD)
+
+Install ArgoCD (local, private, ClusterIP only):
+
+```bash
+./scripts/install-argocd.sh
+```
+
+Access the UI locally via port-forward:
+
+```bash
+./scripts/argocd-port-forward.sh
+# then open http://localhost:8081
+```
+
+See [docs/GITOPS.md](docs/GITOPS.md).

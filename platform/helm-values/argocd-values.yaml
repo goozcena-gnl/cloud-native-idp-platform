@@ -1,0 +1,53 @@
+# ArgoCD Helm values for the local IDP (bootstrap phase).
+#
+# Chart: argo/argo-cd
+# Target namespace: argocd
+#
+# This configuration is intentionally local-friendly and private:
+# - ArgoCD is NOT exposed publicly.
+# - The server uses a ClusterIP service only.
+# - Local access is via `kubectl port-forward` (see scripts/argocd-port-forward.sh).
+#
+# Do not put secrets in this file. The initial admin password is generated
+# by the chart into a Kubernetes Secret and should be rotated/deleted.
+
+global:
+  # Keep image pulls predictable on local kind.
+  logging:
+    format: text
+    level: info
+
+# Run ArgoCD server in insecure mode so it serves plain HTTP behind
+# kubectl port-forward. This avoids TLS warnings for LOCAL use only.
+# Do not use insecure mode for any shared or public deployment.
+configs:
+  params:
+    server.insecure: "true"
+
+server:
+  # ClusterIP only. No LoadBalancer, no NodePort, no Ingress.
+  service:
+    type: ClusterIP
+  # No ingress in the bootstrap phase.
+  ingress:
+    enabled: false
+  # Single replica is enough for local development.
+  replicas: 1
+
+# Keep controller/repo/applicationset lightweight for local kind.
+controller:
+  replicas: 1
+
+repoServer:
+  replicas: 1
+
+applicationSet:
+  replicas: 1
+
+# Dex (SSO) is not needed locally. Local admin login is sufficient.
+dex:
+  enabled: false
+
+# Notifications are out of scope for the bootstrap phase.
+notifications:
+  enabled: false
