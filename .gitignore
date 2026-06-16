@@ -42,3 +42,7 @@ logs/
 # Temporary files
 tmp/
 .cache/
+
+# Local prerequisite check outputs
+prereq-check*.txt
+environment-check*.txt

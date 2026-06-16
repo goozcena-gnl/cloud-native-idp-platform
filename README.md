@@ -36,3 +36,19 @@ Cloud resources are optional and may generate costs.
 ## Status
 
 Current phase: Phase 0 — Project foundation.
+
+## Local environment
+
+Before creating local Kubernetes resources, verify the workstation prerequisites:
+
+```bash
+bash scripts/check-prereqs.sh
+```
+
+For PowerShell users:
+
+```powershell
+.\scripts\check-prereqs.ps1
+```
+
+See [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
