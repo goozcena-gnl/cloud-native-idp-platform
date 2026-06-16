@@ -66,6 +66,21 @@ do not commit secrets, kubeconfig files, tokens, or generated credentials.
 If the repository is private, ArgoCD needs Git credentials configured in the
 cluster before it can reconcile Applications from the repo.
 
+Configure the credential locally:
+
+```bash
+./scripts/configure-argocd-private-repo.sh
+```
+
+Validate the Secret structure without printing the token:
+
+```bash
+./scripts/check-argocd-repo-secret.sh
+```
+
+The token is stored only inside the local Kubernetes cluster as an ArgoCD
+repository Secret.
+
 Do not commit any of the following:
 
 - GitHub personal access tokens
@@ -74,11 +89,17 @@ Do not commit any of the following:
 - Repository credential Secrets
 - ArgoCD repo credential manifests containing secret material
 - Kubeconfig files or cloud credentials
+- Generated Secret YAML
+- Terminal output containing the token
+- Screenshots showing the token
 
 Credential setup is intentionally deferred. For a later task, choose a secure
 local approach such as an ArgoCD CLI repo add command, a manually created
 Kubernetes Secret excluded from Git, or an encrypted secret workflow such as
 SOPS once secret management is part of the platform.
+
+In the advanced version, this credential management should be replaced or
+improved with Vault, External Secrets, Sealed Secrets, or a GitHub App model.
 
 ## MVP decision
 

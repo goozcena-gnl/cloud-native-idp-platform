@@ -90,6 +90,25 @@ securely outside Git.
 
 See [GITOPS_REPOSITORY.md](GITOPS_REPOSITORY.md).
 
+## Private Repository Access
+
+This project currently uses a private GitHub repository, so ArgoCD requires
+read credentials before it can reconcile Applications from Git.
+
+Configure ArgoCD read access with:
+
+```bash
+./scripts/configure-argocd-private-repo.sh
+```
+
+Validate the Secret structure without printing the token:
+
+```bash
+./scripts/check-argocd-repo-secret.sh
+```
+
+The GitHub token must never be committed to Git.
+
 ## Local Access
 
 Start a local port-forward in a dedicated terminal:

@@ -120,6 +120,18 @@ Check the Git repository URL and visibility before creating ArgoCD Applications:
 The preferred MVP model is a public GitHub repository with an HTTPS `repoURL`
 and no committed credentials.
 
+For a private GitOps repository, configure local ArgoCD repository access:
+
+```bash
+./scripts/configure-argocd-private-repo.sh
+```
+
+Validate without printing the token:
+
+```bash
+./scripts/check-argocd-repo-secret.sh
+```
+
 Access the UI locally via port-forward:
 
 ```bash
