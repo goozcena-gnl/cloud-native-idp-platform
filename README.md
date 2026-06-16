@@ -63,3 +63,26 @@ See:
 - [`docs/adr/0004-local-execution-strategy.md`](docs/adr/0004-local-execution-strategy.md)
 
 Ansible is deferred to an advanced phase unless Linux host configuration becomes necessary.
+
+## Local Kubernetes cluster
+
+Create it:
+
+```bash
+./scripts/create-kind-cluster.sh
+```
+
+Validate it:
+
+```bash
+kubectl get nodes -o wide
+kubectl get pods -A
+```
+
+Delete it:
+
+```bash
+./scripts/delete-kind-cluster.sh
+```
+
+See [docs/LOCAL_CLUSTER.md](docs/LOCAL_CLUSTER.md).

@@ -1,0 +1,29 @@
+# kind cluster configuration for the local IDP.
+#
+# Cluster: idp-local
+# Topology: 1 control-plane + 1 worker
+#
+# Host port mappings expose cluster NodePorts to the host:
+#
+#   host 18080 -> cluster NodePort 30080
+#   host 18443 -> cluster NodePort 30443
+#
+# We avoid common ports like 80, 443, 8080, and 8443 to reduce Windows
+# port conflicts. No ingress controller or NodePort service is installed
+# yet in Phase 1.1; these mappings are reserved for future demos.
+#
+# Do not place secrets or kubeconfig data in this file.
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+name: idp-local
+nodes:
+  - role: control-plane
+  - role: worker
+    # Cluster NodePorts 30080/30443 are mapped to host ports 18080/18443.
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 18080
+        protocol: TCP
+      - containerPort: 30443
+        hostPort: 18443
+        protocol: TCP
