@@ -86,3 +86,19 @@ Delete it:
 ```
 
 See [docs/LOCAL_CLUSTER.md](docs/LOCAL_CLUSTER.md).
+
+## Platform namespaces
+
+Apply the MVP namespaces:
+
+```bash
+./scripts/apply-platform-namespaces.sh
+```
+
+Validate:
+
+```bash
+kubectl get namespaces argocd platform-system apps observability security --show-labels
+```
+
+See [docs/NAMESPACES.md](docs/NAMESPACES.md).
