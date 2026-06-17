@@ -237,3 +237,17 @@ ArgoCD picks up the Application automatically via `idp-root`. Validate:
 ```bash
 ./scripts/check-demo-grpc-k8s.sh
 ```
+
+## CI (GitHub Actions)
+
+The CI workflow runs on every push and pull request to `main`.
+
+It validates:
+
+- Go tests and builds;
+- Docker image build and non-root runtime user check;
+- Helm lint and `helm template` rendering;
+- rendered Kubernetes security settings (`runAsNonRoot`, `allowPrivilegeEscalation`,
+  `readOnlyRootFilesystem`, seccomp `RuntimeDefault`, capabilities drop, gRPC probes).
+
+See [docs/CI.md](docs/CI.md) and [.github/workflows/ci.yml](.github/workflows/ci.yml).
