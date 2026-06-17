@@ -110,5 +110,61 @@ Deploy the first real application workload through GitOps:
 - a Helm chart;
 - a GitOps ArgoCD Application for the service;
 - validation through Kubernetes and ArgoCD.
+
+---
+
+## Milestone: Go gRPC workload deployed through GitOps and GHCR
+
+**Date:** 2026-06-17
+**Phase:** Go gRPC reference workload
+**Status:** Achieved and validated
+
+### Summary
+
+The `demo-grpc` Go gRPC service is now fully wired through the supply chain:
+
+```text
+Go source code
+  -> Docker image (distroless, nonroot)
+  -> GHCR package (ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:main)
+  -> ArgoCD Application (platform/argocd/apps/demo-grpc-app.yaml)
+  -> Helm chart (charts/demo-grpc)
+  -> Kubernetes Deployment and Service (namespace: apps)
+```
+
+Current image:
+
+```
+ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:main
+```
+
+### Validated state
+
+```text
+idp-root              Synced   Healthy
+platform-namespaces   Synced   Healthy
+demo-grpc             Synced   Healthy
+```
+
+### Security posture at this milestone
+
+- Image runs as `nonroot:nonroot` (UID 65532), distroless base.
+- All restricted Pod Security Standard fields are set in the Helm chart.
+- GHCR pull secret is stored only as a Kubernetes `docker-registry` Secret,
+  never committed to Git.
+- CI pipeline validates Go tests, Docker image, Helm chart, and Trivy security
+  scans on every push to `main`.
+
+### Known limitation
+
+The deployment currently uses the mutable `main` tag. A future improvement
+should deploy by immutable `sha-*` tag or image digest.
+
+### Next steps
+
+- Switch to immutable SHA tag or image digest.
+- Add Prometheus metrics endpoint to `demo-grpc`.
+- Add observability: structured logging, distributed tracing.
+- Onboard Kyverno admission policies.
 </content>
 </invoke>

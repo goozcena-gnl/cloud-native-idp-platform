@@ -5,8 +5,6 @@ set -euo pipefail
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-idp-local}"
 ARGOCD_NAMESPACE="${ARGOCD_NAMESPACE:-argocd}"
 PROJECT_NAME="${PROJECT_NAME:-idp-platform}"
-ROOT_APP_NAME="${ROOT_APP_NAME:-idp-root}"
-CHILD_APP_NAME="${CHILD_APP_NAME:-platform-namespaces}"
 
 echo "============================================================"
 echo "Check ArgoCD GitOps Applications"
@@ -27,7 +25,7 @@ if [[ "${CURRENT_CONTEXT}" != "${EXPECTED_CONTEXT}" ]]; then
   echo "Expected context: ${EXPECTED_CONTEXT}"
   echo
   echo "Fix with:"
-  echo "kubectl config use-context ${EXPECTED_CONTEXT}"
+  echo "  kubectl config use-context ${EXPECTED_CONTEXT}"
   exit 1
 fi
 
@@ -44,27 +42,16 @@ else
 fi
 echo
 
-echo "Applications:"
-for app in "${ROOT_APP_NAME}" "${CHILD_APP_NAME}"; do
-  if kubectl -n "${ARGOCD_NAMESPACE}" get application "${app}" >/dev/null 2>&1; then
-    kubectl -n "${ARGOCD_NAMESPACE}" get application "${app}" \
-      -o custom-columns='NAME:.metadata.name,PROJECT:.spec.project,SYNC:.status.sync.status,HEALTH:.status.health.status,REVISION:.status.sync.revision'
-  else
-    echo "${app}: not found yet"
-  fi
-done
+echo "All Applications (${ARGOCD_NAMESPACE}):"
+kubectl -n "${ARGOCD_NAMESPACE}" get applications \
+  -o custom-columns='NAME:.metadata.name,PROJECT:.spec.project,SYNC:.status.sync.status,HEALTH:.status.health.status,REVISION:.status.sync.revision'
 echo
 
 echo "Application sources:"
-for app in "${ROOT_APP_NAME}" "${CHILD_APP_NAME}"; do
-  if kubectl -n "${ARGOCD_NAMESPACE}" get application "${app}" >/dev/null 2>&1; then
-    kubectl -n "${ARGOCD_NAMESPACE}" get application "${app}" \
-      -o jsonpath='Name: {.metadata.name}{"\n"}Repo: {.spec.source.repoURL}{"\n"}Revision: {.spec.source.targetRevision}{"\n"}Path: {.spec.source.path}{"\n"}Automated prune: {.spec.syncPolicy.automated.prune}{"\n"}Automated selfHeal: {.spec.syncPolicy.automated.selfHeal}{"\n\n"}'
-  else
-    echo "Name: ${app}"
-    echo "Status: not found yet"
-    echo
-  fi
+mapfile -t APPS < <(kubectl -n "${ARGOCD_NAMESPACE}" get applications -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n')
+for app in "${APPS[@]}"; do
+  kubectl -n "${ARGOCD_NAMESPACE}" get application "${app}" \
+    -o jsonpath='Name: {.metadata.name}{"\n"}Repo: {.spec.source.repoURL}{"\n"}Revision: {.spec.source.targetRevision}{"\n"}Path: {.spec.source.path}{"\n"}Automated prune: {.spec.syncPolicy.automated.prune}{"\n"}Automated selfHeal: {.spec.syncPolicy.automated.selfHeal}{"\n\n"}'
 done
 
 echo "Managed namespaces:"
@@ -72,12 +59,8 @@ kubectl get namespaces argocd platform-system apps observability security --show
 
 echo
 echo "============================================================"
-echo "Validation commands:"
-echo "  kubectl -n ${ARGOCD_NAMESPACE} describe application ${ROOT_APP_NAME}"
-echo "  kubectl -n ${ARGOCD_NAMESPACE} describe application ${CHILD_APP_NAME}"
-echo "  kubectl -n ${ARGOCD_NAMESPACE} get app ${ROOT_APP_NAME} ${CHILD_APP_NAME} -o yaml"
-echo
 echo "Troubleshooting commands:"
+echo "  kubectl -n ${ARGOCD_NAMESPACE} describe application <name>"
 echo "  kubectl -n ${ARGOCD_NAMESPACE} get events --sort-by=.lastTimestamp"
 echo "  kubectl -n ${ARGOCD_NAMESPACE} logs deploy/argocd-repo-server"
 echo "  kubectl -n ${ARGOCD_NAMESPACE} logs statefulset/argocd-application-controller"

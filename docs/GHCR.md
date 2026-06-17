@@ -69,6 +69,27 @@ Validate:
 kubectl -n apps get secret ghcr-demo-grpc-pull
 ```
 
+## Validated Kubernetes state
+
+After deploying from GHCR, the following was validated against the
+`kind-idp-local` cluster:
+
+```text
+demo-grpc Application: Synced / Healthy
+Deployment: rolled out successfully
+gRPC healthcheck: SERVING
+```
+
+## Important limitation
+
+The current deployment uses the mutable tag `main`. This is acceptable for the
+MVP, but production deployments should prefer:
+
+- immutable commit SHA tags;
+- image digests;
+- signed images;
+- admission verification.
+
 ## Security notes
 
 Do not store registry credentials in Git.
