@@ -275,3 +275,20 @@ docker build -t demo-grpc:local services/demo-grpc
 ```
 
 See [docs/DEVSECOPS.md](docs/DEVSECOPS.md).
+
+## Container registry (GHCR)
+
+The `demo-grpc` image is published to GHCR on every push to `main` that
+changes `services/demo-grpc/**`.
+
+Published image:
+
+```
+ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
+```
+
+Tags: `main` (latest build) and `sha-<short>` (immutable per-commit tag).
+
+Authentication uses `GITHUB_TOKEN` — no personal access token is required.
+
+See [docs/GHCR.md](docs/GHCR.md).
