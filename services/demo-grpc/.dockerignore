@@ -1,0 +1,20 @@
+# Git / VCS
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Local build artifacts
+server
+server.exe
+healthcheck
+healthcheck.exe
+/out
+
+# Editor / OS noise
+.vscode
+.idea
+*.log
+.DS_Store

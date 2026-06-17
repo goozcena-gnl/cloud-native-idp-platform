@@ -195,3 +195,20 @@ Local integration test (build, start, healthcheck, stop):
 ```
 
 See [services/demo-grpc/README.md](services/demo-grpc/README.md).
+
+### Container
+
+Build and run the service as a minimal, non-root container image:
+
+```bash
+docker build -t demo-grpc:local services/demo-grpc
+docker run -d --name demo-grpc -p 50052:50051 demo-grpc:local
+```
+
+Automated container test (build, run, healthcheck, inspect, clean up):
+
+```bash
+./scripts/test-demo-grpc-container.sh
+```
+
+See [docs/CONTAINERIZATION.md](docs/CONTAINERIZATION.md).
