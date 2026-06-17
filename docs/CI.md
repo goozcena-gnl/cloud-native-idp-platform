@@ -43,8 +43,21 @@ Depends on the `go` job. Validates `charts/demo-grpc` by running:
 - `helm lint`;
 - `helm template` (renders to a temp file);
 - rendered security assertions: `runAsNonRoot`, `allowPrivilegeEscalation: false`,
-  `readOnlyRootFilesystem: true`, `RuntimeDefault` seccomp, capabilities `drop`,
-  `readinessProbe`, `livenessProbe`, native `grpc:` probe.
+  `readOnlyRootFilesystem: true`, `RuntimeDefault` seccomp, capabilities `drop`
+  including an explicit `- ALL`, `readinessProbe`, `livenessProbe`, native
+  `grpc:` probe.
+
+### Trivy security scan
+
+Depends on both `docker` and `helm`. Installs Trivy CLI from the official
+GitHub release archive (pinned to `v0.69.3`) and runs four scans:
+
+- **filesystem** — GO dependency CVEs, hardcoded secrets, Dockerfile misconfigurations;
+- **Helm config** — Kubernetes security issues in rendered manifests;
+- **image** — OS and application CVEs in the built Docker image.
+
+`aquasecurity/trivy-action` is not used (supply-chain advisory, March 2026).
+See [docs/DEVSECOPS.md](DEVSECOPS.md) for full rationale.
 
 ## Security model
 
@@ -58,15 +71,20 @@ permissions:
 This follows least privilege: the workflow only reads repository contents; it
 does not write, create releases, or push packages.
 
+The `security` job also explicitly declares `permissions: contents: read` to
+be self-documenting.
+
 ## Job dependency graph
 
 ```text
 go
-├── docker  (needs: go)
-└── helm    (needs: go)
+├── docker    (needs: go)
+├── helm      (needs: go)
+└── security  (needs: docker, helm)
 ```
 
-`docker` and `helm` run in parallel after `go` passes.
+`docker` and `helm` run in parallel after `go` passes. `security` runs after
+both complete.
 
 ## Current limitations
 
@@ -74,8 +92,9 @@ This workflow does not yet:
 
 - push images to GHCR;
 - update GitOps image tags in the repository;
-- run Trivy image or chart scans;
 - run integration tests inside a kind cluster;
+- publish SARIF reports to GitHub Security tab;
+- generate SBOMs;
 - sign images.
 
 These will be added progressively as the project matures.

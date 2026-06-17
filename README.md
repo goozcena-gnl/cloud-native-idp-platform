@@ -251,3 +251,27 @@ It validates:
   `readOnlyRootFilesystem`, seccomp `RuntimeDefault`, capabilities drop, gRPC probes).
 
 See [docs/CI.md](docs/CI.md) and [.github/workflows/ci.yml](.github/workflows/ci.yml).
+
+## DevSecOps (Trivy)
+
+The `security` CI job scans for vulnerabilities, secrets, and
+misconfigurations using [Trivy](https://trivy.dev/):
+
+- filesystem and Go dependency CVEs;
+- hardcoded secrets;
+- Dockerfile misconfigurations;
+- rendered Helm manifest Kubernetes config issues;
+- Docker image OS and application CVEs.
+
+Trivy is installed from the official GitHub release archive and pinned to a
+specific version. `aquasecurity/trivy-action` is not used (supply-chain
+advisory, March 2026).
+
+Run locally (requires Trivy and Helm in `PATH`):
+
+```bash
+docker build -t demo-grpc:local services/demo-grpc
+./scripts/security-scan.sh
+```
+
+See [docs/DEVSECOPS.md](docs/DEVSECOPS.md).

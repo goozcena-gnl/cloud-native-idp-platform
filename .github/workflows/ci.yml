@@ -119,6 +119,75 @@ jobs:
           grep -q "readOnlyRootFilesystem: true" /tmp/rendered/demo-grpc.yaml
           grep -q "RuntimeDefault" /tmp/rendered/demo-grpc.yaml
           grep -q "drop:" /tmp/rendered/demo-grpc.yaml
+          grep -qE -- "^ +- ALL$" /tmp/rendered/demo-grpc.yaml
           grep -q "readinessProbe:" /tmp/rendered/demo-grpc.yaml
           grep -q "livenessProbe:" /tmp/rendered/demo-grpc.yaml
           grep -q "grpc:" /tmp/rendered/demo-grpc.yaml
+
+  security:
+    name: Trivy security scan
+    runs-on: ubuntu-latest
+    needs:
+      - docker
+      - helm
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build demo-grpc image for scanning
+        uses: docker/build-push-action@v6
+        with:
+          context: services/demo-grpc
+          file: services/demo-grpc/Dockerfile
+          push: false
+          tags: demo-grpc:local
+          load: true
+
+      - name: Install Trivy CLI
+        env:
+          TRIVY_VERSION: "0.69.3"
+        run: |
+          set -euo pipefail
+          curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+            -o /tmp/trivy.tar.gz
+          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+          sudo install -m 0755 /tmp/trivy /usr/local/bin/trivy
+          trivy --version
+
+      - name: Run Trivy filesystem scan
+        run: |
+          trivy fs \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: Render Helm chart for config scan
+        run: |
+          helm template demo-grpc charts/demo-grpc \
+            --namespace apps \
+            > /tmp/demo-grpc-rendered.yaml
+
+      - name: Run Trivy Kubernetes config scan
+        run: |
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            /tmp/demo-grpc-rendered.yaml
+
+      - name: Run Trivy image scan
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            demo-grpc:local
