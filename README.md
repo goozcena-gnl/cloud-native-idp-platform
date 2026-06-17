@@ -222,3 +222,18 @@ Validate the Helm chart (lint + template + server-side dry-run):
 ```
 
 See [docs/HELM.md](docs/HELM.md).
+
+### GitOps deployment
+
+Load the local image into kind (required before ArgoCD can pull it):
+
+```bash
+./scripts/load-demo-grpc-kind-image.sh
+```
+
+After committing and pushing `platform/argocd/apps/demo-grpc-app.yaml`,
+ArgoCD picks up the Application automatically via `idp-root`. Validate:
+
+```bash
+./scripts/check-demo-grpc-k8s.sh
+```

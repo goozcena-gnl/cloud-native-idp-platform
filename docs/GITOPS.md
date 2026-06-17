@@ -329,3 +329,28 @@ port-forward, Dex disabled), an idempotent install script with context
 guard, a port-forward helper, and GitOps documentation including admin
 password retrieval and security warnings.
 ```
+
+## GitOps deployment: demo-grpc
+
+The `demo-grpc` workload is deployed by the ArgoCD Application defined in
+`platform/argocd/apps/demo-grpc-app.yaml`. It is picked up automatically by
+the `idp-root` app-of-apps once the file is committed and pushed.
+
+It renders the Helm chart from:
+
+```text
+charts/demo-grpc
+```
+
+Because the MVP uses a local image (`demo-grpc:local`), the image must be
+loaded into kind before ArgoCD deploys the workload:
+
+```bash
+./scripts/load-demo-grpc-kind-image.sh
+```
+
+Validate the deployment:
+
+```bash
+./scripts/check-demo-grpc-k8s.sh
+```

@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-grpc
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: workload
+spec:
+  project: idp-platform
+
+  source:
+    repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+    targetRevision: main
+    path: charts/demo-grpc
+    helm:
+      releaseName: demo-grpc
+      values: |
+        image:
+          repository: demo-grpc
+          tag: local
+          pullPolicy: IfNotPresent
+
+        env:
+          SERVICE_NAME: demo-grpc
+          APP_VERSION: gitops-local
+
+        service:
+          port: 50051
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - PruneLast=true

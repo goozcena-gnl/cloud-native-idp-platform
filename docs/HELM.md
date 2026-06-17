@@ -155,3 +155,20 @@ helm -n apps uninstall demo-grpc
 - GitHub Actions CI running `helm lint` and `helm template` on every PR.
 - Trivy scan of the chart and image.
 - Kyverno policy validation.
+
+## GitOps deployment
+
+The `demo-grpc` chart is deployed by ArgoCD through:
+
+```text
+platform/argocd/apps/demo-grpc-app.yaml
+```
+
+For the local MVP, the image is `demo-grpc:local` and must be loaded into
+kind before ArgoCD deploys the workload:
+
+```bash
+./scripts/load-demo-grpc-kind-image.sh
+```
+
+See [GITOPS.md](GITOPS.md) for the full GitOps deployment flow.
