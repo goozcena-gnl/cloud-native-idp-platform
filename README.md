@@ -212,3 +212,13 @@ Automated container test (build, run, healthcheck, inspect, clean up):
 ```
 
 See [docs/CONTAINERIZATION.md](docs/CONTAINERIZATION.md).
+
+### Helm chart
+
+Validate the Helm chart (lint + template + server-side dry-run):
+
+```bash
+./scripts/validate-demo-grpc-helm.sh
+```
+
+See [docs/HELM.md](docs/HELM.md).

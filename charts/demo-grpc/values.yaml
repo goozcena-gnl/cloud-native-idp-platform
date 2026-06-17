@@ -1,0 +1,59 @@
+# Default values for demo-grpc.
+
+replicaCount: 1
+
+image:
+  repository: demo-grpc
+  tag: local
+  pullPolicy: IfNotPresent
+
+# Environment variables passed to the server container.
+env:
+  SERVICE_NAME: demo-grpc
+  APP_VERSION: dev
+
+service:
+  type: ClusterIP
+  port: 50051
+
+# gRPC liveness and readiness probes use native Kubernetes gRPC health checks
+# against the service port. The standard gRPC health service is registered by
+# the server. The healthcheck binary remains in the image for the Docker
+# HEALTHCHECK and local testing.
+probes:
+  liveness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 64Mi
+
+# All security fields are required for the restricted Pod Security Standard
+# applied to the apps namespace. Do not disable these for cluster deployments.
+securityContext:
+  # Pod-level
+  pod:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  # Container-level
+  container:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL

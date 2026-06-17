@@ -124,6 +124,17 @@ The container test validates:
 
 See [../../docs/CONTAINERIZATION.md](../../docs/CONTAINERIZATION.md).
 
+## Helm chart
+
+The service has a Helm chart at `charts/demo-grpc/`. Validate it (lint +
+template + server-side dry-run) from the repository root:
+
+```bash
+./scripts/validate-demo-grpc-helm.sh
+```
+
+See [../../docs/HELM.md](../../docs/HELM.md).
+
 ## Future improvements
 
 Planned additions:

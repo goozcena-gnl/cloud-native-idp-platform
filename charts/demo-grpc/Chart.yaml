@@ -1,0 +1,6 @@
+apiVersion: v2
+name: demo-grpc
+description: Minimal Go gRPC reference service for the Internal Developer Platform.
+type: application
+version: 0.1.0
+appVersion: "dev"

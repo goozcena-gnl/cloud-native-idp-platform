@@ -1,0 +1,18 @@
+demo-grpc has been deployed.
+
+  Release:   {{ .Release.Name }}
+  Namespace: {{ .Release.Namespace }}
+  Image:     {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+Validate the rollout:
+
+  kubectl -n {{ .Release.Namespace }} rollout status deployment/{{ include "demo-grpc.fullname" . }}
+  kubectl -n {{ .Release.Namespace }} get pods -l app.kubernetes.io/name={{ include "demo-grpc.name" . }}
+
+Access via port-forward (gRPC, host port 50052):
+
+  kubectl -n {{ .Release.Namespace }} port-forward \
+    svc/{{ include "demo-grpc.fullname" . }} 50052:{{ .Values.service.port }}
+
+  # In a second terminal, from services/demo-grpc:
+  go run ./cmd/healthcheck -addr localhost:50052
