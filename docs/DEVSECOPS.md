@@ -76,17 +76,23 @@ image built by the `docker` CI job (loaded into the runner, not pushed).
 
 To run the same scans locally, install Trivy first
 ([https://trivy.dev/latest/getting-started/installation/](https://trivy.dev/latest/getting-started/installation/)),
-build the image, then run:
+then run:
 
 ```bash
-# Build image first (if not already built)
-docker build -t demo-grpc:local services/demo-grpc
-
 ./scripts/security-scan.sh
 ```
 
-The script checks for Trivy and Helm in `PATH` and exits with a clear error
-message if either is missing.
+If the local image `demo-grpc:local` is missing, the script builds it from
+`services/demo-grpc` before running the Trivy image scan. To disable automatic
+image build (fail instead):
+
+```bash
+BUILD_IMAGE_IF_MISSING=false ./scripts/security-scan.sh
+```
+
+The script checks for Trivy, Helm, and Docker in `PATH` and verifies the Docker
+daemon is reachable, exiting with a clear error message if any prerequisite is
+missing.
 
 ## Current limitations
 

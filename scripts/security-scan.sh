@@ -4,7 +4,9 @@ set -euo pipefail
 
 IMAGE_NAME="${IMAGE_NAME:-demo-grpc:local}"
 CHART_DIR="${CHART_DIR:-charts/demo-grpc}"
+SERVICE_DIR="${SERVICE_DIR:-services/demo-grpc}"
 RENDERED_FILE="${RENDERED_FILE:-/tmp/demo-grpc-rendered.yaml}"
+BUILD_IMAGE_IF_MISSING="${BUILD_IMAGE_IF_MISSING:-true}"
 
 echo "============================================================"
 echo "Security scan: demo-grpc"
@@ -23,6 +25,16 @@ if ! command -v helm >/dev/null 2>&1; then
   echo "ERROR: helm is not installed or not in PATH."
   exit 1
 fi
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "ERROR: docker is not installed or not in PATH."
+  exit 1
+fi
+
+echo "Checking Docker daemon..."
+docker info >/dev/null
+echo "Docker daemon OK."
+echo
 
 echo "Trivy version:"
 trivy --version
@@ -47,6 +59,22 @@ trivy config \
   --severity HIGH,CRITICAL \
   --exit-code 1 \
   "${RENDERED_FILE}"
+
+echo
+echo "Checking whether Docker image exists locally..."
+if docker image inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
+  echo "Image already exists: ${IMAGE_NAME}"
+else
+  if [[ "${BUILD_IMAGE_IF_MISSING}" != "true" ]]; then
+    echo "ERROR: image ${IMAGE_NAME} does not exist locally."
+    echo "Build it with:"
+    echo "  docker build -t ${IMAGE_NAME} ${SERVICE_DIR}"
+    exit 1
+  fi
+
+  echo "Image not found. Building ${IMAGE_NAME} from ${SERVICE_DIR}..."
+  docker build -t "${IMAGE_NAME}" "${SERVICE_DIR}"
+fi
 
 echo
 echo "Docker image scan"
