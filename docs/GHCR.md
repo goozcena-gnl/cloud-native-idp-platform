@@ -39,11 +39,35 @@ Each publish produces two tags:
 | `main` | always points to the latest build from `main` |
 | `sha-<short>` | immutable tag for the exact commit (e.g. `sha-a3c1446`) |
 
-## Current limitation
+## GitOps deployment from GHCR
 
-The Kubernetes deployment still uses the local image `demo-grpc:local` loaded
-into kind. A later task will update the Helm values and ArgoCD Application to
-use the GHCR image by digest or by SHA tag.
+The ArgoCD Application `platform/argocd/apps/demo-grpc-app.yaml` deploys the
+GHCR image:
+
+```
+ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:main
+```
+
+Because `main` is a mutable tag, the Deployment uses `pullPolicy: Always`.
+
+### Pull secret
+
+The package is private, so the cluster needs a pull secret. Create it locally
+without printing the token:
+
+```bash
+GITHUB_USERNAME=goozdu12 ./scripts/configure-ghcr-pull-secret.sh
+```
+
+This creates a `docker-registry` Secret named `ghcr-demo-grpc-pull` in the
+`apps` namespace, referenced via `imagePullSecrets` in the Helm chart. The
+Secret is not committed to Git.
+
+Validate:
+
+```bash
+kubectl -n apps get secret ghcr-demo-grpc-pull
+```
 
 ## Security notes
 
@@ -51,8 +75,11 @@ Do not store registry credentials in Git.
 
 For production-grade supply chain security, future improvements should include:
 
+- publish a public portfolio image; or
+- use immutable `sha-*` tags; or
+- deploy by digest; or
+- manage registry credentials through Vault / External Secrets;
 - Trivy scan before publish;
 - SBOM generation;
 - image signing with Cosign;
-- signature verification with Kyverno;
-- immutable deployment by digest.
+- signature verification with Kyverno.

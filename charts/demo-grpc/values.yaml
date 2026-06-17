@@ -7,6 +7,10 @@ image:
   tag: local
   pullPolicy: IfNotPresent
 
+# Image pull secrets for private registries (e.g. GHCR).
+# Each entry is a reference to an existing Kubernetes docker-registry Secret.
+imagePullSecrets: []
+
 # Environment variables passed to the server container.
 env:
   SERVICE_NAME: demo-grpc

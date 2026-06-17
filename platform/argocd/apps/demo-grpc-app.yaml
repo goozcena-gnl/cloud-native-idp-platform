@@ -17,13 +17,16 @@ spec:
       releaseName: demo-grpc
       values: |
         image:
-          repository: demo-grpc
-          tag: local
-          pullPolicy: IfNotPresent
+          repository: ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
+          tag: main
+          pullPolicy: Always
+
+        imagePullSecrets:
+          - name: ghcr-demo-grpc-pull
 
         env:
           SERVICE_NAME: demo-grpc
-          APP_VERSION: gitops-local
+          APP_VERSION: ghcr-main
 
         service:
           port: 50051
