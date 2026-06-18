@@ -9,14 +9,17 @@ SERVICE_DIR="${REPO_ROOT}/services/demo-grpc"
 IMAGE="demo-grpc:local"
 CONTAINER="demo-grpc-test"
 HOST_PORT="${HOST_PORT:-50052}"
+METRICS_HOST_PORT="${METRICS_HOST_PORT:-9091}"
 CONTAINER_PORT="50051"
+METRICS_CONTAINER_PORT="9090"
 ADDR="localhost:${HOST_PORT}"
 
 echo "============================================================"
 echo "demo-grpc container test"
 echo "============================================================"
-echo "image      : ${IMAGE}"
-echo "host port  : ${HOST_PORT} -> container ${CONTAINER_PORT}"
+echo "image         : ${IMAGE}"
+echo "host port     : ${HOST_PORT} -> container ${CONTAINER_PORT}"
+echo "metrics port  : ${METRICS_HOST_PORT} -> container ${METRICS_CONTAINER_PORT}"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "ERROR: docker is not installed or not in PATH."
@@ -64,9 +67,11 @@ echo "Starting container..."
 docker run -d \
   --name "${CONTAINER}" \
   -p "${HOST_PORT}:${CONTAINER_PORT}" \
+  -p "${METRICS_HOST_PORT}:${METRICS_CONTAINER_PORT}" \
   -e SERVICE_NAME=demo-grpc \
   -e APP_VERSION=container-local \
   -e GRPC_PORT="${CONTAINER_PORT}" \
+  -e METRICS_PORT="${METRICS_CONTAINER_PORT}" \
   "${IMAGE}" >/dev/null
 
 echo
@@ -92,6 +97,13 @@ done
 echo
 echo "Running gRPC healthcheck client against the container..."
 (cd "${SERVICE_DIR}" && go run ./cmd/healthcheck -addr "${ADDR}")
+
+# ── check metrics endpoint ───────────────────────────────────────────────────
+echo
+echo "Checking container Prometheus metrics endpoint..."
+curl -fsS "http://localhost:${METRICS_HOST_PORT}/metrics" \
+  | grep -E "go_goroutines|process_cpu_seconds_total" >/dev/null
+echo "Container metrics endpoint OK."
 
 # ── inspect image and container ──────────────────────────────────────────────
 echo

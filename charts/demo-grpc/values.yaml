@@ -20,6 +20,8 @@ service:
   type: ClusterIP
   port: 50051
 
+metricsPort: 9090
+
 # gRPC liveness and readiness probes use native Kubernetes gRPC health checks
 # against the service port. The standard gRPC health service is registered by
 # the server. The healthcheck binary remains in the image for the Docker

@@ -31,6 +31,7 @@ COPY --from=build /out/healthcheck /app/healthcheck
 USER nonroot:nonroot
 
 EXPOSE 50051
+EXPOSE 9090
 
 # Container-native health check using the gRPC healthcheck client.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \

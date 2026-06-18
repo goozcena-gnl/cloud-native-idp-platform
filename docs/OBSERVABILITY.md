@@ -140,3 +140,9 @@ The next step is application observability:
 ```text
 demo-grpc metrics  -> ServiceMonitor  -> Prometheus scrape  -> Grafana dashboard
 ```
+
+`demo-grpc` now exposes a Prometheus-compatible `/metrics` endpoint on port
+`9090`. This endpoint is validated locally (via `test-demo-grpc.sh`) and in the
+container image (via `test-demo-grpc-container.sh`) before Kubernetes scrape
+configuration is enabled. The next step is to expose this port in the Helm chart
+and add a `ServiceMonitor`.

@@ -15,11 +15,12 @@ Internal Developer Platform.
 
 All configuration is supplied through environment variables.
 
-| Variable       | Default      | Description                       |
-|----------------|--------------|-----------------------------------|
-| `GRPC_PORT`    | `50051`      | Port the gRPC server listens on   |
-| `SERVICE_NAME` | `demo-grpc`  | Informational label in logs       |
-| `APP_VERSION`  | `dev`        | Build version in logs             |
+| Variable        | Default      | Description                             |
+|-----------------|--------------|------------------------------------------|
+| `GRPC_PORT`     | `50051`      | Port the gRPC server listens on         |
+| `METRICS_PORT`  | `9090`       | Port the Prometheus /metrics server on  |
+| `SERVICE_NAME`  | `demo-grpc`  | Informational label in logs             |
+| `APP_VERSION`   | `dev`        | Build version in logs                   |
 
 ## Run locally
 
@@ -120,9 +121,25 @@ The container test validates:
 - non-root runtime user;
 - exposed gRPC service;
 - host-side gRPC healthcheck (`healthcheck OK: SERVING`);
+- Prometheus metrics endpoint (`go_goroutines`, `process_cpu_seconds_total`);
 - Docker HEALTHCHECK status (`healthy`).
 
 See [../../docs/CONTAINERIZATION.md](../../docs/CONTAINERIZATION.md).
+
+## Prometheus metrics
+
+The service exposes Prometheus metrics on a separate HTTP port.
+
+```bash
+curl http://localhost:9090/metrics
+```
+
+The endpoint exposes standard Go runtime and process metrics through the
+Prometheus Go client (`github.com/prometheus/client_golang`). Override the port:
+
+```bash
+METRICS_PORT=19090 go run ./cmd/server
+```
 
 ## Helm chart
 

@@ -7,13 +7,15 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVICE_DIR="${REPO_ROOT}/services/demo-grpc"
 LOG_FILE="/tmp/demo-grpc.log"
 GRPC_PORT="${GRPC_PORT:-50051}"
+METRICS_PORT="${METRICS_PORT:-9090}"
 ADDR="localhost:${GRPC_PORT}"
 
 echo "============================================================"
 echo "demo-grpc local integration test"
 echo "============================================================"
-echo "service dir : ${SERVICE_DIR}"
-echo "gRPC port   : ${GRPC_PORT}"
+echo "service dir  : ${SERVICE_DIR}"
+echo "gRPC port    : ${GRPC_PORT}"
+echo "metrics port : ${METRICS_PORT}"
 
 # ── build check (validates compilation) ──────────────────────────────────────
 echo
@@ -29,7 +31,7 @@ echo "Build OK."
 echo
 echo "Starting server (log -> ${LOG_FILE})..."
 # exec replaces the subshell so $! captures the go run process PID.
-(cd "${SERVICE_DIR}" && GRPC_PORT="${GRPC_PORT}" exec go run ./cmd/server) > "${LOG_FILE}" 2>&1 &
+(cd "${SERVICE_DIR}" && GRPC_PORT="${GRPC_PORT}" METRICS_PORT="${METRICS_PORT}" exec go run ./cmd/server) > "${LOG_FILE}" 2>&1 &
 SERVER_PID=$!
 
 cleanup() {
@@ -56,6 +58,13 @@ done
 echo
 echo "Running gRPC healthcheck client..."
 (cd "${SERVICE_DIR}" && go run ./cmd/healthcheck -addr "${ADDR}")
+
+# ── check metrics endpoint ───────────────────────────────────────────────────
+echo
+echo "Checking Prometheus metrics endpoint..."
+curl -fsS "http://localhost:${METRICS_PORT}/metrics" \
+  | grep -E "go_goroutines|process_cpu_seconds_total" >/dev/null
+echo "Metrics endpoint OK."
 
 # ── server log excerpt ───────────────────────────────────────────────────────
 echo

@@ -9,6 +9,8 @@ import (
 type Config struct {
 	// GRPCPort is the port the gRPC server binds to.
 	GRPCPort string
+	// MetricsPort is the port the Prometheus /metrics HTTP server binds to.
+	MetricsPort string
 	// ServiceName is an informational label included in startup logs.
 	ServiceName string
 	// AppVersion is the build version included in startup logs.
@@ -20,6 +22,7 @@ type Config struct {
 func Load() *Config {
 	return &Config{
 		GRPCPort:    getEnv("GRPC_PORT", "50051"),
+		MetricsPort: getEnv("METRICS_PORT", "9090"),
 		ServiceName: getEnv("SERVICE_NAME", "demo-grpc"),
 		AppVersion:  getEnv("APP_VERSION", "dev"),
 	}

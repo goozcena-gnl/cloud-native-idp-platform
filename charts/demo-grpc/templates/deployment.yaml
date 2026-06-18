@@ -35,9 +35,14 @@ spec:
             - name: grpc
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.metricsPort }}
+              protocol: TCP
           env:
             - name: GRPC_PORT
               value: {{ .Values.service.port | quote }}
+            - name: METRICS_PORT
+              value: {{ .Values.metricsPort | quote }}
             - name: SERVICE_NAME
               value: {{ .Values.env.SERVICE_NAME | quote }}
             - name: APP_VERSION
