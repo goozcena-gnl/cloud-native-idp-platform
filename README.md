@@ -393,3 +393,20 @@ Validate:
 ```bash
 ./scripts/check-demo-grpc-metrics.sh
 ```
+
+## Grafana dashboard
+
+A `demo-grpc` dashboard is provisioned via GitOps (ConfigMap + Grafana sidecar).
+
+Panels: service info, goroutines, total requests, error rate, request rate, p50/p95 latency.
+
+```bash
+./scripts/grafana-port-forward.sh
+# then open http://localhost:3000/d/demo-grpc
+```
+
+Validate provisioning:
+
+```bash
+./scripts/check-grafana-dashboard.sh
+```

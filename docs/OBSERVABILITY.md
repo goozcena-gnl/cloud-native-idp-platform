@@ -272,3 +272,42 @@ histogram_quantile(0.95, rate(demo_grpc_grpc_request_duration_seconds_bucket[5m]
 
 Next step: create a dedicated Grafana dashboard for `demo-grpc` with request
 rate, error rate, latency, and service build/version information.
+
+## demo-grpc Grafana dashboard
+
+A Grafana dashboard for `demo-grpc` is provisioned via a Kubernetes ConfigMap
+labelled `grafana_dashboard: "1"`. The Grafana sidecar in `kube-prometheus-stack`
+automatically loads it.
+
+GitOps path:
+
+```text
+platform/grafana/dashboards/demo-grpc-dashboard.yaml
+  -> ConfigMap observability/demo-grpc-dashboard
+  -> Grafana sidecar
+  -> Dashboard uid: demo-grpc
+```
+
+Dashboard panels:
+
+| Panel | Type | Query |
+|---|---|---|
+| Service Info | Stat | `demo_grpc_build_info` |
+| Goroutines | Stat | `go_goroutines` |
+| Total Requests | Stat | `sum(demo_grpc_grpc_requests_total)` |
+| Error Rate (5m) | Stat | `rate(...code!="OK"...)` |
+| Request Rate | Time series | `rate(demo_grpc_grpc_requests_total[5m])` by method/code |
+| Request Latency | Time series | p50 + p95 histogram_quantile |
+
+Validate:
+
+```bash
+./scripts/check-grafana-dashboard.sh
+```
+
+Access:
+
+```bash
+./scripts/grafana-port-forward.sh
+# then open http://localhost:3000/d/demo-grpc
+```
