@@ -103,3 +103,40 @@ This is acceptable for a controlled local portfolio environment.
 
 Future hardening should replace this wildcard with an explicit allowlist for
 only the required observability resources.
+
+## Validated observability milestone
+
+The observability foundation is now validated.
+
+Current state:
+
+```text
+kube-prometheus-stack   Synced / Healthy
+Grafana                 Running
+Prometheus              Running
+Grafana /api/health     HTTP 200 OK
+```
+
+Grafana dashboards are available under **Dashboards** in the Grafana UI. The
+installation includes Kubernetes dashboards such as:
+
+- Kubernetes API server;
+- Kubernetes compute resources;
+- Kubernetes networking;
+- kubelet;
+- node exporter;
+- Prometheus overview.
+
+## Local Grafana stabilization
+
+The initial Grafana resource limits were too small for the local kind
+environment. Grafana was stabilized by increasing CPU and memory limits and
+making probes more tolerant. This is a pragmatic local-first adjustment.
+
+## Next observability step
+
+The next step is application observability:
+
+```text
+demo-grpc metrics  -> ServiceMonitor  -> Prometheus scrape  -> Grafana dashboard
+```

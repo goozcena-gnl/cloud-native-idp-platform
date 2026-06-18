@@ -61,7 +61,16 @@ echo "ServiceMonitors:"
 kubectl -n "${NAMESPACE}" get servicemonitor | head -n 20 || true
 
 echo
+echo "Grafana service:"
+kubectl -n "${NAMESPACE}" get svc kube-prometheus-stack-grafana
+
+echo
+echo "Grafana health check reminder:"
+echo "  1. Run: ./scripts/grafana-port-forward.sh"
+echo "  2. In another terminal: curl -i http://localhost:3000/api/health"
+echo "  3. Expected: HTTP/1.1 200 OK"
+
+echo
 echo "============================================================"
-echo "Observability stack check complete."
-echo "Run ./scripts/grafana-port-forward.sh to access Grafana."
+echo "Observability stack is installed and core components are ready."
 echo "============================================================"

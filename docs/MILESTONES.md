@@ -166,5 +166,54 @@ should deploy by immutable `sha-*` tag or image digest.
 - Add Prometheus metrics endpoint to `demo-grpc`.
 - Add observability: structured logging, distributed tracing.
 - Onboard Kyverno admission policies.
+
+---
+
+## Milestone: Observability foundation
+
+**Date:** 2026-06-18
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- `kube-prometheus-stack` is deployed through ArgoCD.
+- Prometheus Operator is running.
+- Prometheus is running.
+- Grafana is running.
+- kube-state-metrics is running.
+- node-exporter is running on the local kind nodes.
+- Grafana is reachable through local port-forwarding.
+- Grafana `/api/health` returns HTTP 200.
+- Kubernetes dashboards are visible in Grafana.
+
+### Current observability flow
+
+```text
+ArgoCD Application
+  -> prometheus-community/kube-prometheus-stack Helm chart
+  -> platform/helm-values/kube-prometheus-stack-values.yaml
+  -> observability namespace
+  -> Prometheus + Grafana + Kubernetes dashboards
+```
+
+### Local tuning
+
+Grafana resources were increased for local kind stability because the default
+MVP limits were too small for Grafana, dashboards, sidecars, and internal APIs.
+
+### Known limitations
+
+- Grafana uses local MVP credentials.
+- Grafana has no persistent storage.
+- Alertmanager is disabled.
+- Application-level metrics for `demo-grpc` are not exposed yet.
+- Logs and traces are not configured yet.
+
+### Next steps
+
+- Expose Prometheus metrics from `demo-grpc`.
+- Create a ServiceMonitor for `demo-grpc`.
+- Build a Grafana dashboard for `demo-grpc` gRPC request metrics.
 </content>
 </invoke>

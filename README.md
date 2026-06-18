@@ -318,3 +318,26 @@ Access Grafana locally:
 ```
 
 See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
+
+## Observability milestone
+
+The platform now includes a GitOps-managed observability stack:
+
+```text
+kube-prometheus-stack
+```
+
+Validated components: Prometheus Operator, Prometheus, Grafana,
+kube-state-metrics, node-exporter, Kubernetes dashboards.
+
+Access Grafana locally:
+
+```bash
+./scripts/grafana-port-forward.sh
+```
+
+Grafana health check:
+
+```bash
+curl -i http://localhost:3000/api/health
+```
