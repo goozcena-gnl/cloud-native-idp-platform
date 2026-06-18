@@ -169,6 +169,7 @@ Validated ArgoCD Applications:
 ```text
 idp-root              Synced   Healthy
 platform-namespaces   Synced   Healthy
+demo-grpc             Synced   Healthy
 ```
 
 See [docs/GITOPS.md](docs/GITOPS.md),
@@ -292,3 +293,28 @@ Tags: `main` (latest build) and `sha-<short>` (immutable per-commit tag).
 Authentication uses `GITHUB_TOKEN` — no personal access token is required.
 
 See [docs/GHCR.md](docs/GHCR.md).
+
+## Observability
+
+The first observability stack uses `kube-prometheus-stack` (Prometheus Operator,
+Prometheus, Grafana, kube-state-metrics, node-exporter, default dashboards and
+rules), deployed by ArgoCD via the multi-source pattern:
+
+```text
+platform/argocd/apps/kube-prometheus-stack-app.yaml
+```
+
+Validate:
+
+```bash
+./scripts/check-observability-stack.sh
+```
+
+Access Grafana locally:
+
+```bash
+./scripts/grafana-port-forward.sh
+# then open http://localhost:3000  (admin / admin)
+```
+
+See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).

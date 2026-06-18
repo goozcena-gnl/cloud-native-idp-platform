@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: observability
+spec:
+  project: idp-platform
+
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 86.2.2
+      helm:
+        releaseName: kube-prometheus-stack
+        valueFiles:
+          - $values/platform/helm-values/kube-prometheus-stack-values.yaml
+    - repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+      - PruneLast=true

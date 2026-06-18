@@ -1,0 +1,86 @@
+# Observability
+
+## Purpose
+
+Observability provides visibility into platform and workload health. The first
+observability milestone installs the `kube-prometheus-stack`, which provides:
+
+- Prometheus Operator;
+- Prometheus;
+- Grafana;
+- kube-state-metrics;
+- prometheus-node-exporter;
+- default Kubernetes dashboards and alerting rules.
+
+## Current stack
+
+```text
+kube-prometheus-stack v86.2.2
+```
+
+The chart is deployed by ArgoCD using the multi-source pattern:
+
+```text
+platform/argocd/apps/kube-prometheus-stack-app.yaml
+```
+
+The chart comes from the Prometheus Community Helm registry. Values are stored
+in the GitOps repository and referenced via the ArgoCD `$values` source:
+
+```text
+platform/helm-values/kube-prometheus-stack-values.yaml
+```
+
+## Access Grafana
+
+```bash
+./scripts/grafana-port-forward.sh
+```
+
+Then open:
+
+```
+http://localhost:3000
+```
+
+Local MVP credentials:
+
+```
+admin / admin
+```
+
+## Validate
+
+```bash
+./scripts/check-observability-stack.sh
+```
+
+## Multi-source ArgoCD Application
+
+The `kube-prometheus-stack-app.yaml` uses the ArgoCD multi-source feature
+(`sources:`) to combine:
+
+1. The chart from the external Helm registry (`prometheus-community.github.io`).
+2. The values file from the GitOps repository (`ref: values`).
+
+This keeps the chart version and the custom values in Git without bundling a
+third-party chart in the repository.
+
+## Security notes
+
+The local MVP uses a simple Grafana admin password (`admin/admin`) for
+convenience. Grafana is `ClusterIP` only and accessible exclusively through
+`kubectl port-forward` — it is not reachable from outside the local machine.
+
+This is **not production-grade**.
+
+Future improvements:
+
+- store Grafana credentials in a Kubernetes Secret managed by Vault or
+  External Secrets;
+- restrict access with ingress authentication or SSO;
+- enable persistent storage;
+- define SLO dashboards;
+- add OpenTelemetry metrics from `demo-grpc`;
+- add Loki for logs;
+- add Tempo for traces.
