@@ -315,5 +315,49 @@ application-level instrumentation.
 - Define basic SLI/SLO queries.
 - Add latency percentile panels.
 - Add request rate and error rate panels.
+
+---
+
+## Milestone: GitOps-provisioned Grafana dashboard
+
+**Date:** 2026-06-18
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- A dedicated `demo-grpc` Grafana dashboard is stored in Git.
+- The dashboard is deployed through an ArgoCD Application.
+- The dashboard is provisioned as a Kubernetes ConfigMap.
+- Grafana sidecar discovers the dashboard through the `grafana_dashboard=1` label.
+- The dashboard is visible in Grafana.
+- Grafana API confirms the dashboard is searchable.
+- Grafana API confirms the dashboard is accessible by UID.
+
+### Dashboard flow
+
+```text
+Git repository
+  -> ArgoCD Application grafana-dashboards
+  -> ConfigMap observability/demo-grpc-dashboard
+  -> Grafana dashboard sidecar
+  -> Grafana dashboard UID demo-grpc
+```
+
+### Dashboard panels
+
+- Service information;
+- Build info;
+- Request rate;
+- Error rate;
+- Request latency (p95);
+- Requests by method and code.
+
+### Important local note
+
+Grafana currently runs as an MVP local instance without persistent storage.
+Manual UI changes, such as changing the admin password, are not part of GitOps
+state and can create drift. Future secret handling should be moved to Vault or
+External Secrets.
 </content>
 </invoke>

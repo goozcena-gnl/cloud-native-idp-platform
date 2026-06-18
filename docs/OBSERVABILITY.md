@@ -311,3 +311,39 @@ Access:
 ./scripts/grafana-port-forward.sh
 # then open http://localhost:3000/d/demo-grpc
 ```
+
+## Validated Grafana dashboard provisioning
+
+A dedicated `demo-grpc` Grafana dashboard is now provisioned through GitOps.
+
+Validated resources:
+
+```text
+ArgoCD Application: grafana-dashboards
+ConfigMap:          observability/demo-grpc-dashboard
+Grafana dashboard:  demo-grpc
+Dashboard UID:      demo-grpc
+```
+
+Validation command:
+
+```bash
+./scripts/check-grafana-dashboard.sh
+```
+
+Expected result:
+
+```
+Dashboard found in Grafana.
+Dashboard UID lookup OK.
+Grafana demo-grpc dashboard is provisioned and accessible.
+```
+
+The dashboard includes panels for service information, request rate, error rate,
+latency, and runtime/application metrics.
+
+### Important note
+
+Grafana credentials should remain aligned with Kubernetes Secret state in this
+local MVP. Manual password changes through the UI can cause validation scripts
+and dashboard reload hooks to fail with `401 Unauthorized`.
