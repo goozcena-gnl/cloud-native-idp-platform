@@ -4,21 +4,20 @@ metadata:
   name: grafana-dashboards
   namespace: argocd
   labels:
+    app.kubernetes.io/name: grafana-dashboards
     app.kubernetes.io/part-of: idp-platform
-    idp.platform/tier: observability
 spec:
   project: idp-platform
-
   source:
     repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
     targetRevision: main
     path: platform/grafana/dashboards
-
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
-
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - PruneLast=true
