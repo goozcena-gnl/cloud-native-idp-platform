@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/config"
+	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/telemetry"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -27,7 +28,9 @@ func main() {
 
 	cfg := config.Load()
 
-	grpcServer, healthSvc, lis := newGRPCServer(logger, cfg)
+	serverMetrics := telemetry.NewServerMetrics(cfg.ServiceName, cfg.AppVersion)
+
+	grpcServer, healthSvc, lis := newGRPCServer(logger, cfg, serverMetrics)
 	metricsServer := newMetricsServer(cfg)
 
 	go serveGRPC(logger, grpcServer, lis, cfg)
@@ -36,7 +39,7 @@ func main() {
 	waitForShutdown(logger, grpcServer, healthSvc, metricsServer)
 }
 
-func newGRPCServer(logger *slog.Logger, cfg *config.Config) (*grpc.Server, *health.Server, net.Listener) {
+func newGRPCServer(logger *slog.Logger, cfg *config.Config, serverMetrics *telemetry.ServerMetrics) (*grpc.Server, *health.Server, net.Listener) {
 	address := net.JoinHostPort("", cfg.GRPCPort)
 	lis, err := net.Listen("tcp", address)
 	if err != nil {
@@ -44,7 +47,9 @@ func newGRPCServer(logger *slog.Logger, cfg *config.Config) (*grpc.Server, *heal
 		os.Exit(1)
 	}
 
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(
+		grpc.UnaryInterceptor(serverMetrics.UnaryServerInterceptor()),
+	)
 	healthSvc := health.NewServer()
 	healthSvc.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
 	healthpb.RegisterHealthServer(srv, healthSvc)

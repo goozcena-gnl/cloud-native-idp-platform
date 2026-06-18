@@ -126,6 +126,18 @@ The container test validates:
 
 See [../../docs/CONTAINERIZATION.md](../../docs/CONTAINERIZATION.md).
 
+## Custom application metrics
+
+In addition to standard Go and process metrics, the service exposes custom metrics:
+
+| Metric | Type | Description |
+|---|---|---|
+| `demo_grpc_build_info` | Gauge | Service/version metadata |
+| `demo_grpc_grpc_requests_total` | Counter | Total gRPC requests by method and status code |
+| `demo_grpc_grpc_request_duration_seconds` | Histogram | gRPC request duration by method and status code |
+
+The gRPC metrics are collected through a unary server interceptor.
+
 ## Prometheus metrics
 
 The service exposes Prometheus metrics on a separate HTTP port.

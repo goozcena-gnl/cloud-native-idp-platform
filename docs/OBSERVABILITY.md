@@ -218,3 +218,18 @@ kubectl -n apps rollout status deployment/demo-grpc --timeout=180s
 ```
 
 This will be improved later by deploying immutable image tags or digests.
+
+## demo-grpc custom metrics
+
+`demo-grpc` now exposes custom application metrics:
+
+```text
+demo_grpc_build_info
+demo_grpc_grpc_requests_total
+demo_grpc_grpc_request_duration_seconds
+```
+
+These metrics complement the default Go/process metrics and demonstrate
+application-level instrumentation.
+
+The gRPC request metrics are collected through a unary gRPC server interceptor.

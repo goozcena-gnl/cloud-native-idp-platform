@@ -60,6 +60,13 @@ curl -fsS "http://localhost:${LOCAL_METRICS_PORT}/metrics" \
 echo "Service /metrics endpoint OK."
 
 echo
+echo "Checking custom metrics through Kubernetes Service..."
+curl -fsS "http://localhost:${LOCAL_METRICS_PORT}/metrics" | grep "demo_grpc_build_info" >/dev/null
+curl -fsS "http://localhost:${LOCAL_METRICS_PORT}/metrics" | grep "demo_grpc_grpc_requests_total" >/dev/null
+curl -fsS "http://localhost:${LOCAL_METRICS_PORT}/metrics" | grep "demo_grpc_grpc_request_duration_seconds" >/dev/null
+echo "Custom Kubernetes metrics endpoint OK."
+
+echo
 echo "Testing Prometheus target discovery..."
 kubectl -n "${OBS_NAMESPACE}" port-forward svc/kube-prometheus-stack-prometheus \
   "${LOCAL_PROM_PORT}:9090" >/tmp/prometheus-port-forward.log 2>&1 &
@@ -76,6 +83,12 @@ echo "Querying Prometheus up metric for apps namespace..."
 curl -fsS "http://localhost:${LOCAL_PROM_PORT}/api/v1/query?query=up%7Bnamespace%3D%22${APP_NAMESPACE}%22%7D" \
   | grep -q "${APP_NAME}"
 echo "Prometheus scrape query OK."
+
+echo
+echo "Querying custom Prometheus metric..."
+curl -fsS "http://localhost:${LOCAL_PROM_PORT}/api/v1/query?query=demo_grpc_build_info" \
+  | grep -q "${APP_NAME}"
+echo "Custom Prometheus metric query OK."
 
 echo
 echo "============================================================"

@@ -105,6 +105,14 @@ curl -fsS "http://localhost:${METRICS_HOST_PORT}/metrics" \
   | grep -E "go_goroutines|process_cpu_seconds_total" >/dev/null
 echo "Container metrics endpoint OK."
 
+# ── check container custom metrics ───────────────────────────────────────────
+echo
+echo "Checking container custom Prometheus metrics..."
+curl -fsS "http://localhost:${METRICS_HOST_PORT}/metrics" | grep "demo_grpc_build_info" >/dev/null
+curl -fsS "http://localhost:${METRICS_HOST_PORT}/metrics" | grep "demo_grpc_grpc_requests_total" >/dev/null
+curl -fsS "http://localhost:${METRICS_HOST_PORT}/metrics" | grep "demo_grpc_grpc_request_duration_seconds" >/dev/null
+echo "Container custom metrics OK."
+
 # ── inspect image and container ──────────────────────────────────────────────
 echo
 echo "Waiting for Docker HEALTHCHECK..."

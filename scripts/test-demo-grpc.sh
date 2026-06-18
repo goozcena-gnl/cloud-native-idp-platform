@@ -66,6 +66,14 @@ curl -fsS "http://localhost:${METRICS_PORT}/metrics" \
   | grep -E "go_goroutines|process_cpu_seconds_total" >/dev/null
 echo "Metrics endpoint OK."
 
+# ── check custom metrics ─────────────────────────────────────────────────────
+echo
+echo "Checking custom Prometheus metrics..."
+curl -fsS "http://localhost:${METRICS_PORT}/metrics" | grep "demo_grpc_build_info" >/dev/null
+curl -fsS "http://localhost:${METRICS_PORT}/metrics" | grep "demo_grpc_grpc_requests_total" >/dev/null
+curl -fsS "http://localhost:${METRICS_PORT}/metrics" | grep "demo_grpc_grpc_request_duration_seconds" >/dev/null
+echo "Custom metrics OK."
+
 # ── server log excerpt ───────────────────────────────────────────────────────
 echo
 echo "Server log excerpt:"
