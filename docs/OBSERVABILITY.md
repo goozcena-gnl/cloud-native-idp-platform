@@ -233,3 +233,42 @@ These metrics complement the default Go/process metrics and demonstrate
 application-level instrumentation.
 
 The gRPC request metrics are collected through a unary gRPC server interceptor.
+
+## Validated custom application metrics
+
+`demo-grpc` now exposes custom Prometheus metrics in addition to standard Go
+and process metrics.
+
+Validated metrics:
+
+```text
+demo_grpc_build_info
+demo_grpc_grpc_requests_total
+demo_grpc_grpc_request_duration_seconds
+```
+
+The gRPC request metrics are collected through a unary gRPC server interceptor.
+
+Validated checks:
+
+```
+Custom Kubernetes metrics endpoint OK.
+Custom Prometheus metric query OK.
+```
+
+Example PromQL queries:
+
+```promql
+demo_grpc_build_info
+```
+
+```promql
+rate(demo_grpc_grpc_requests_total[5m])
+```
+
+```promql
+histogram_quantile(0.95, rate(demo_grpc_grpc_request_duration_seconds_bucket[5m]))
+```
+
+Next step: create a dedicated Grafana dashboard for `demo-grpc` with request
+rate, error rate, latency, and service build/version information.

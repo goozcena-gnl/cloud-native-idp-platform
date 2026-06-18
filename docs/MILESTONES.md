@@ -262,5 +262,58 @@ immutable tags or image digests.
 - Add custom business metrics.
 - Create a dedicated Grafana dashboard for `demo-grpc`.
 - Define basic SLI/SLO panels.
+
+---
+
+## Milestone: Custom application metrics
+
+**Date:** 2026-06-18
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- `demo-grpc` exposes custom Prometheus metrics.
+- gRPC requests are instrumented through a unary server interceptor.
+- The metrics endpoint includes build metadata.
+- The metrics endpoint includes request counters.
+- The metrics endpoint includes request duration histograms.
+- Local tests validate custom metrics.
+- Container tests validate custom metrics.
+- Kubernetes Service validation confirms custom metrics are reachable.
+- Prometheus successfully queries custom `demo_grpc_*` metrics.
+
+### Custom metrics
+
+```text
+demo_grpc_build_info
+demo_grpc_grpc_requests_total
+demo_grpc_grpc_request_duration_seconds
+```
+
+### Current metrics flow
+
+```text
+gRPC request
+  -> unary interceptor
+  -> demo_grpc_* custom metrics
+  -> /metrics endpoint
+  -> ServiceMonitor
+  -> Prometheus
+  -> Grafana / PromQL
+```
+
+### Important lesson learned
+
+The project now demonstrates both infrastructure observability and
+application-level instrumentation.
+
+### Future improvements
+
+- Add business-level metrics.
+- Create a Grafana dashboard for `demo-grpc`.
+- Define basic SLI/SLO queries.
+- Add latency percentile panels.
+- Add request rate and error rate panels.
 </content>
 </invoke>

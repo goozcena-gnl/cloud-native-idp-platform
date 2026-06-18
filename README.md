@@ -375,3 +375,21 @@ Service /metrics endpoint OK.
 Prometheus target discovery OK.
 Prometheus scrape query OK.
 ```
+
+## Custom application metrics
+
+`demo-grpc` now exposes custom Prometheus metrics:
+
+```text
+demo_grpc_build_info
+demo_grpc_grpc_requests_total
+demo_grpc_grpc_request_duration_seconds
+```
+
+These metrics are scraped by Prometheus through the `apps/demo-grpc` ServiceMonitor.
+
+Validate:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+```
