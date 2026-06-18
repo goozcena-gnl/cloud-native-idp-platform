@@ -146,3 +146,29 @@ demo-grpc metrics  -> ServiceMonitor  -> Prometheus scrape  -> Grafana dashboard
 container image (via `test-demo-grpc-container.sh`) before Kubernetes scrape
 configuration is enabled. The next step is to expose this port in the Helm chart
 and add a `ServiceMonitor`.
+
+## demo-grpc Prometheus scraping
+
+`demo-grpc` exposes Prometheus metrics on port `9090`.
+
+Kubernetes exposure:
+
+```text
+Service port:    metrics / 9090
+ServiceMonitor:  apps/demo-grpc
+Prometheus:      kube-prometheus-stack
+```
+
+Validate:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+```
+
+Expected result:
+
+```
+Service /metrics endpoint OK.
+Prometheus target discovery OK.
+Prometheus scrape query OK.
+```

@@ -67,6 +67,9 @@ prometheus:
     retention: 6h
     scrapeInterval: 30s
     evaluationInterval: 30s
+    # Discover ServiceMonitors in all namespaces (e.g. apps/demo-grpc from observability/prometheus).
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
 
     resources:
       requests:

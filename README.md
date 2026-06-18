@@ -341,3 +341,13 @@ Grafana health check:
 ```bash
 curl -i http://localhost:3000/api/health
 ```
+
+## Application metrics
+
+`demo-grpc` exposes Prometheus metrics on `/metrics`.
+
+Validate Kubernetes scraping:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+```
