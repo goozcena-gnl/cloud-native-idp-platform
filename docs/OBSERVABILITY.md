@@ -84,3 +84,22 @@ Future improvements:
 - add OpenTelemetry metrics from `demo-grpc`;
 - add Loki for logs;
 - add Tempo for traces.
+
+## AppProject permission note
+
+`kube-prometheus-stack` requires cluster-scoped Kubernetes resources such as
+CRDs, ClusterRoles, ClusterRoleBindings, and webhooks.
+
+For the local MVP, the `idp-platform` AppProject temporarily allows all
+cluster-scoped resources:
+
+```yaml
+clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+```
+
+This is acceptable for a controlled local portfolio environment.
+
+Future hardening should replace this wildcard with an explicit allowlist for
+only the required observability resources.
