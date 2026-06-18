@@ -351,3 +351,27 @@ Validate Kubernetes scraping:
 ```bash
 ./scripts/check-demo-grpc-metrics.sh
 ```
+
+## Application metrics scraping
+
+`demo-grpc` exposes Prometheus metrics on `/metrics`.
+
+Kubernetes scraping is configured with:
+
+```text
+ServiceMonitor apps/demo-grpc
+```
+
+Validate:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+```
+
+Expected result:
+
+```
+Service /metrics endpoint OK.
+Prometheus target discovery OK.
+Prometheus scrape query OK.
+```

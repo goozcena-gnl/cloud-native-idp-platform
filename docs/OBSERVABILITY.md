@@ -172,3 +172,49 @@ Service /metrics endpoint OK.
 Prometheus target discovery OK.
 Prometheus scrape query OK.
 ```
+
+## Validated demo-grpc metrics scraping
+
+`demo-grpc` is now scraped by Prometheus.
+
+Validated Kubernetes objects:
+
+```text
+Service:        apps/demo-grpc
+Service port:   metrics / 9090
+ServiceMonitor: apps/demo-grpc
+Prometheus:     observability/kube-prometheus-stack-prometheus
+```
+
+Validated checks:
+
+```
+Service /metrics endpoint OK.
+Prometheus target discovery OK.
+Prometheus scrape query OK.
+```
+
+Manual Prometheus query example:
+
+```
+up{namespace="apps"}
+```
+
+Expected result:
+
+```
+demo-grpc target present and up
+```
+
+### Important note
+
+The current deployment uses the mutable image tag `main`.
+
+If a newly published image is not immediately used by Kubernetes, force a rollout:
+
+```bash
+kubectl -n apps rollout restart deployment/demo-grpc
+kubectl -n apps rollout status deployment/demo-grpc --timeout=180s
+```
+
+This will be improved later by deploying immutable image tags or digests.

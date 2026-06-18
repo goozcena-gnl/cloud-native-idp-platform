@@ -215,5 +215,52 @@ MVP limits were too small for Grafana, dashboards, sidecars, and internal APIs.
 - Expose Prometheus metrics from `demo-grpc`.
 - Create a ServiceMonitor for `demo-grpc`.
 - Build a Grafana dashboard for `demo-grpc` gRPC request metrics.
+
+---
+
+## Milestone: Application metrics scraping
+
+**Date:** 2026-06-18
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- `demo-grpc` exposes a Prometheus-compatible `/metrics` endpoint.
+- The metrics endpoint runs on port `9090`.
+- The Docker image exposes both gRPC and metrics ports.
+- Local tests validate the gRPC healthcheck and `/metrics`.
+- Container tests validate the gRPC healthcheck and `/metrics`.
+- The Helm chart exposes a named `metrics` container port.
+- The Kubernetes Service exposes port `9090`.
+- A `ServiceMonitor` is deployed in the `apps` namespace.
+- Prometheus discovers the `demo-grpc` scrape target.
+- Prometheus `up` query confirms the target is scraped.
+
+### Current metrics flow
+
+```text
+demo-grpc
+  -> /metrics on port 9090
+  -> Kubernetes Service metrics port
+  -> ServiceMonitor apps/demo-grpc
+  -> kube-prometheus-stack Prometheus
+  -> Grafana / Prometheus queries
+```
+
+### Important lesson learned
+
+The deployment currently uses the mutable GHCR tag `main`.
+
+After publishing a new image, Kubernetes may still run an older cached image
+until a rollout restart occurs. This validated the need for a future move to
+immutable tags or image digests.
+
+### Future improvements
+
+- Deploy `demo-grpc` using `sha-*` tags or image digests.
+- Add custom business metrics.
+- Create a dedicated Grafana dashboard for `demo-grpc`.
+- Define basic SLI/SLO panels.
 </content>
 </invoke>
