@@ -33,3 +33,4 @@ spec:
       - CreateNamespace=false
       - ServerSideApply=true
       - PruneLast=true
+      - SkipDryRunOnMissingResource=true
