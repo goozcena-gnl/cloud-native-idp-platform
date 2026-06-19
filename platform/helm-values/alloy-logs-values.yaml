@@ -1,0 +1,60 @@
+# Local MVP Grafana Alloy values for Kubernetes pod logs.
+#
+# Alloy collects pod logs through the Kubernetes API and forwards them to Loki.
+# This avoids privileged containers and hostPath mounts in the local MVP.
+fullnameOverride: alloy-logs
+controller:
+  type: deployment
+  replicas: 1
+alloy:
+  enableReporting: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 384Mi
+  configMap:
+    create: true
+    content: |-
+      loki.write "local" {
+        endpoint {
+          url = "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push"
+        }
+      }
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance"]
+          target_label  = "instance"
+        }
+      }
+      loki.source.kubernetes "pod_logs" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.local.receiver]
+      }
+rbac:
+  create: true
+service:
+  enabled: true
+  type: ClusterIP

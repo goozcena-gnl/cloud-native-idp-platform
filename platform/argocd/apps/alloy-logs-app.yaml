@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy-logs
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: alloy-logs
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: observability
+spec:
+  project: idp-platform
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: 1.10.0
+      helm:
+        releaseName: alloy-logs
+        valueFiles:
+          - $values/platform/helm-values/alloy-logs-values.yaml
+    - repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - PruneLast=true
