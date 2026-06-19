@@ -359,5 +359,89 @@ Grafana currently runs as an MVP local instance without persistent storage.
 Manual UI changes, such as changing the admin password, are not part of GitOps
 state and can create drift. Future secret handling should be moved to Vault or
 External Secrets.
+
+---
+
+## Milestone: Immutable image tag deployment
+
+**Date:** 2026-06-18
+**Phase:** Supply chain / deployment discipline
+**Status:** Achieved
+
+### Summary
+
+The `demo-grpc` ArgoCD Application no longer references the mutable `:main`
+tag. It now pins to the exact SHA digest tag published by the CI workflow for
+the last image-producing commit.
+
+```yaml
+image:
+  tag: sha-1b1db1a      # immutable — maps to one specific image layer set
+  pullPolicy: IfNotPresent
+env:
+  APP_VERSION: sha-1b1db1a
+```
+
+### What changed
+
+| Field | Before | After |
+|---|---|---|
+| `image.tag` | `main` (mutable) | `sha-1b1db1a` (immutable) |
+| `image.pullPolicy` | `Always` | `IfNotPresent` |
+| `APP_VERSION` | `ghcr-main` | `sha-1b1db1a` |
+
+### Why this matters
+
+With a mutable tag ArgoCD cannot detect that a new image was pushed; the
+manifest diff is empty and no rollout fires. The previous workaround was
+`kubectl rollout restart`, which is error-prone and untracked.
+
+With an immutable SHA tag:
+
+- Every image upgrade is an explicit Git commit.
+- ArgoCD detects the manifest diff and fires a real rollout automatically.
+- The running image is fully traceable back to the triggering commit.
+- `pullPolicy: IfNotPresent` is correct and efficient because the tag will
+  never point to a different layer set.
+
+### CI workflow
+
+The `publish-demo-grpc.yml` workflow already publishes two tags on every
+push to `main` that touches `services/demo-grpc/**` or `charts/demo-grpc/**`:
+
+```yaml
+tags: |
+  type=raw,value=main           # mutable alias — kept for convenience
+  type=sha,prefix=sha-,format=short   # immutable 7-char SHA tag
+```
+
+No changes were needed to the workflow itself.
+
+### Deployment upgrade procedure
+
+When a new version of `demo-grpc` is ready to deploy:
+
+1. Push code changes to `main` (triggers the publish workflow).
+2. Identify the short SHA of that commit: `git rev-parse --short=7 HEAD`.
+3. Update `platform/argocd/apps/demo-grpc-app.yaml`:
+   - `image.tag: sha-<new-sha>`
+   - `env.APP_VERSION: sha-<new-sha>`
+4. Commit and push the manifest change.
+5. ArgoCD detects the diff and rolls out the new image automatically.
+
+### Validation after cluster restart
+
+```bash
+# Confirm ArgoCD synced with the new tag
+kubectl -n apps get deployment demo-grpc \
+  -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+
+# Should print:
+# ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:sha-1b1db1a
+
+# Full metrics and dashboard validation
+./scripts/check-demo-grpc-metrics.sh
+./scripts/check-grafana-dashboard.sh
+```
 </content>
 </invoke>
