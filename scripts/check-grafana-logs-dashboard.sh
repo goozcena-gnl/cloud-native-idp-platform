@@ -70,11 +70,19 @@ echo "Loki datasource OK."
 echo
 
 echo "Checking logs dashboard..."
-curl -fsS \
-  -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
-  "http://localhost:${LOCAL_GRAFANA_PORT}/api/dashboards/uid/${DASHBOARD_UID}" \
-  | grep -q "\"uid\":\"${DASHBOARD_UID}\""
+DASHBOARD_RESPONSE="$(
+  curl -fsS \
+    -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+    "http://localhost:${LOCAL_GRAFANA_PORT}/api/dashboards/uid/${DASHBOARD_UID}"
+)"
+
+echo "${DASHBOARD_RESPONSE}" | grep -q "\"uid\":\"${DASHBOARD_UID}\""
+echo "${DASHBOARD_RESPONSE}" | grep -q "\"name\":\"namespace\""
+echo "${DASHBOARD_RESPONSE}" | grep -q "\"name\":\"pod\""
+echo "${DASHBOARD_RESPONSE}" | grep -q "\"name\":\"container\""
+
 echo "Grafana logs dashboard OK."
+echo "Grafana logs dashboard variables OK."
 echo
 
 echo "============================================================"

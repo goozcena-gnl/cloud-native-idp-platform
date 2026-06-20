@@ -15,11 +15,74 @@ data:
       "tags": ["demo-grpc", "loki", "logs", "gitops"],
       "timezone": "browser",
       "schemaVersion": 39,
-      "version": 1,
+      "version": 2,
       "refresh": "30s",
       "time": {
         "from": "now-24h",
         "to": "now"
+      },
+      "templating": {
+        "list": [
+          {
+            "name": "namespace",
+            "type": "query",
+            "label": "Namespace",
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "query": "label_values({job=\"loki.source.kubernetes.pod_logs\"}, namespace)",
+            "refresh": 2,
+            "sort": 1,
+            "multi": false,
+            "includeAll": false,
+            "current": {
+              "selected": true,
+              "text": "apps",
+              "value": "apps"
+            }
+          },
+          {
+            "name": "pod",
+            "type": "query",
+            "label": "Pod",
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "query": "label_values({namespace=\"$namespace\"}, pod)",
+            "refresh": 2,
+            "sort": 1,
+            "multi": true,
+            "includeAll": true,
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            }
+          },
+          {
+            "name": "container",
+            "type": "query",
+            "label": "Container",
+            "datasource": {
+              "type": "loki",
+              "uid": "loki"
+            },
+            "query": "label_values({namespace=\"$namespace\", pod=~\"$pod\"}, container)",
+            "refresh": 2,
+            "sort": 1,
+            "multi": true,
+            "includeAll": true,
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "demo-grpc",
+              "value": "demo-grpc"
+            }
+          }
+        ]
       },
       "panels": [
         {
@@ -34,13 +97,13 @@ data:
           },
           "options": {
             "mode": "markdown",
-            "content": "## demo-grpc logs\n\n`demo-grpc stdout` → `Kubernetes pod logs` → `Grafana Alloy` → `Loki` → `Grafana`\n\nMain query:\n\n```logql\n{namespace=\"apps\", container=\"demo-grpc\"}\n```"
+            "content": "## demo-grpc logs\n\n`demo-grpc stdout` → `Kubernetes pod logs` → `Grafana Alloy` → `Loki` → `Grafana`\n\nMain query:\n\n```logql\n{namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"}\n```"
           }
         },
         {
           "id": 2,
           "type": "logs",
-          "title": "Recent demo-grpc logs",
+          "title": "Recent logs",
           "gridPos": {
             "h": 9,
             "w": 24,
@@ -54,7 +117,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "{namespace=\"apps\", container=\"demo-grpc\"}",
+              "expr": "{namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"}",
               "datasource": {
                 "type": "loki",
                 "uid": "loki"
@@ -89,7 +152,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "{namespace=\"apps\", container=\"demo-grpc\"} |= \"starting\"",
+              "expr": "{namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"} |= \"starting\"",
               "datasource": {
                 "type": "loki",
                 "uid": "loki"
@@ -123,7 +186,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "{namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"ERROR\"",
+              "expr": "{namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"} | json | level=\"ERROR\"",
               "datasource": {
                 "type": "loki",
                 "uid": "loki"
@@ -157,7 +220,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(rate({namespace=\"apps\", container=\"demo-grpc\"}[5m]))",
+              "expr": "sum(rate({namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"}[5m]))",
               "legendFormat": "logs/sec",
               "datasource": {
                 "type": "loki",
@@ -188,7 +251,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"INFO\" [$__range]))",
+              "expr": "sum(count_over_time({namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"} | json | level=\"INFO\" [$__range]))",
               "datasource": {
                 "type": "loki",
                 "uid": "loki"
@@ -218,7 +281,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"ERROR\" [$__range]))",
+              "expr": "sum(count_over_time({namespace=\"$namespace\", pod=~\"$pod\", container=~\"$container\"} | json | level=\"ERROR\" [$__range]))",
               "datasource": {
                 "type": "loki",
                 "uid": "loki"
