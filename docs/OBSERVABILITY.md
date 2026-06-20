@@ -472,3 +472,37 @@ Example LogQL queries:
 ```logql
 {namespace="apps", container="demo-grpc"} |= `"version":"sha-4398e39"`
 ```
+
+## Grafana logs dashboard
+
+A dedicated Grafana dashboard is provisioned for `demo-grpc` logs.
+
+Dashboard:
+
+```text
+demo-grpc Logs
+```
+
+Dashboard UID:
+
+```
+demo-grpc-logs
+```
+
+Main query:
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from:
+
+```text
+platform/grafana/dashboards/demo-grpc-logs-dashboard.yaml
+```
+
+Validation command:
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```

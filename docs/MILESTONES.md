@@ -562,5 +562,80 @@ running pod emits structured JSON logs.
 - Add error-level log queries.
 - Add log-derived metrics.
 - Add trace IDs once OpenTelemetry tracing is introduced.
+
+---
+
+## Milestone 13 — GitOps-provisioned Grafana logs dashboard
+
+**Date:** 2026-06-20
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- A dedicated Grafana dashboard for `demo-grpc` logs is provisioned through GitOps.
+- The dashboard is stored as a Kubernetes ConfigMap.
+- The ConfigMap is managed by the existing `grafana-dashboards` ArgoCD application.
+- The dashboard uses the Loki datasource.
+- The dashboard UID is `demo-grpc-logs`.
+- Grafana API validation confirms that the dashboard is reachable.
+- CI is green.
+
+### Dashboard
+
+```text
+demo-grpc Logs
+```
+
+Dashboard UID:
+
+```
+demo-grpc-logs
+```
+
+Main LogQL query:
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+### Panels
+
+- Recent `demo-grpc` logs
+- Startup logs
+- Error logs
+- Log rate
+- INFO logs count
+- ERROR logs count
+
+### Validation command
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```
+
+Expected result:
+
+```
+Grafana health OK.
+Loki datasource OK.
+Grafana logs dashboard OK.
+Grafana logs dashboard is provisioned and reachable.
+```
+
+### Current observability coverage
+
+```text
+Metrics dashboard:  demo-grpc -> Prometheus -> Grafana
+Logs dashboard:     demo-grpc -> Alloy -> Loki -> Grafana
+```
+
+### Future improvements
+
+- Add dashboard variables for namespace, pod, and container.
+- Add log-level filters.
+- Add JSON parsing-based panels.
+- Add log-derived metrics.
+- Add trace ID filters when OpenTelemetry tracing is introduced.
 </content>
 </invoke>

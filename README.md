@@ -450,3 +450,19 @@ Example LogQL query:
 ```logql
 {namespace="apps", container="demo-grpc"} |= `"msg":"starting service"`
 ```
+
+## Grafana logs dashboard
+
+The platform includes a GitOps-provisioned Grafana dashboard for `demo-grpc` logs.
+
+Validate it with:
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```
+
+Dashboard UID:
+
+```
+demo-grpc-logs
+```
