@@ -398,3 +398,29 @@ demo-grpc logs are collected by Alloy and queryable in Loki.
 The current setup uses ephemeral local Loki storage and is intended for local
 portfolio validation. A production setup would require persistent/object
 storage, retention policy, and stronger access controls.
+
+## Structured JSON application logs
+
+`demo-grpc` writes structured JSON logs to stdout.
+
+The logs are collected through the existing pipeline:
+
+```text
+demo-grpc stdout
+  -> Kubernetes pod logs
+  -> Grafana Alloy
+  -> Loki
+  -> Grafana Explore
+```
+
+This improves filtering, parsing, and future log-derived metrics.
+
+Example LogQL queries:
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"msg":"starting service"`
+```
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"service":"demo-grpc"`
+```

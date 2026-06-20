@@ -67,7 +67,10 @@ RESPONSE="$(
 )"
 
 echo "${RESPONSE}" | grep -q "demo-grpc"
-echo "${RESPONSE}" | grep -E "starting service|starting metrics server" >/dev/null
+echo "${RESPONSE}" | grep -E '"msg":"starting service"|starting service' >/dev/null
+echo "${RESPONSE}" | grep -E '"service":"demo-grpc"|service=demo-grpc' >/dev/null
+echo "${RESPONSE}" | grep -E '"version":"sha-|version=sha-' >/dev/null
+echo "${RESPONSE}" | grep -E '"msg":"starting metrics server"|starting metrics server' >/dev/null
 
 echo "demo-grpc logs found in Loki."
 echo

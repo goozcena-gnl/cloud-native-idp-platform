@@ -141,6 +141,17 @@ echo
 echo "Container logs:"
 docker logs "${CONTAINER}" 2>&1 | sed 's/^/  /'
 
+# ── structured JSON log validation ───────────────────────────────────────────
+echo
+echo "Checking container structured JSON logs..."
+docker logs "${CONTAINER}" 2>&1 | grep -q '"msg":"starting service"'
+docker logs "${CONTAINER}" 2>&1 | grep -q '"service":"demo-grpc"'
+docker logs "${CONTAINER}" 2>&1 | grep -q '"version":"container-local"'
+docker logs "${CONTAINER}" 2>&1 | grep -q '"grpc_port":"50051"'
+docker logs "${CONTAINER}" 2>&1 | grep -q '"msg":"starting metrics server"'
+docker logs "${CONTAINER}" 2>&1 | grep -q '"metrics_port":"9090"'
+echo "Container structured JSON logs OK."
+
 echo
 echo "Image size:"
 docker image ls "${IMAGE}" --format '  {{.Repository}}:{{.Tag}}  {{.Size}}'

@@ -79,6 +79,17 @@ echo
 echo "Server log excerpt:"
 cat "${LOG_FILE}"
 
+# ── structured JSON log validation ───────────────────────────────────────────
+echo
+echo "Checking structured JSON logs..."
+grep -q '"msg":"starting service"' "${LOG_FILE}"
+grep -q '"service":"demo-grpc"' "${LOG_FILE}"
+grep -q '"version":"dev"' "${LOG_FILE}"
+grep -q '"grpc_port":"50051"' "${LOG_FILE}"
+grep -q '"msg":"starting metrics server"' "${LOG_FILE}"
+grep -q '"metrics_port":"9090"' "${LOG_FILE}"
+echo "Structured JSON logs OK."
+
 echo
 echo "============================================================"
 echo "demo-grpc local test passed."

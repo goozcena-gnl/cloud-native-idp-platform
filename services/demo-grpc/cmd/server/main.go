@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}))
 
@@ -69,7 +69,7 @@ func newMetricsServer(cfg *config.Config) *http.Server {
 }
 
 func serveGRPC(logger *slog.Logger, srv *grpc.Server, lis net.Listener, cfg *config.Config) {
-	logger.Info("starting",
+	logger.Info("starting service",
 		"service", cfg.ServiceName,
 		"version", cfg.AppVersion,
 		"grpc_port", cfg.GRPCPort,
@@ -82,7 +82,9 @@ func serveGRPC(logger *slog.Logger, srv *grpc.Server, lis net.Listener, cfg *con
 
 func serveMetrics(logger *slog.Logger, metricsServer *http.Server, cfg *config.Config) {
 	logger.Info("starting metrics server",
-		"port", cfg.MetricsPort,
+		"service", cfg.ServiceName,
+		"version", cfg.AppVersion,
+		"metrics_port", cfg.MetricsPort,
 		"path", "/metrics",
 	)
 	if err := metricsServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
