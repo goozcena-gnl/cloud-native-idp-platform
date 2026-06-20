@@ -443,5 +443,72 @@ kubectl -n apps get deployment demo-grpc \
 ./scripts/check-demo-grpc-metrics.sh
 ./scripts/check-grafana-dashboard.sh
 ```
+
+---
+
+## Milestone 11 — Centralized Kubernetes logs with Loki and Alloy
+
+**Date:** 2026-06-20
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- Loki is deployed through ArgoCD.
+- Grafana Alloy is deployed through ArgoCD.
+- Loki runs in local monolithic mode.
+- Alloy collects Kubernetes pod logs through the Kubernetes API.
+- Logs are forwarded from Alloy to Loki.
+- Grafana has a Loki datasource provisioned through GitOps.
+- Loki `/ready` returns `ready`.
+- `demo-grpc` logs are queryable through Loki.
+- `demo-grpc` logs are visible in Grafana Explore.
+- Validation scripts confirm the Loki stack and application logs.
+
+### Current logs flow
+
+```text
+Kubernetes pod logs
+  -> Grafana Alloy
+  -> Loki
+  -> Grafana Loki datasource
+  -> Grafana Explore
+  -> LogQL queries
+```
+
+### Validated LogQL query
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+### Example returned logs
+
+```
+starting service=demo-grpc version=sha-1b1db1a grpc_port=50051
+starting metrics server port=9090 path=/metrics
+```
+
+### Important implementation choice
+
+Promtail was intentionally not used. The project uses Grafana Alloy for log
+collection because Alloy is the forward-looking Grafana telemetry collector
+and is better aligned with the current Loki ecosystem.
+
+### Local limitations
+
+- Loki storage is ephemeral.
+- Loki is not exposed publicly.
+- No retention/persistence strategy is configured yet.
+- No alerting rules are configured on logs yet.
+- No structured JSON log parsing pipeline is configured yet.
+
+### Future improvements
+
+- Add structured log parsing.
+- Add log-based dashboard panels.
+- Add error log queries.
+- Add log-derived metrics.
+- Add Tempo and OpenTelemetry traces.
 </content>
 </invoke>

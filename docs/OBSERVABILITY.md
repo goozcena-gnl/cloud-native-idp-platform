@@ -347,3 +347,54 @@ latency, and runtime/application metrics.
 Grafana credentials should remain aligned with Kubernetes Secret state in this
 local MVP. Manual password changes through the UI can cause validation scripts
 and dashboard reload hooks to fail with `401 Unauthorized`.
+
+## Centralized logs with Loki and Alloy
+
+The platform now includes centralized Kubernetes logging.
+
+### Components
+
+```text
+Loki
+Grafana Alloy
+Grafana Loki datasource
+```
+
+### Log collection flow
+
+```text
+Kubernetes pod logs
+  -> Alloy
+  -> Loki
+  -> Grafana Explore
+```
+
+### Validation commands
+
+```bash
+./scripts/check-loki-stack.sh
+./scripts/check-demo-grpc-logs.sh
+```
+
+Expected result:
+
+```
+Loki ready endpoint OK.
+Loki + Alloy logs stack is healthy.
+demo-grpc logs found in Loki.
+demo-grpc logs are collected by Alloy and queryable in Loki.
+```
+
+### Example LogQL queries
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+```logql
+{namespace="apps", container="demo-grpc"} |= "starting"
+```
+
+The current setup uses ephemeral local Loki storage and is intended for local
+portfolio validation. A production setup would require persistent/object
+storage, retention policy, and stronger access controls.

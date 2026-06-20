@@ -410,3 +410,26 @@ Validate provisioning:
 ```bash
 ./scripts/check-grafana-dashboard.sh
 ```
+
+## Centralized logs
+
+The platform includes centralized Kubernetes logging with:
+
+```text
+Grafana Alloy -> Loki -> Grafana
+```
+
+Validate the logs stack:
+
+```bash
+./scripts/check-loki-stack.sh
+./scripts/check-demo-grpc-logs.sh
+```
+
+Example LogQL query:
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
