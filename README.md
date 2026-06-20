@@ -433,3 +433,20 @@ Example LogQL query:
 ```
 
 See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
+
+## Structured application logs
+
+`demo-grpc` emits structured JSON logs to stdout.
+These logs are collected by Grafana Alloy and stored in Loki.
+
+Validate:
+
+```bash
+./scripts/check-demo-grpc-logs.sh
+```
+
+Example LogQL query:
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"msg":"starting service"`
+```

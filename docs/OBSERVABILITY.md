@@ -424,3 +424,51 @@ Example LogQL queries:
 ```logql
 {namespace="apps", container="demo-grpc"} |= `"service":"demo-grpc"`
 ```
+
+## Structured JSON logs validation
+
+`demo-grpc` now emits structured JSON logs.
+
+Example:
+
+```json
+{"time":"2026-06-20T13:29:30.994701865Z","level":"INFO","msg":"starting service","service":"demo-grpc","version":"sha-4398e39","grpc_port":"50051"}
+```
+
+The logs are collected through the existing pipeline:
+
+```text
+demo-grpc stdout
+  -> Kubernetes pod logs
+  -> Grafana Alloy
+  -> Loki
+  -> Grafana Explore
+```
+
+Validation command:
+
+```bash
+./scripts/check-demo-grpc-logs.sh
+```
+
+Expected result:
+
+```
+demo-grpc logs found in Loki.
+Structured JSON startup logs found in Loki.
+demo-grpc structured JSON logs are collected by Alloy and queryable in Loki.
+```
+
+Example LogQL queries:
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"msg":"starting service"`
+```
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"service":"demo-grpc"`
+```
+
+```logql
+{namespace="apps", container="demo-grpc"} |= `"version":"sha-4398e39"`
+```

@@ -510,5 +510,57 @@ and is better aligned with the current Loki ecosystem.
 - Add error log queries.
 - Add log-derived metrics.
 - Add Tempo and OpenTelemetry traces.
+
+---
+
+## Milestone 12 — Structured JSON application logs
+
+**Date:** 2026-06-20
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- `demo-grpc` now emits structured JSON logs to stdout.
+- Startup logs include explicit fields such as `service`, `version`, `grpc_port`, `metrics_port`, and `path`.
+- Local tests validate structured JSON logs.
+- Container tests validate structured JSON logs.
+- The Docker image was rebuilt and published to GHCR.
+- The deployment was pinned to the immutable image tag `sha-4398e39`.
+- Kubernetes logs show JSON-formatted application logs.
+- Loki contains the structured JSON logs.
+- The validation script confirms that structured logs are queryable through Loki.
+- CI is green.
+
+### Example structured logs
+
+```json
+{"time":"2026-06-20T13:29:30.994701865Z","level":"INFO","msg":"starting service","service":"demo-grpc","version":"sha-4398e39","grpc_port":"50051"}
+{"time":"2026-06-20T13:29:30.994858581Z","level":"INFO","msg":"starting metrics server","service":"demo-grpc","version":"sha-4398e39","metrics_port":"9090","path":"/metrics"}
+```
+
+### Current logs flow
+
+```text
+demo-grpc JSON stdout
+  -> Kubernetes pod logs
+  -> Grafana Alloy
+  -> Loki
+  -> Grafana Explore
+  -> LogQL queries
+```
+
+### Important implementation detail
+
+Older text logs can still appear in Loki for previous pods. The current
+running pod emits structured JSON logs.
+
+### Future improvements
+
+- Add structured log parsing in Alloy or Loki queries.
+- Add log-based dashboard panels.
+- Add error-level log queries.
+- Add log-derived metrics.
+- Add trace IDs once OpenTelemetry tracing is introduced.
 </content>
 </invoke>
