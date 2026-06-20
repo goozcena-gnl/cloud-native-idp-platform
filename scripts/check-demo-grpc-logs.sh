@@ -54,7 +54,11 @@ curl -fsS "http://localhost:${LOCAL_LOKI_PORT}/ready" | grep -q "ready"
 echo "Loki ready endpoint OK."
 echo
 
-START="$(($(date -u -d '2 hours ago' +%s) * 1000000000))"
+QUERY_WINDOW_HOURS="${QUERY_WINDOW_HOURS:-24}"
+
+echo "Loki query window: last ${QUERY_WINDOW_HOURS}h"
+
+START="$(($(date -u -d "${QUERY_WINDOW_HOURS} hours ago" +%s) * 1000000000))"
 END="$(($(date -u +%s) * 1000000000))"
 
 echo "Querying Loki for demo-grpc logs..."
