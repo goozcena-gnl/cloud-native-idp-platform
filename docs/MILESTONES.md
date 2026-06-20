@@ -637,5 +637,72 @@ Logs dashboard:     demo-grpc -> Alloy -> Loki -> Grafana
 - Add JSON parsing-based panels.
 - Add log-derived metrics.
 - Add trace ID filters when OpenTelemetry tracing is introduced.
+
+---
+
+## Milestone 14 — Grafana logs dashboard variables
+
+**Date:** 2026-06-20
+**Phase:** Observability and security
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- The `demo-grpc Logs` dashboard now includes Grafana variables.
+- Variables allow filtering logs by namespace, pod, and container.
+- The dashboard remains provisioned through GitOps.
+- The dashboard is still managed by the `grafana-dashboards` ArgoCD application.
+- The dashboard uses the Loki datasource.
+- The validation script confirms that the dashboard and variables are reachable through the Grafana API.
+- CI is green.
+
+### Dashboard UID
+
+```text
+demo-grpc-logs
+```
+
+### Dashboard variables
+
+```text
+namespace
+pod
+container
+```
+
+### Default operational view
+
+```text
+namespace = apps
+pod       = All
+container = demo-grpc
+```
+
+### Main parameterized LogQL query
+
+```logql
+{namespace="$namespace", pod=~"$pod", container=~"$container"}
+```
+
+### Validation command
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```
+
+Expected result:
+
+```
+Grafana health OK.
+Loki datasource OK.
+Grafana logs dashboard OK.
+Grafana logs dashboard variables OK.
+Grafana logs dashboard is provisioned and reachable.
+```
+
+### Why this matters
+
+The logs dashboard is no longer hardcoded to a single pod. It can follow new
+`demo-grpc` pods after rollouts and can be reused more easily for troubleshooting.
 </content>
 </invoke>

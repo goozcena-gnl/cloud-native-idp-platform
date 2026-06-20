@@ -466,3 +466,25 @@ Dashboard UID:
 ```
 demo-grpc-logs
 ```
+
+## Grafana logs dashboard variables
+
+The `demo-grpc Logs` dashboard supports filtering by:
+
+```text
+namespace
+pod
+container
+```
+
+Main LogQL pattern:
+
+```logql
+{namespace="$namespace", pod=~"$pod", container=~"$container"}
+```
+
+Validate the dashboard and variables:
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```

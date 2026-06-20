@@ -506,3 +506,38 @@ Validation command:
 ```bash
 ./scripts/check-grafana-logs-dashboard.sh
 ```
+
+## Grafana logs dashboard variables
+
+The `demo-grpc Logs` dashboard includes variables for interactive filtering.
+
+Variables:
+
+```text
+namespace
+pod
+container
+```
+
+Main query pattern:
+
+```logql
+{namespace="$namespace", pod=~"$pod", container=~"$container"}
+```
+
+Default intended view:
+
+```text
+namespace = apps
+pod       = All
+container = demo-grpc
+```
+
+This makes the dashboard more useful after Kubernetes rollouts, because pod
+names change every time a new ReplicaSet is created.
+
+Validation command:
+
+```bash
+./scripts/check-grafana-logs-dashboard.sh
+```
