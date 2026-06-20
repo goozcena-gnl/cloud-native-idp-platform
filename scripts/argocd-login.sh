@@ -35,41 +35,39 @@ fi
 echo "kubectl context is correct: ${CURRENT_CONTEXT}"
 echo
 
-# Retrieve the initial admin password.
-if ! kubectl -n "${ARGOCD_NAMESPACE}" get secret "${INITIAL_SECRET}" >/dev/null 2>&1; then
-  echo "ERROR: Secret '${INITIAL_SECRET}' not found in namespace '${ARGOCD_NAMESPACE}'."
-  echo
-  echo "This secret is created on first install and may have been deleted."
-  echo "Reset the admin password and regenerate it with:"
-  echo
-  echo "  kubectl -n ${ARGOCD_NAMESPACE} patch secret argocd-secret \\"
-  echo "    -p '{\"data\": {\"admin.password\": null, \"admin.passwordMtime\": null}}'"
-  echo "  kubectl -n ${ARGOCD_NAMESPACE} rollout restart deploy argocd-server"
-  echo
-  echo "Then re-run this script."
-  exit 1
+PASSWORD_SOURCE="environment"
+
+if [[ -z "${ARGOCD_PASSWORD:-}" ]]; then
+  if kubectl -n "${ARGOCD_NAMESPACE}" get secret "${INITIAL_SECRET}" >/dev/null 2>&1; then
+    ARGOCD_PASSWORD="$(
+      kubectl -n "${ARGOCD_NAMESPACE}" get secret "${INITIAL_SECRET}" \
+        -o jsonpath='{.data.password}' | base64 -d
+    )"
+    PASSWORD_SOURCE="initial admin Secret"
+  else
+    PASSWORD_SOURCE="interactive prompt"
+    read -rsp "ArgoCD admin password: " ARGOCD_PASSWORD
+    echo
+  fi
 fi
 
-ADMIN_PASSWORD="$(kubectl -n "${ARGOCD_NAMESPACE}" get secret "${INITIAL_SECRET}" \
-  -o jsonpath='{.data.password}' | base64 -d)"
-
-if [[ -z "${ADMIN_PASSWORD}" ]]; then
-  echo "ERROR: Retrieved admin password is empty."
+if [[ -z "${ARGOCD_PASSWORD}" ]]; then
+  echo "ERROR: ArgoCD password is empty."
   exit 1
 fi
 
 echo "Admin username: ${ADMIN_USER}"
-echo "Admin password: ${ADMIN_PASSWORD}"
+echo "Password source: ${PASSWORD_SOURCE}"
 echo
 
-# If the argocd CLI is available, log in automatically.
 if command -v argocd >/dev/null 2>&1; then
   echo "Logging in via argocd CLI against ${ARGOCD_SERVER} ..."
   echo "(Ensure ./scripts/argocd-port-forward.sh is running in another terminal.)"
   echo
+
   if argocd login "${ARGOCD_SERVER}" \
     --username "${ADMIN_USER}" \
-    --password "${ADMIN_PASSWORD}" \
+    --password "${ARGOCD_PASSWORD}" \
     --plaintext; then
     echo
     echo "Logged in. Try: argocd app list"
@@ -82,12 +80,12 @@ if command -v argocd >/dev/null 2>&1; then
   fi
 else
   echo "argocd CLI not found in PATH."
-  echo "Log in through the UI instead:"
+  echo "Start the port-forward and log in through the UI:"
   echo
-  echo "  1. Start the port-forward: ./scripts/argocd-port-forward.sh"
-  echo "  2. Open: http://${ARGOCD_SERVER}"
-  echo "  3. Username: ${ADMIN_USER}"
-  echo "  4. Password: (shown above)"
+  echo "  ./scripts/argocd-port-forward.sh"
+  echo "  http://${ARGOCD_SERVER}"
+  echo
+  echo "Use username '${ADMIN_USER}' and your current local admin password."
 fi
 
 echo "============================================================"
