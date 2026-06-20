@@ -46,3 +46,8 @@ tmp/
 # Local prerequisite check outputs
 prereq-check*.txt
 environment-check*.txt
+
+# Local Go build artifacts
+*.exe
+services/demo-grpc/server
+services/demo-grpc/healthcheck
