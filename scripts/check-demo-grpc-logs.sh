@@ -66,13 +66,43 @@ RESPONSE="$(
     --data-urlencode "limit=50"
 )"
 
-echo "${RESPONSE}" | grep -q "demo-grpc"
-echo "${RESPONSE}" | grep -E '"msg":"starting service"|starting service' >/dev/null
-echo "${RESPONSE}" | grep -E '"service":"demo-grpc"|service=demo-grpc' >/dev/null
-echo "${RESPONSE}" | grep -E '"version":"sha-|version=sha-' >/dev/null
-echo "${RESPONSE}" | grep -E '"msg":"starting metrics server"|starting metrics server' >/dev/null
+if ! echo "${RESPONSE}" | grep -q '"status":"success"'; then
+  echo "ERROR: Loki query did not return success."
+  echo "${RESPONSE}" | head -c 2000
+  echo
+  exit 1
+fi
+
+if ! echo "${RESPONSE}" | grep -q "${APP_CONTAINER}"; then
+  echo "ERROR: Loki response does not contain ${APP_CONTAINER} logs."
+  echo "${RESPONSE}" | head -c 2000
+  echo
+  exit 1
+fi
+
+if ! echo "${RESPONSE}" | grep -q "starting service"; then
+  echo "ERROR: Loki response does not contain the expected startup service log."
+  echo "${RESPONSE}" | head -c 2000
+  echo
+  exit 1
+fi
+
+if ! echo "${RESPONSE}" | grep -q "starting metrics server"; then
+  echo "ERROR: Loki response does not contain the expected startup metrics log."
+  echo "${RESPONSE}" | head -c 2000
+  echo
+  exit 1
+fi
+
+if ! echo "${RESPONSE}" | grep -q "sha-"; then
+  echo "ERROR: Loki response does not contain the immutable sha-* application version."
+  echo "${RESPONSE}" | head -c 2000
+  echo
+  exit 1
+fi
 
 echo "demo-grpc logs found in Loki."
+echo "Structured JSON startup logs found in Loki."
 echo
 
 echo "Sample Loki response:"
@@ -81,5 +111,5 @@ echo
 echo
 
 echo "============================================================"
-echo "demo-grpc logs are collected by Alloy and queryable in Loki."
+echo "demo-grpc structured JSON logs are collected by Alloy and queryable in Loki."
 echo "============================================================"
