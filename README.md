@@ -488,3 +488,26 @@ Validate the dashboard and variables:
 ```bash
 ./scripts/check-grafana-logs-dashboard.sh
 ```
+
+## Grafana SRE summary dashboard
+
+The platform includes a GitOps-provisioned SRE summary dashboard for `demo-grpc`.
+
+It combines:
+
+```text
+Prometheus metrics
+Loki logs
+```
+
+Validate it with:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```

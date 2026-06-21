@@ -541,3 +541,48 @@ Validation command:
 ```bash
 ./scripts/check-grafana-logs-dashboard.sh
 ```
+
+## Grafana SRE summary dashboard
+
+The platform includes a GitOps-provisioned SRE summary dashboard for `demo-grpc`.
+
+Dashboard:
+
+```text
+demo-grpc SRE Summary
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
+
+The dashboard combines Prometheus metrics and Loki logs.
+
+### Main Prometheus signals
+
+- Service Up
+- Build info / version
+- Request rate
+- Error rate
+- P95 latency
+
+### Main Loki signals
+
+- INFO logs count
+- ERROR logs count
+- Startup logs count
+- Recent application logs
+
+Validation command:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from:
+
+```text
+platform/grafana/dashboards/demo-grpc-sre-dashboard.yaml
+```

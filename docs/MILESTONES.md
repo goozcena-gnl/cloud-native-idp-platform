@@ -704,5 +704,114 @@ Grafana logs dashboard is provisioned and reachable.
 
 The logs dashboard is no longer hardcoded to a single pod. It can follow new
 `demo-grpc` pods after rollouts and can be reused more easily for troubleshooting.
+
+---
+
+## Milestone 15 — Grafana SRE summary dashboard
+
+**Date:** 2026-06-21
+**Phase:** Observability and SRE
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- A dedicated Grafana SRE summary dashboard is provisioned through GitOps.
+- The dashboard is stored as a Kubernetes ConfigMap.
+- The ConfigMap is managed by the existing `grafana-dashboards` ArgoCD application.
+- The dashboard uses both Prometheus and Loki datasources.
+- The dashboard UID is `demo-grpc-sre`.
+- Grafana API validation confirms that the dashboard is reachable.
+- CI is green.
+
+### Dashboard
+
+```text
+demo-grpc SRE Summary
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
+
+Prometheus datasource UID: `prometheus` — Loki datasource UID: `loki`
+
+### Key Prometheus panels
+
+- Service Up
+- Current build info
+- Request rate
+- Error rate
+- P95 latency
+- gRPC request rate over time
+- P95 latency over time
+
+### Key Loki panels
+
+- INFO logs count
+- ERROR logs count
+- Startup logs count
+- Recent application logs
+
+### Validated Prometheus queries
+
+```promql
+demo_grpc_build_info
+```
+
+```promql
+sum(rate(demo_grpc_grpc_requests_total[5m]))
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(demo_grpc_grpc_request_duration_seconds_bucket[5m])) by (le))
+```
+
+### Validated Loki queries
+
+```logql
+sum(count_over_time({namespace="apps", container="demo-grpc"} | json | level="INFO" [24h])) or vector(0)
+```
+
+```logql
+sum(count_over_time({namespace="apps", container="demo-grpc"} | json | level="ERROR" [24h])) or vector(0)
+```
+
+```logql
+{namespace="apps", container="demo-grpc"}
+```
+
+### Current observability coverage
+
+```text
+Metrics:     demo-grpc -> ServiceMonitor -> Prometheus -> Grafana
+Logs:        demo-grpc JSON stdout -> Alloy -> Loki -> Grafana
+SRE summary: Prometheus + Loki -> Grafana SRE dashboard
+```
+
+### Validation command
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+Expected result:
+
+```
+Grafana health OK.
+Prometheus datasource OK.
+Loki datasource OK.
+Grafana SRE dashboard OK.
+Grafana SRE summary dashboard is provisioned and reachable.
+```
+
+### Future improvements
+
+- Add dashboard variables for namespace, pod, and container.
+- Add ArgoCD application health once ArgoCD metrics are scraped.
+- Add Kubernetes pod restart panels.
+- Add log-derived error rate.
+- Add trace panels once OpenTelemetry and Tempo are introduced.
 </content>
 </invoke>
