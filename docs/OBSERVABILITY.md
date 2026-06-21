@@ -630,3 +630,65 @@ Validation command:
 ```bash
 ./scripts/check-argocd-metrics.sh
 ```
+
+## SRE dashboard with GitOps metrics
+
+The `demo-grpc SRE Summary` dashboard includes application, logs, and GitOps signals.
+
+Dashboard UID:
+
+```text
+demo-grpc-sre
+```
+
+The dashboard combines:
+
+- Prometheus application metrics
+- Loki application logs
+- ArgoCD GitOps metrics
+
+### GitOps signals
+
+```text
+Total ArgoCD applications
+Synced ArgoCD applications
+Healthy ArgoCD applications
+OutOfSync applications
+Unhealthy applications
+ArgoCD version
+Git request rate
+Git request P95 latency
+ArgoCD applications table
+```
+
+### Useful PromQL queries
+
+```promql
+sum(argocd_app_info{project="idp-platform"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",sync_status="Synced"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",health_status="Healthy"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",sync_status!="Synced"}) or vector(0)
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",health_status!="Healthy"}) or vector(0)
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(argocd_git_request_duration_seconds_bucket[30m])) by (le, request_type))
+```
+
+Validation command:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```

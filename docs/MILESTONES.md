@@ -886,5 +886,115 @@ The platform can now observe GitOps health directly from Prometheus. This
 enables future dashboards and alerts for ArgoCD application sync status,
 health status, Git repository latency, reconciliation activity, and controller
 health.
+
+---
+
+## Milestone 17 — SRE dashboard enriched with GitOps metrics
+
+**Date:** 2026-06-21
+**Phase:** Observability, SRE, and GitOps
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- The `demo-grpc SRE Summary` dashboard now includes GitOps metrics.
+- The dashboard combines application metrics, application logs, and ArgoCD metrics.
+- ArgoCD application health and sync status are visible in Grafana.
+- ArgoCD repository activity is visible through repo-server Git request metrics.
+- The dashboard is provisioned through GitOps.
+- The dashboard is managed by the `grafana-dashboards` ArgoCD application.
+- Grafana API validation confirms that the dashboard is reachable.
+- CI is green.
+
+### Dashboard
+
+```text
+demo-grpc SRE Summary
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
+
+### GitOps panels added
+
+```text
+GitOps Apps Total
+GitOps Apps Synced
+GitOps Apps Healthy
+OutOfSync Apps
+Unhealthy Apps
+ArgoCD version
+Git request rate by type
+Git request P95 by type
+ArgoCD applications table
+```
+
+### Validated Prometheus queries
+
+```promql
+sum(argocd_app_info{project="idp-platform"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",sync_status="Synced"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",health_status="Healthy"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",sync_status!="Synced"}) or vector(0)
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform",health_status!="Healthy"}) or vector(0)
+```
+
+```promql
+argocd_info
+```
+
+```promql
+sum(rate(argocd_git_request_duration_seconds_count[30m])) by (request_type)
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(argocd_git_request_duration_seconds_bucket[30m])) by (le, request_type))
+```
+
+### Current SRE coverage
+
+```text
+Application metrics: demo-grpc -> Prometheus -> Grafana
+Application logs:    demo-grpc -> Alloy -> Loki -> Grafana
+GitOps metrics:      ArgoCD -> Prometheus -> Grafana
+SRE summary:         Prometheus + Loki + ArgoCD metrics -> Grafana
+```
+
+### Validation command
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+Expected result:
+
+```
+Grafana health OK.
+Prometheus datasource OK.
+Loki datasource OK.
+Grafana SRE dashboard OK.
+Grafana SRE summary dashboard is provisioned and reachable.
+```
+
+### Why this matters
+
+The platform now demonstrates an SRE-style operational view that connects
+workload health, logs, deployment version, GitOps reconciliation state, and
+Git repository activity in a single dashboard.
 </content>
 </invoke>

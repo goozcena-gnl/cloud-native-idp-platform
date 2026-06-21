@@ -529,3 +529,28 @@ argocd_app_info
 argocd_info
 argocd_git_request_duration_seconds_count
 ```
+
+## SRE dashboard with GitOps metrics
+
+The `demo-grpc SRE Summary` dashboard combines:
+
+```text
+Application metrics
+Application logs
+ArgoCD GitOps metrics
+```
+
+It shows workload health, deployment version, logs, ArgoCD sync/health status,
+and Git repository activity.
+
+Validate:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
