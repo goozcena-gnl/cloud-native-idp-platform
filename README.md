@@ -511,3 +511,21 @@ Dashboard UID:
 ```
 demo-grpc-sre
 ```
+
+## ArgoCD metrics
+
+The platform scrapes ArgoCD metrics with Prometheus.
+
+Validate:
+
+```bash
+./scripts/check-argocd-metrics.sh
+```
+
+Useful metrics:
+
+```text
+argocd_app_info
+argocd_info
+argocd_git_request_duration_seconds_count
+```

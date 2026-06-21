@@ -586,3 +586,47 @@ The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from
 ```text
 platform/grafana/dashboards/demo-grpc-sre-dashboard.yaml
 ```
+
+## ArgoCD metrics
+
+The platform scrapes ArgoCD metrics with Prometheus.
+
+The following ArgoCD components expose metrics through dedicated Services:
+
+```text
+argocd-application-controller-metrics : 8082
+argocd-repo-server-metrics            : 8084
+argocd-server-metrics                 : 8083
+```
+
+The metrics are discovered by Prometheus through:
+
+```text
+ServiceMonitor/argocd-metrics
+```
+
+The monitoring manifests are managed by:
+
+```text
+Application/argocd-monitoring
+```
+
+Useful Prometheus queries:
+
+```promql
+argocd_app_info
+```
+
+```promql
+argocd_info
+```
+
+```promql
+argocd_git_request_duration_seconds_count
+```
+
+Validation command:
+
+```bash
+./scripts/check-argocd-metrics.sh
+```

@@ -813,5 +813,78 @@ Grafana SRE summary dashboard is provisioned and reachable.
 - Add Kubernetes pod restart panels.
 - Add log-derived error rate.
 - Add trace panels once OpenTelemetry and Tempo are introduced.
+
+---
+
+## Milestone 16 — ArgoCD metrics scraped by Prometheus
+
+**Date:** 2026-06-21
+**Phase:** Observability and GitOps
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- Dedicated metrics Services were created for ArgoCD components.
+- `argocd-application-controller` metrics are exposed on port 8082.
+- `argocd-repo-server` metrics are exposed on port 8084.
+- `argocd-server` metrics are exposed on port 8083.
+- A dedicated `ServiceMonitor` named `argocd-metrics` was created.
+- The `ServiceMonitor` is selected by `kube-prometheus-stack` through the `release: kube-prometheus-stack` label.
+- The `argocd-monitoring` ArgoCD Application manages the monitoring manifests through GitOps.
+- Prometheus successfully scrapes ArgoCD metrics.
+- CI is green.
+
+### GitOps application
+
+```text
+argocd-monitoring
+```
+
+### Created metrics Services
+
+```text
+argocd-application-controller-metrics
+argocd-repo-server-metrics
+argocd-server-metrics
+```
+
+### Created ServiceMonitor
+
+```text
+argocd-metrics
+```
+
+### Validated Prometheus metrics
+
+```promql
+argocd_app_info
+```
+
+```promql
+argocd_info
+```
+
+```promql
+argocd_git_request_duration_seconds_count
+```
+
+### Validation command
+
+```bash
+./scripts/check-argocd-metrics.sh
+```
+
+Expected result:
+
+```
+ArgoCD metrics are scraped by Prometheus.
+```
+
+### Why this matters
+
+The platform can now observe GitOps health directly from Prometheus. This
+enables future dashboards and alerts for ArgoCD application sync status,
+health status, Git repository latency, reconciliation activity, and controller
+health.
 </content>
 </invoke>
