@@ -10,434 +10,788 @@ metadata:
 data:
   demo-grpc-sre-dashboard.json: |-
     {
-      "uid": "demo-grpc-sre",
-      "title": "demo-grpc SRE Summary",
-      "tags": ["demo-grpc", "sre", "prometheus", "loki", "gitops"],
-      "timezone": "browser",
-      "schemaVersion": 39,
-      "version": 1,
-      "refresh": "30s",
-      "time": {
-        "from": "now-24h",
-        "to": "now"
-      },
-      "panels": [
-        {
-          "id": 1,
-          "type": "text",
-          "title": "SRE overview",
-          "gridPos": {
-            "h": 4,
-            "w": 24,
-            "x": 0,
-            "y": 0
-          },
-          "options": {
-            "mode": "markdown",
-            "content": "## demo-grpc SRE Summary\n\nThis dashboard combines Prometheus metrics and Loki logs for the `demo-grpc` workload.\n\nMetrics path: `demo-grpc -> ServiceMonitor -> Prometheus -> Grafana`\n\nLogs path: `demo-grpc JSON stdout -> Alloy -> Loki -> Grafana`"
-          }
+        "uid": "demo-grpc-sre",
+        "title": "demo-grpc SRE Summary",
+        "tags": [
+            "demo-grpc",
+            "sre",
+            "prometheus",
+            "loki",
+            "gitops"
+        ],
+        "timezone": "browser",
+        "schemaVersion": 39,
+        "version": 2,
+        "refresh": "30s",
+        "time": {
+            "from": "now-24h",
+            "to": "now"
         },
-        {
-          "id": 2,
-          "type": "stat",
-          "title": "Service Up",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 4
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
+        "panels": [
             {
-              "refId": "A",
-              "expr": "max(up{namespace=\"apps\", job=\"demo-grpc\"})",
-              "instant": true,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "mappings": [
-                {
-                  "type": "value",
-                  "options": {
-                    "0": {
-                      "text": "DOWN"
-                    },
-                    "1": {
-                      "text": "UP"
-                    }
-                  }
+                "id": 1,
+                "type": "text",
+                "title": "SRE overview",
+                "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "options": {
+                    "mode": "markdown",
+                    "content": "## demo-grpc SRE Summary\n\nThis dashboard combines Prometheus metrics and Loki logs for the `demo-grpc` workload.\n\nMetrics path: `demo-grpc -> ServiceMonitor -> Prometheus -> Grafana`\n\nLogs path: `demo-grpc JSON stdout -> Alloy -> Loki -> Grafana`"
                 }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red",
-                    "value": null
-                  },
-                  {
-                    "color": "green",
-                    "value": 1
-                  }
-                ]
-              }
-            }
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": ["lastNotNull"],
-              "fields": "",
-              "values": false
-            },
-            "orientation": "auto",
-            "textMode": "auto"
-          }
-        },
-        {
-          "id": 3,
-          "type": "table",
-          "title": "Current build info",
-          "gridPos": {
-            "h": 5,
-            "w": 18,
-            "x": 6,
-            "y": 4
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "demo_grpc_build_info",
-              "instant": true,
-              "format": "table",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "options": {
-            "showHeader": true,
-            "cellHeight": "sm"
-          }
-        },
-        {
-          "id": 4,
-          "type": "stat",
-          "title": "Request rate",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 9
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(rate(demo_grpc_grpc_requests_total[5m]))",
-              "instant": true,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "reqps"
-            }
-          }
-        },
-        {
-          "id": 5,
-          "type": "stat",
-          "title": "Error rate",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 9
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(rate(demo_grpc_grpc_requests_total{grpc_code!=\"OK\"}[5m]))",
-              "instant": true,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "reqps"
-            }
-          }
-        },
-        {
-          "id": 6,
-          "type": "stat",
-          "title": "P95 latency",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 9
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "histogram_quantile(0.95, sum(rate(demo_grpc_grpc_request_duration_seconds_bucket[5m])) by (le))",
-              "instant": true,
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s"
-            }
-          }
-        },
-        {
-          "id": 7,
-          "type": "stat",
-          "title": "Startup logs",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 9
-          },
-          "datasource": {
-            "type": "loki",
-            "uid": "loki"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} |= \"starting\" [24h])) or vector(0)",
-              "queryType": "instant",
-              "datasource": {
-                "type": "loki",
-                "uid": "loki"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short"
-            }
-          }
-        },
-        {
-          "id": 8,
-          "type": "stat",
-          "title": "INFO logs",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 14
-          },
-          "datasource": {
-            "type": "loki",
-            "uid": "loki"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"INFO\" [24h])) or vector(0)",
-              "queryType": "instant",
-              "datasource": {
-                "type": "loki",
-                "uid": "loki"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short"
-            }
-          }
-        },
-        {
-          "id": 9,
-          "type": "stat",
-          "title": "ERROR logs",
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 14
-          },
-          "datasource": {
-            "type": "loki",
-            "uid": "loki"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"ERROR\" [24h])) or vector(0)",
-              "queryType": "instant",
-              "datasource": {
-                "type": "loki",
-                "uid": "loki"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 1
-                  }
-                ]
-              }
-            }
-          }
-        },
-        {
-          "id": 10,
-          "type": "timeseries",
-          "title": "gRPC request rate",
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 14
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(rate(demo_grpc_grpc_requests_total[5m]))",
-              "legendFormat": "requests/sec",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
             },
             {
-              "refId": "B",
-              "expr": "sum(rate(demo_grpc_grpc_requests_total{grpc_code!=\"OK\"}[5m]))",
-              "legendFormat": "errors/sec",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "reqps"
-            }
-          }
-        },
-        {
-          "id": 11,
-          "type": "timeseries",
-          "title": "P95 latency over time",
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 19
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "targets": [
+                "id": 2,
+                "type": "stat",
+                "title": "Service Up",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 0,
+                    "y": 4
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "max(up{namespace=\"apps\", job=\"demo-grpc\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "mappings": [
+                            {
+                                "type": "value",
+                                "options": {
+                                    "0": {
+                                        "text": "DOWN"
+                                    },
+                                    "1": {
+                                        "text": "UP"
+                                    }
+                                }
+                            }
+                        ],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                "options": {
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "orientation": "auto",
+                    "textMode": "auto"
+                }
+            },
             {
-              "refId": "A",
-              "expr": "histogram_quantile(0.95, sum(rate(demo_grpc_grpc_request_duration_seconds_bucket[5m])) by (le))",
-              "legendFormat": "p95",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              }
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s"
-            }
-          }
-        },
-        {
-          "id": 12,
-          "type": "logs",
-          "title": "Recent application logs",
-          "gridPos": {
-            "h": 10,
-            "w": 24,
-            "x": 0,
-            "y": 27
-          },
-          "datasource": {
-            "type": "loki",
-            "uid": "loki"
-          },
-          "targets": [
+                "id": 3,
+                "type": "table",
+                "title": "Current build info",
+                "gridPos": {
+                    "h": 5,
+                    "w": 18,
+                    "x": 6,
+                    "y": 4
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "demo_grpc_build_info",
+                        "instant": true,
+                        "format": "table",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "options": {
+                    "showHeader": true,
+                    "cellHeight": "sm"
+                }
+            },
             {
-              "refId": "A",
-              "expr": "{namespace=\"apps\", container=\"demo-grpc\"}",
-              "datasource": {
-                "type": "loki",
-                "uid": "loki"
-              }
+                "id": 4,
+                "type": "stat",
+                "title": "Request rate",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 0,
+                    "y": 9
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(demo_grpc_grpc_requests_total[5m]))",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 5,
+                "type": "stat",
+                "title": "Error rate",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 6,
+                    "y": 9
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(demo_grpc_grpc_requests_total{grpc_code!=\"OK\"}[5m]))",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 6,
+                "type": "stat",
+                "title": "P95 latency",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 12,
+                    "y": 9
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "histogram_quantile(0.95, sum(rate(demo_grpc_grpc_request_duration_seconds_bucket[5m])) by (le))",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "s"
+                    }
+                }
+            },
+            {
+                "id": 7,
+                "type": "stat",
+                "title": "Startup logs",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 18,
+                    "y": 9
+                },
+                "datasource": {
+                    "type": "loki",
+                    "uid": "loki"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} |= \"starting\" [24h])) or vector(0)",
+                        "queryType": "instant",
+                        "datasource": {
+                            "type": "loki",
+                            "uid": "loki"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short"
+                    }
+                }
+            },
+            {
+                "id": 8,
+                "type": "stat",
+                "title": "INFO logs",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 0,
+                    "y": 14
+                },
+                "datasource": {
+                    "type": "loki",
+                    "uid": "loki"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"INFO\" [24h])) or vector(0)",
+                        "queryType": "instant",
+                        "datasource": {
+                            "type": "loki",
+                            "uid": "loki"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short"
+                    }
+                }
+            },
+            {
+                "id": 9,
+                "type": "stat",
+                "title": "ERROR logs",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 6,
+                    "y": 14
+                },
+                "datasource": {
+                    "type": "loki",
+                    "uid": "loki"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(count_over_time({namespace=\"apps\", container=\"demo-grpc\"} | json | level=\"ERROR\" [24h])) or vector(0)",
+                        "queryType": "instant",
+                        "datasource": {
+                            "type": "loki",
+                            "uid": "loki"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 10,
+                "type": "timeseries",
+                "title": "gRPC request rate",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 14
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(demo_grpc_grpc_requests_total[5m]))",
+                        "legendFormat": "requests/sec",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    },
+                    {
+                        "refId": "B",
+                        "expr": "sum(rate(demo_grpc_grpc_requests_total{grpc_code!=\"OK\"}[5m]))",
+                        "legendFormat": "errors/sec",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 11,
+                "type": "timeseries",
+                "title": "P95 latency over time",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 19
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "histogram_quantile(0.95, sum(rate(demo_grpc_grpc_request_duration_seconds_bucket[5m])) by (le))",
+                        "legendFormat": "p95",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "s"
+                    }
+                }
+            },
+            {
+                "id": 12,
+                "type": "logs",
+                "title": "Recent application logs",
+                "gridPos": {
+                    "h": 10,
+                    "w": 24,
+                    "x": 0,
+                    "y": 27
+                },
+                "datasource": {
+                    "type": "loki",
+                    "uid": "loki"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "{namespace=\"apps\", container=\"demo-grpc\"}",
+                        "datasource": {
+                            "type": "loki",
+                            "uid": "loki"
+                        }
+                    }
+                ],
+                "options": {
+                    "showTime": true,
+                    "showLabels": true,
+                    "showCommonLabels": false,
+                    "wrapLogMessage": true,
+                    "prettifyLogMessage": true,
+                    "enableLogDetails": true,
+                    "dedupStrategy": "none",
+                    "sortOrder": "Descending"
+                }
+            },
+            {
+                "id": 13,
+                "type": "text",
+                "title": "GitOps overview",
+                "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 37
+                },
+                "options": {
+                    "mode": "markdown",
+                    "content": "## GitOps health\n\nThis section shows ArgoCD application health and repository activity from Prometheus metrics.\n\nSource: `ArgoCD -> ServiceMonitor/argocd-metrics -> Prometheus -> Grafana`"
+                }
+            },
+            {
+                "id": 14,
+                "type": "stat",
+                "title": "GitOps Apps Total",
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0,
+                    "y": 41
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(argocd_app_info{project=\"idp-platform\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short"
+                    }
+                }
+            },
+            {
+                "id": 15,
+                "type": "stat",
+                "title": "GitOps Apps Synced",
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5,
+                    "y": 41
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(argocd_app_info{project=\"idp-platform\",sync_status=\"Synced\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 16,
+                "type": "stat",
+                "title": "GitOps Apps Healthy",
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10,
+                    "y": 41
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(argocd_app_info{project=\"idp-platform\",health_status=\"Healthy\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 17,
+                "type": "stat",
+                "title": "OutOfSync Apps",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 15,
+                    "y": 41
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(argocd_app_info{project=\"idp-platform\",sync_status!=\"Synced\"}) or vector(0)",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 18,
+                "type": "stat",
+                "title": "Unhealthy Apps",
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 19,
+                    "y": 41
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(argocd_app_info{project=\"idp-platform\",health_status!=\"Healthy\"}) or vector(0)",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 19,
+                "type": "table",
+                "title": "ArgoCD version",
+                "gridPos": {
+                    "h": 6,
+                    "w": 8,
+                    "x": 0,
+                    "y": 46
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "argocd_info",
+                        "instant": true,
+                        "format": "table",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "options": {
+                    "showHeader": true,
+                    "cellHeight": "sm"
+                }
+            },
+            {
+                "id": 20,
+                "type": "timeseries",
+                "title": "Git request rate by type",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 46
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(argocd_git_request_duration_seconds_count[30m])) by (request_type)",
+                        "legendFormat": "{{request_type}}",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 21,
+                "type": "timeseries",
+                "title": "Git request P95 by type",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 46
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "histogram_quantile(0.95, sum(rate(argocd_git_request_duration_seconds_bucket[30m])) by (le, request_type))",
+                        "legendFormat": "{{request_type}}",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "s"
+                    }
+                }
+            },
+            {
+                "id": 22,
+                "type": "table",
+                "title": "ArgoCD applications table",
+                "gridPos": {
+                    "h": 10,
+                    "w": 24,
+                    "x": 0,
+                    "y": 54
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "argocd_app_info{project=\"idp-platform\"}",
+                        "instant": true,
+                        "format": "table",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "options": {
+                    "showHeader": true,
+                    "cellHeight": "sm"
+                }
             }
-          ],
-          "options": {
-            "showTime": true,
-            "showLabels": true,
-            "showCommonLabels": false,
-            "wrapLogMessage": true,
-            "prettifyLogMessage": true,
-            "enableLogDetails": true,
-            "dedupStrategy": "none",
-            "sortOrder": "Descending"
-          }
-        }
-      ]
+        ]
     }
