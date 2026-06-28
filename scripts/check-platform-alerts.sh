@@ -89,41 +89,47 @@ if [[ "${missing}" -ne 0 ]]; then
 fi
 
 echo "Checking alert runbook_url annotations..."
-RUNBOOK_COUNT="$(echo "${RULES_RESPONSE}" | grep -o "runbook_url" | wc -l | tr -d ' ')"
-if [[ "${RUNBOOK_COUNT}" -lt "${#ALERT_NAMES[@]}" ]]; then
-  echo "ERROR: fewer runbook_url annotations than expected (found ${RUNBOOK_COUNT}, expected ${#ALERT_NAMES[@]})."
-  exit 1
-fi
-echo "Alert runbook_url annotations OK (${RUNBOOK_COUNT}/${#ALERT_NAMES[@]})."
+RULES_RESPONSE_FILE="$(mktemp)"
+printf '%s' "${RULES_RESPONSE}" > "${RULES_RESPONSE_FILE}"
+python - "${RULES_RESPONSE_FILE}" <<'PYRUNBOOKS'
+import json
+import sys
+
+expected_alerts = [
+    "DemoGrpcDown",
+    "GrafanaDown",
+    "LokiDown",
+    "ArgoCDAppOutOfSync",
+    "ArgoCDAppUnhealthy",
+    "ArgoCDApplicationControllerMetricsDown",
+    "ArgoCDRepoServerMetricsDown",
+    "ArgoCDServerMetricsDown",
+]
+
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    payload = json.load(f)
+
+found = {}
+
+for group in payload.get("data", {}).get("groups", []):
+    for rule in group.get("rules", []):
+        name = rule.get("name")
+        if name in expected_alerts:
+            annotations = rule.get("annotations", {}) or {}
+            found[name] = bool(annotations.get("runbook_url"))
+
+missing = [name for name in expected_alerts if not found.get(name)]
+
+if missing:
+    print("ERROR: missing runbook_url annotations for:")
+    for name in missing:
+        print(f"- {name}")
+    sys.exit(1)
+
+print(f"Alert runbook_url annotations OK ({len(expected_alerts)}/{len(expected_alerts)}).")
+PYRUNBOOKS
+rm -f "${RULES_RESPONSE_FILE}"
 echo
-
-query_prometheus() {
-  local query="$1"
-  curl -G -s "http://localhost:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
-    --data-urlencode "query=${query}"
-}
-
-assert_value() {
-  local label="$1"
-  local query="$2"
-  local expected="$3"
-
-  echo "Checking expression: ${label}"
-  RESPONSE="$(query_prometheus "${query}")"
-
-  if ! echo "${RESPONSE}" | grep -q "\"${expected}\""; then
-    echo "ERROR: unexpected query result for ${label}"
-    echo "Query: ${query}"
-    echo "Expected value fragment: ${expected}"
-    echo "Response:"
-    echo "${RESPONSE}" | head -c 3000
-    echo
-    exit 1
-  fi
-
-  echo "OK: ${label}"
-}
-
 assert_value \
   "demo-grpc up" \
   'max(up{namespace="apps", service="demo-grpc"})' \
