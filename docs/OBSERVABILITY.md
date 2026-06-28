@@ -581,6 +581,54 @@ Validation command:
 ./scripts/check-grafana-sre-dashboard.sh
 ```
 
+## Loki metrics
+
+Loki metrics are scraped by Prometheus through a dedicated `ServiceMonitor`.
+
+GitOps application:
+
+```text
+loki-monitoring
+```
+
+ServiceMonitor:
+
+```
+ServiceMonitor/loki
+```
+
+Useful PromQL queries:
+
+```promql
+max(up{namespace="observability", service="loki"})
+```
+
+```promql
+count({__name__=~"loki_.*", namespace="observability", service="loki"})
+```
+
+Validation command:
+
+```bash
+./scripts/check-loki-metrics.sh
+```
+
+## LokiDown alert
+
+The platform alert rules include a `LokiDown` alert.
+
+The alert fires when Prometheus cannot scrape the Loki metrics target:
+
+```promql
+(max(up{namespace="observability", service="loki"}) == 0) or absent(up{namespace="observability", service="loki"})
+```
+
+Validation command:
+
+```bash
+./scripts/check-platform-alerts.sh
+```
+
 ## Platform Prometheus alerts
 
 The platform includes a GitOps-managed `PrometheusRule` for first-level SRE alerting.

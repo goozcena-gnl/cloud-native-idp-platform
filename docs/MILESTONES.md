@@ -1088,5 +1088,77 @@ Platform Prometheus alerts are loaded and healthy.
 - Loki alerting is intentionally not included yet because Loki metrics are not currently scraped by Prometheus.
 - Grafana dashboard validation is not included as a PrometheusRule yet because it requires either a synthetic exporter, blackbox exporter, or scheduled external check exposing metrics to Prometheus.
 - Alertmanager notification routing is a future improvement. The current milestone validates Prometheus rule loading and alert expression health.
+
+---
+
+## Milestone 19 — Loki metrics and LokiDown alert
+
+**Date:** 2026-06-28
+**Phase:** Observability, SRE, and Alerting
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- Loki exposes `/metrics` on the `http-metrics` port.
+- A dedicated `ServiceMonitor` named `loki` is provisioned through GitOps.
+- The `ServiceMonitor` is selected by Prometheus through the `release: kube-prometheus-stack` label.
+- The `loki-monitoring` ArgoCD Application manages the Loki monitoring manifests.
+- Prometheus successfully scrapes Loki metrics.
+- Loki-owned `loki_*` metrics are available in Prometheus.
+- The `LokiDown` alert was added to the platform `PrometheusRule`.
+- The `platform-alerts` ArgoCD Application remains Synced and Healthy.
+- No platform alert is currently firing.
+- CI is green.
+
+### GitOps application
+
+```text
+loki-monitoring
+```
+
+### ServiceMonitor
+
+```
+ServiceMonitor/loki
+```
+
+### Validated Loki target query
+
+```promql
+max(up{namespace="observability", service="loki"})
+```
+
+### Validated Loki metrics count query
+
+```promql
+count({__name__=~"loki_.*", namespace="observability", service="loki"})
+```
+
+### Validated alert
+
+```
+LokiDown
+```
+
+### Validation commands
+
+```bash
+./scripts/check-loki-metrics.sh
+./scripts/check-platform-alerts.sh
+```
+
+Expected results:
+
+```
+Loki metrics are scraped by Prometheus.
+Platform Prometheus alerts are loaded and healthy.
+```
+
+### Why this matters
+
+The platform can now alert on the availability of the log storage backend
+itself. This closes the monitoring loop for application logs: logs are
+collected by Alloy, stored in Loki, queried in Grafana, scraped by Prometheus,
+and protected by a Prometheus alert.
 </content>
 </invoke>

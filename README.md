@@ -512,6 +512,28 @@ Dashboard UID:
 demo-grpc-sre
 ```
 
+## Loki metrics and alerting
+
+The platform scrapes Loki metrics with Prometheus and includes a `LokiDown` alert.
+
+Validate Loki metrics:
+
+```bash
+./scripts/check-loki-metrics.sh
+```
+
+Validate platform alerts:
+
+```bash
+./scripts/check-platform-alerts.sh
+```
+
+Current Loki observability path:
+
+```text
+Loki -> ServiceMonitor -> Prometheus -> PrometheusRule/LokiDown
+```
+
 ## Platform alerts
 
 The platform includes GitOps-managed Prometheus alert rules.
