@@ -47,6 +47,10 @@ spec:
               value: {{ .Values.env.SERVICE_NAME | quote }}
             - name: APP_VERSION
               value: {{ .Values.env.APP_VERSION | quote }}
+            - name: OTEL_TRACES_ENABLED
+              value: {{ .Values.tracing.enabled | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.tracing.otlpEndpoint | quote }}
           # gRPC liveness probe — native Kubernetes gRPC health check.
           livenessProbe:
             grpc:

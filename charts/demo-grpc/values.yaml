@@ -72,3 +72,7 @@ securityContext:
     capabilities:
       drop:
         - ALL
+
+tracing:
+  enabled: false
+  otlpEndpoint: ""

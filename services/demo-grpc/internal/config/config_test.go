@@ -12,6 +12,8 @@ func TestLoad_Defaults(t *testing.T) {
 	os.Unsetenv("METRICS_PORT")
 	os.Unsetenv("SERVICE_NAME")
 	os.Unsetenv("APP_VERSION")
+	os.Unsetenv("OTEL_TRACES_ENABLED")
+	os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
 
 	cfg := config.Load()
 
@@ -27,6 +29,12 @@ func TestLoad_Defaults(t *testing.T) {
 	if cfg.AppVersion != "dev" {
 		t.Errorf("AppVersion: got %q, want %q", cfg.AppVersion, "dev")
 	}
+	if cfg.OTelTracesEnabled {
+		t.Errorf("OTelTracesEnabled: got true, want false")
+	}
+	if cfg.OTelExporterOTLPEndpoint != "" {
+		t.Errorf("OTelExporterOTLPEndpoint: got %q, want empty", cfg.OTelExporterOTLPEndpoint)
+	}
 }
 
 func TestLoad_EnvOverride(t *testing.T) {
@@ -34,11 +42,15 @@ func TestLoad_EnvOverride(t *testing.T) {
 	os.Setenv("METRICS_PORT", "19090")
 	os.Setenv("SERVICE_NAME", "custom-service")
 	os.Setenv("APP_VERSION", "v1.2.3")
+	os.Setenv("OTEL_TRACES_ENABLED", "true")
+	os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "tempo.observability.svc.cluster.local:4317")
 	t.Cleanup(func() {
 		os.Unsetenv("GRPC_PORT")
 		os.Unsetenv("METRICS_PORT")
 		os.Unsetenv("SERVICE_NAME")
 		os.Unsetenv("APP_VERSION")
+		os.Unsetenv("OTEL_TRACES_ENABLED")
+		os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
 	})
 
 	cfg := config.Load()
@@ -54,5 +66,11 @@ func TestLoad_EnvOverride(t *testing.T) {
 	}
 	if cfg.AppVersion != "v1.2.3" {
 		t.Errorf("AppVersion: got %q, want %q", cfg.AppVersion, "v1.2.3")
+	}
+	if !cfg.OTelTracesEnabled {
+		t.Errorf("OTelTracesEnabled: got false, want true")
+	}
+	if cfg.OTelExporterOTLPEndpoint != "tempo.observability.svc.cluster.local:4317" {
+		t.Errorf("OTelExporterOTLPEndpoint: got %q, want %q", cfg.OTelExporterOTLPEndpoint, "tempo.observability.svc.cluster.local:4317")
 	}
 }

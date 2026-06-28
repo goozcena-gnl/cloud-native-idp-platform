@@ -15,6 +15,7 @@ import (
 	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/config"
 	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/telemetry"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -28,6 +29,19 @@ func main() {
 
 	cfg := config.Load()
 
+	tracingShutdown, err := telemetry.InitTracing(
+		context.Background(),
+		logger,
+		cfg.ServiceName,
+		cfg.AppVersion,
+		cfg.OTelExporterOTLPEndpoint,
+		cfg.OTelTracesEnabled,
+	)
+	if err != nil {
+		logger.Error("failed to initialize OpenTelemetry tracing", "error", err)
+		os.Exit(1)
+	}
+
 	serverMetrics := telemetry.NewServerMetrics(cfg.ServiceName, cfg.AppVersion)
 
 	grpcServer, healthSvc, lis := newGRPCServer(logger, cfg, serverMetrics)
@@ -36,7 +50,7 @@ func main() {
 	go serveGRPC(logger, grpcServer, lis, cfg)
 	go serveMetrics(logger, metricsServer, cfg)
 
-	waitForShutdown(logger, grpcServer, healthSvc, metricsServer)
+	waitForShutdown(logger, grpcServer, healthSvc, metricsServer, tracingShutdown)
 }
 
 func newGRPCServer(logger *slog.Logger, cfg *config.Config, serverMetrics *telemetry.ServerMetrics) (*grpc.Server, *health.Server, net.Listener) {
@@ -48,6 +62,7 @@ func newGRPCServer(logger *slog.Logger, cfg *config.Config, serverMetrics *telem
 	}
 
 	srv := grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.UnaryInterceptor(serverMetrics.UnaryServerInterceptor()),
 	)
 	healthSvc := health.NewServer()
@@ -98,6 +113,7 @@ func waitForShutdown(
 	srv *grpc.Server,
 	healthSvc *health.Server,
 	metricsServer *http.Server,
+	tracingShutdown telemetry.TracingShutdown,
 ) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
