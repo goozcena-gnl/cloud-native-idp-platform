@@ -353,6 +353,64 @@ kubectl -n argocd get applications \
 gh run list --workflow CI --limit 10
 ```
 
+## Alertmanager and Incident Response Readiness
+
+The platform includes Alertmanager routing readiness as part of the SRE layer.
+
+Alert flow:
+
+```text
+PrometheusRule -> Prometheus -> Alertmanager -> route -> receiver
+```
+
+Configured receivers:
+
+```text
+local-null
+platform-critical
+platform-warning
+gitops-alerts
+```
+
+For the local kind environment, the receivers are intentionally configured as
+local/null-style receivers. This validates Alertmanager routing without
+requiring external notification secrets.
+
+The platform alerts also include runbook links through `runbook_url`
+annotations.
+
+Runbook file:
+
+```text
+docs/RUNBOOKS.md
+```
+
+Validated signals:
+
+```text
+Alertmanager CR: Ready
+Alertmanager pod: 2/2 Running
+Prometheus active Alertmanager discovery: OK
+Alertmanager readiness: OK
+Alertmanager receivers: OK
+Platform alert runbooks: 8/8
+No platform alert firing: OK
+```
+
+Validation commands:
+
+```bash
+./scripts/check-alertmanager.sh
+./scripts/check-platform-alerts.sh
+```
+
+Expected results:
+
+```text
+Alertmanager is enabled, reachable, and routing config is loaded.
+Alert runbook_url annotations OK (8/8).
+```
+
 ## CI Evidence
 
 The CI pipeline validates the platform continuously.

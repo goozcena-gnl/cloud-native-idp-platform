@@ -50,15 +50,6 @@ ArgoCD repository credential Secret
   -> platform/namespaces
 ```
 
-### Validation evidence
-
-```bash
-./scripts/check-argocd-apps.sh
-kubectl -n argocd get applications.argoproj.io idp-root platform-namespaces
-kubectl get namespaces argocd platform-system apps observability security --show-labels
-```
-
-Expected:
 
 - `idp-root`: `Synced` / `Healthy`
 - `platform-namespaces`: `Synced` / `Healthy`
@@ -77,18 +68,9 @@ automation in later phases:
   (`./scripts/bootstrap-argocd-apps.sh`).
 - Rotating and eventually replacing the temporary Personal Access Token (PAT).
 
-After this one-time bootstrap, application and platform changes flow through
-Git rather than manual `kubectl apply`.
-
-### Security posture at this milestone
-
 - ArgoCD is not publicly exposed (ClusterIP + port-forward only).
 - The Git repository is private.
-- Repository read access uses a **temporary PAT** stored only in a Kubernetes
-  `Secret`. The token is **never committed to Git**.
-- The PAT is a deliberate MVP shortcut. It must be **short-lived** and rotated.
 - The advanced target credential strategy is a **read-only deploy key**, a
-  **GitHub App**, or a **Vault-managed credential**.
 
 See [security/GITHUB_TOKEN_STRATEGY.md](security/GITHUB_TOKEN_STRATEGY.md) for
 the full credential strategy and migration path.
@@ -98,22 +80,10 @@ the full credential strategy and migration path.
 - Replace the PAT with a least-privilege, read-only credential
   (deploy key / GitHub App / Vault).
 - Onboard the first real workload (Go gRPC reference service) as a GitOps
-  child Application under `platform/argocd/apps/`.
-- Expand the app-of-apps tree to cover observability and security components.
-
-## Next milestone
-
-Deploy the first real application workload through GitOps:
-
 - a minimal Go gRPC service;
 - a Dockerfile;
 - a Helm chart;
 - a GitOps ArgoCD Application for the service;
-- validation through Kubernetes and ArgoCD.
-
----
-
-## Milestone: Go gRPC workload deployed through GitOps and GHCR
 
 **Date:** 2026-06-17
 **Phase:** Go gRPC reference workload
@@ -1265,5 +1235,65 @@ Loki metrics are scraped by Prometheus.
 The platform now exposes a complete SRE view that connects workload health,
 GitOps state, application logs, and logging backend health in a single
 GitOps-managed Grafana dashboard.
+
+---
+
+## Milestone 21 - Alertmanager routing and alert runbooks
+
+**Date:** 2026-06-28
+**Phase:** Observability, SRE, Alerting, and Incident Response
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- Alertmanager is enabled through the GitOps-managed `kube-prometheus-stack` Helm values.
+- The `kube-prometheus-stack-alertmanager` Alertmanager custom resource is created.
+- The Alertmanager pod is running and ready.
+- Prometheus discovers an active Alertmanager target.
+- Alertmanager exposes its readiness and alerts API.
+- Alertmanager routing configuration is loaded.
+- The following receivers are configured:
+  - `local-null`
+  - `platform-critical`
+  - `platform-warning`
+  - `gitops-alerts`
+- Platform alerts include `runbook_url` annotations.
+- The runbook validation confirms `8/8` platform alerts have runbook URLs.
+- Platform alert expressions are still healthy.
+- No platform alert is currently firing.
+- CI is green.
+
+### Validation commands
+
+```bash
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Expected results:
+
+```text
+Alert runbook_url annotations OK (8/8).
+Platform Prometheus alerts are loaded and healthy.
+Alertmanager is enabled, reachable, and routing config is loaded.
+```
+
+Alertmanager routing path:
+
+```text
+PrometheusRule -> Prometheus -> Alertmanager -> route -> receiver
+```
+
+Runbook path:
+
+```text
+PrometheusRule annotation -> runbook_url -> docs/RUNBOOKS.md
+```
+
+### Why this matters
+
+The platform now goes beyond simple alert definition. Alerts are discoverable by Prometheus,
+routed through Alertmanager, associated with receivers, and linked to operational runbooks.
+This creates a realistic incident-response foundation for the local platform.
 </content>
 </invoke>

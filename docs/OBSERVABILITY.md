@@ -519,6 +519,52 @@ pod
 container
 ```
 
+## Alertmanager routing and runbooks
+
+Alertmanager is enabled as part of the GitOps-managed `kube-prometheus-stack` deployment.
+The platform uses Alertmanager to provide routing readiness for Prometheus alerts.
+
+Configured receivers:
+
+```text
+local-null
+platform-critical
+platform-warning
+gitops-alerts
+```
+
+The current local receiver setup does not send external notifications. This is
+intentional for the local kind environment. It validates the routing layer
+without requiring Slack, email, Discord, or webhook secrets.
+
+Alert flow:
+
+```text
+PrometheusRule -> Prometheus -> Alertmanager -> route -> receiver
+```
+
+Platform alerts include `runbook_url` annotations pointing to:
+
+```text
+docs/RUNBOOKS.md
+```
+
+Validation commands:
+
+```bash
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Expected results:
+
+```text
+Alert runbook_url annotations OK (8/8).
+Platform Prometheus alerts are loaded and healthy.
+Alertmanager is enabled, reachable, and routing config is loaded.
+```
+
+
 Main query pattern:
 
 ```logql
