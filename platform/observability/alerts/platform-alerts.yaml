@@ -1,0 +1,109 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: platform-alerts
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: platform-alerts
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: observability
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: idp-platform.availability
+      rules:
+        - alert: DemoGrpcDown
+          expr: |
+            (max(up{namespace="apps", service="demo-grpc"}) == 0)
+            or
+            absent(up{namespace="apps", service="demo-grpc"})
+          for: 2m
+          labels:
+            severity: critical
+            service: demo-grpc
+            team: platform
+          annotations:
+            summary: "demo-grpc target is down"
+            description: "Prometheus cannot scrape the demo-grpc metrics target in namespace apps."
+
+        - alert: GrafanaDown
+          expr: |
+            (max(up{namespace="observability", service="kube-prometheus-stack-grafana"}) == 0)
+            or
+            absent(up{namespace="observability", service="kube-prometheus-stack-grafana"})
+          for: 2m
+          labels:
+            severity: warning
+            service: grafana
+            team: platform
+          annotations:
+            summary: "Grafana target is down"
+            description: "Prometheus cannot scrape the Grafana target in namespace observability."
+
+    - name: idp-platform.gitops
+      rules:
+        - alert: ArgoCDAppOutOfSync
+          expr: |
+            sum(argocd_app_info{project="idp-platform", sync_status!="Synced"}) > 0
+          for: 2m
+          labels:
+            severity: warning
+            service: argocd
+            team: platform
+          annotations:
+            summary: "One or more ArgoCD applications are OutOfSync"
+            description: "At least one ArgoCD application in project idp-platform is not Synced."
+
+        - alert: ArgoCDAppUnhealthy
+          expr: |
+            sum(argocd_app_info{project="idp-platform", health_status!="Healthy"}) > 0
+          for: 2m
+          labels:
+            severity: critical
+            service: argocd
+            team: platform
+          annotations:
+            summary: "One or more ArgoCD applications are unhealthy"
+            description: "At least one ArgoCD application in project idp-platform is not Healthy."
+
+        - alert: ArgoCDApplicationControllerMetricsDown
+          expr: |
+            (max(up{namespace="argocd", service="argocd-application-controller-metrics"}) == 0)
+            or
+            absent(up{namespace="argocd", service="argocd-application-controller-metrics"})
+          for: 2m
+          labels:
+            severity: critical
+            service: argocd-application-controller
+            team: platform
+          annotations:
+            summary: "ArgoCD application-controller metrics target is down"
+            description: "Prometheus cannot scrape argocd-application-controller metrics."
+
+        - alert: ArgoCDRepoServerMetricsDown
+          expr: |
+            (max(up{namespace="argocd", service="argocd-repo-server-metrics"}) == 0)
+            or
+            absent(up{namespace="argocd", service="argocd-repo-server-metrics"})
+          for: 2m
+          labels:
+            severity: warning
+            service: argocd-repo-server
+            team: platform
+          annotations:
+            summary: "ArgoCD repo-server metrics target is down"
+            description: "Prometheus cannot scrape argocd-repo-server metrics."
+
+        - alert: ArgoCDServerMetricsDown
+          expr: |
+            (max(up{namespace="argocd", service="argocd-server-metrics"}) == 0)
+            or
+            absent(up{namespace="argocd", service="argocd-server-metrics"})
+          for: 2m
+          labels:
+            severity: warning
+            service: argocd-server
+            team: platform
+          annotations:
+            summary: "ArgoCD server metrics target is down"
+            description: "Prometheus cannot scrape argocd-server metrics."
