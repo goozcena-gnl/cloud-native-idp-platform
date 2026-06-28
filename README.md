@@ -512,6 +512,37 @@ Dashboard UID:
 demo-grpc-sre
 ```
 
+## SRE dashboard with Loki metrics
+
+The `demo-grpc SRE Summary` dashboard includes Loki backend metrics.
+
+It combines:
+
+```text
+Application metrics
+Application logs
+ArgoCD GitOps metrics
+Loki backend metrics
+```
+
+Validate the dashboard:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+```
+
+Validate Loki metrics scraping:
+
+```bash
+./scripts/check-loki-metrics.sh
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
+
 ## Loki metrics and alerting
 
 The platform scrapes Loki metrics with Prometheus and includes a `LokiDown` alert.

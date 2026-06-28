@@ -581,6 +581,69 @@ Validation command:
 ./scripts/check-grafana-sre-dashboard.sh
 ```
 
+## SRE dashboard with Loki backend metrics
+
+The `demo-grpc SRE Summary` dashboard includes Loki backend metrics.
+
+Dashboard UID:
+
+```text
+demo-grpc-sre
+```
+
+The dashboard now combines:
+
+```text
+Application metrics
+Application logs
+ArgoCD GitOps metrics
+Loki backend metrics
+```
+
+Loki backend signals:
+
+```text
+Loki backend up
+Loki metrics count
+Loki 4xx rate
+Loki 5xx rate
+Loki ingested bytes/sec
+Loki ingested lines/sec
+Loki ingester streams
+Loki memory usage
+Loki request rate by route/status
+Loki request P95 by route
+```
+
+Useful PromQL queries:
+
+```promql
+max(up{namespace="observability", service="loki"})
+```
+
+```promql
+count({__name__=~"loki_.*", namespace="observability", service="loki"})
+```
+
+```promql
+sum(rate(loki_distributor_bytes_received_total{namespace="observability", service="loki"}[5m]))
+```
+
+```promql
+sum(rate(loki_distributor_lines_received_total{namespace="observability", service="loki"}[5m]))
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(loki_request_duration_seconds_bucket{namespace="observability", service="loki"}[5m])) by (le, route))
+```
+
+Validation commands:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-loki-metrics.sh
+```
+
 ## Loki metrics
 
 Loki metrics are scraped by Prometheus through a dedicated `ServiceMonitor`.

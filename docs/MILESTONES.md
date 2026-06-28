@@ -1160,5 +1160,110 @@ The platform can now alert on the availability of the log storage backend
 itself. This closes the monitoring loop for application logs: logs are
 collected by Alloy, stored in Loki, queried in Grafana, scraped by Prometheus,
 and protected by a Prometheus alert.
+
+---
+
+## Milestone 20 — SRE dashboard enriched with Loki metrics
+
+**Date:** 2026-06-28
+**Phase:** Observability, SRE, Logging, and Dashboards
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- The `demo-grpc SRE Summary` dashboard now includes Loki backend metrics.
+- The dashboard combines application metrics, application logs, GitOps metrics, and logging backend metrics.
+- Loki availability is visible in Grafana.
+- Loki metric cardinality is visible through the Loki metrics count panel.
+- Loki request rate and P95 latency are visible by route.
+- Loki ingestion throughput is visible through bytes/sec and lines/sec panels.
+- Loki memory usage and ingester stream count are visible.
+- The dashboard is provisioned through GitOps.
+- The dashboard is managed by the `grafana-dashboards` ArgoCD Application.
+- Grafana API validation confirms that the dashboard is reachable.
+- Loki metrics validation confirms that Prometheus scrapes Loki successfully.
+- CI is green.
+
+### Dashboard
+
+```text
+demo-grpc SRE Summary
+```
+
+Dashboard UID:
+
+```
+demo-grpc-sre
+```
+
+### Logging backend panels added
+
+```text
+Logging backend overview
+Loki backend up
+Loki metrics count
+Loki 5xx rate
+Loki 4xx rate
+Loki ingested bytes/sec
+Loki ingested lines/sec
+Loki ingester streams
+Loki memory usage
+Loki request rate by route/status
+Loki request P95 by route
+```
+
+### Validated Prometheus queries
+
+```promql
+max(up{namespace="observability", service="loki"})
+```
+
+```promql
+count({__name__=~"loki_.*", namespace="observability", service="loki"})
+```
+
+```promql
+sum(rate(loki_request_duration_seconds_count{namespace="observability", service="loki"}[5m])) by (route, status_code)
+```
+
+```promql
+histogram_quantile(0.95, sum(rate(loki_request_duration_seconds_bucket{namespace="observability", service="loki"}[5m])) by (le, route))
+```
+
+```promql
+sum(rate(loki_distributor_bytes_received_total{namespace="observability", service="loki"}[5m]))
+```
+
+```promql
+sum(rate(loki_distributor_lines_received_total{namespace="observability", service="loki"}[5m]))
+```
+
+```promql
+sum(loki_ingester_memory_streams{namespace="observability", service="loki"})
+```
+
+```promql
+process_resident_memory_bytes{namespace="observability", service="loki"}
+```
+
+### Validation commands
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-loki-metrics.sh
+```
+
+Expected results:
+
+```
+Grafana SRE summary dashboard is provisioned and reachable.
+Loki metrics are scraped by Prometheus.
+```
+
+### Why this matters
+
+The platform now exposes a complete SRE view that connects workload health,
+GitOps state, application logs, and logging backend health in a single
+GitOps-managed Grafana dashboard.
 </content>
 </invoke>
