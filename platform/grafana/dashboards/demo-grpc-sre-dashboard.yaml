@@ -21,7 +21,7 @@ data:
         ],
         "timezone": "browser",
         "schemaVersion": 39,
-        "version": 3,
+        "version": 4,
         "refresh": "30s",
         "time": {
             "from": "now-24h",
@@ -892,7 +892,16 @@ data:
                 ],
                 "fieldConfig": {
                     "defaults": {
-                        "unit": "short"
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
                     }
                 }
             },
@@ -998,7 +1007,16 @@ data:
                 ],
                 "fieldConfig": {
                     "defaults": {
-                        "unit": "Bps"
+                        "unit": "Bps",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
                     }
                 }
             },
@@ -1029,7 +1047,16 @@ data:
                 ],
                 "fieldConfig": {
                     "defaults": {
-                        "unit": "ops"
+                        "unit": "ops",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
                     }
                 }
             },
@@ -1060,7 +1087,16 @@ data:
                 ],
                 "fieldConfig": {
                     "defaults": {
-                        "unit": "short"
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        }
                     }
                 }
             },
@@ -1091,7 +1127,24 @@ data:
                 ],
                 "fieldConfig": {
                     "defaults": {
-                        "unit": "bytes"
+                        "unit": "bytes",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 536870912
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1073741824
+                                }
+                            ]
+                        }
                     }
                 }
             },
