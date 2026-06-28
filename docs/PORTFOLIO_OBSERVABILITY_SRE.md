@@ -493,6 +493,25 @@ This screenshot shows the GitHub Actions CI pipeline with Go test/build, Docker 
 ![GitHub Actions CI green](assets/observability-sre/06-github-actions-ci-green.png)
 
 
+### 7. Alertmanager UI
+
+This screenshot shows that Alertmanager is reachable and receives alerts from Prometheus.
+
+![Alertmanager UI](assets/observability-sre/07-alertmanager-ui.png)
+
+### 8. Alertmanager status and receivers
+
+This screenshot shows that the Alertmanager routing configuration is loaded, including the local platform and GitOps receivers.
+
+![Alertmanager status and receivers](assets/observability-sre/08-alertmanager-status-receivers.png)
+
+### 9. Alert runbooks documentation
+
+This screenshot shows the alert runbook documentation used by the `runbook_url` annotations in Prometheus alert rules.
+
+![Alert runbooks documentation](assets/observability-sre/09-runbooks-documentation.png)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
