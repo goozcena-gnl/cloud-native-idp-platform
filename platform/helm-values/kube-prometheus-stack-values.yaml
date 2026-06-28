@@ -82,13 +82,63 @@ prometheus:
     storageSpec: {}
 
 alertmanager:
-  enabled: false
-
-kube-state-metrics:
   enabled: true
 
-prometheus-node-exporter:
-  enabled: true
+  service:
+    type: ClusterIP
 
-defaultRules:
-  create: true
+  alertmanagerSpec:
+    replicas: 1
+    retention: 24h
+    storage: {}
+
+  config:
+    global:
+      resolve_timeout: 5m
+
+    route:
+      receiver: local-null
+      group_by:
+        - namespace
+        - alertname
+        - severity
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      routes:
+        - receiver: platform-critical
+          matchers:
+            - team="platform"
+            - severity="critical"
+          continue: true
+
+        - receiver: platform-warning
+          matchers:
+            - team="platform"
+            - severity="warning"
+          continue: true
+
+        - receiver: gitops-alerts
+          matchers:
+            - service="argocd"
+          continue: true
+
+    receivers:
+      - name: local-null
+
+      - name: platform-critical
+
+      - name: platform-warning
+
+      - name: gitops-alerts
+
+    inhibit_rules:
+      - source_matchers:
+          - severity="critical"
+        target_matchers:
+          - severity="warning"
+        equal:
+          - namespace
+          - alertname
+          - service
+
