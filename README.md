@@ -512,6 +512,26 @@ Dashboard UID:
 demo-grpc-sre
 ```
 
+## Platform alerts
+
+The platform includes GitOps-managed Prometheus alert rules.
+
+Validate:
+
+```bash
+./scripts/check-platform-alerts.sh
+```
+
+Current alert coverage:
+
+```text
+demo-grpc availability
+Grafana availability
+ArgoCD application sync status
+ArgoCD application health status
+ArgoCD metrics target availability
+```
+
 ## ArgoCD metrics
 
 The platform scrapes ArgoCD metrics with Prometheus.

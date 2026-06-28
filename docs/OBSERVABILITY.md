@@ -581,6 +581,48 @@ Validation command:
 ./scripts/check-grafana-sre-dashboard.sh
 ```
 
+## Platform Prometheus alerts
+
+The platform includes a GitOps-managed `PrometheusRule` for first-level SRE alerting.
+
+PrometheusRule:
+
+```text
+platform-alerts
+```
+
+Managed by:
+
+```text
+Application/platform-alerts
+```
+
+Current alerts:
+
+```text
+DemoGrpcDown
+GrafanaDown
+ArgoCDAppOutOfSync
+ArgoCDAppUnhealthy
+ArgoCDApplicationControllerMetricsDown
+ArgoCDRepoServerMetricsDown
+ArgoCDServerMetricsDown
+```
+
+Validation command:
+
+```bash
+./scripts/check-platform-alerts.sh
+```
+
+Current limitations:
+
+```text
+LokiDown is not enabled yet because Loki metrics are not scraped by Prometheus.
+Grafana dashboard validation requires a future synthetic check exporter or blackbox probe.
+Alertmanager notification routing is a future improvement.
+```
+
 The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from:
 
 ```text

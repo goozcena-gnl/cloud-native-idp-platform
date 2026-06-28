@@ -996,5 +996,97 @@ Grafana SRE summary dashboard is provisioned and reachable.
 The platform now demonstrates an SRE-style operational view that connects
 workload health, logs, deployment version, GitOps reconciliation state, and
 Git repository activity in a single dashboard.
+
+---
+
+## Milestone 18 — Platform Prometheus alerts
+
+**Date:** 2026-06-28
+**Phase:** Observability, SRE, and Alerting
+**Status:** Achieved and validated
+
+### Validated outcomes
+
+- A dedicated `PrometheusRule` named `platform-alerts` is provisioned through GitOps.
+- The rule is selected by Prometheus through the `release: kube-prometheus-stack` label.
+- The rule is managed by the `platform-alerts` ArgoCD Application.
+- Prometheus successfully loads all platform alert rules.
+- The alert expressions are validated against live Prometheus data.
+- No platform alert is currently firing.
+- CI is green.
+
+### GitOps application
+
+```text
+platform-alerts
+```
+
+### PrometheusRule
+
+```
+platform-alerts
+```
+
+### Alert rules added
+
+```text
+DemoGrpcDown
+GrafanaDown
+ArgoCDAppOutOfSync
+ArgoCDAppUnhealthy
+ArgoCDApplicationControllerMetricsDown
+ArgoCDRepoServerMetricsDown
+ArgoCDServerMetricsDown
+```
+
+### Validated expressions
+
+```promql
+max(up{namespace="apps", service="demo-grpc"})
+```
+
+```promql
+max(up{namespace="observability", service="kube-prometheus-stack-grafana"})
+```
+
+```promql
+max(up{namespace="argocd", service="argocd-application-controller-metrics"})
+```
+
+```promql
+max(up{namespace="argocd", service="argocd-repo-server-metrics"})
+```
+
+```promql
+max(up{namespace="argocd", service="argocd-server-metrics"})
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform", sync_status!="Synced"}) or vector(0)
+```
+
+```promql
+sum(argocd_app_info{project="idp-platform", health_status!="Healthy"}) or vector(0)
+```
+
+### Validation command
+
+```bash
+./scripts/check-platform-alerts.sh
+```
+
+Expected result:
+
+```
+All platform alert rules are loaded.
+No platform alert is firing.
+Platform Prometheus alerts are loaded and healthy.
+```
+
+### Notes
+
+- Loki alerting is intentionally not included yet because Loki metrics are not currently scraped by Prometheus.
+- Grafana dashboard validation is not included as a PrometheusRule yet because it requires either a synthetic exporter, blackbox exporter, or scheduled external check exposing metrics to Prometheus.
+- Alertmanager notification routing is a future improvement. The current milestone validates Prometheus rule loading and alert expression health.
 </content>
 </invoke>
