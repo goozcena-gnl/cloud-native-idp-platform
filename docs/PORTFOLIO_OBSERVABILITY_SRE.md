@@ -396,6 +396,45 @@ Recommended screenshots for the portfolio:
 | Prometheus `idp-platform.gitops` rules       | GitOps alerts are loaded                                         |
 | GitHub Actions CI green                      | CI validates build, Helm, Docker, and security                   |
 
+## Evidence Screenshots
+
+### 1. ArgoCD applications Synced and Healthy
+
+This screenshot shows that all platform applications are synchronized and healthy through ArgoCD.
+
+![ArgoCD applications Synced and Healthy](assets/observability-sre/01-argocd-apps-synced-healthy.png)
+
+### 2. Grafana SRE Summary dashboard
+
+This screenshot shows the main SRE dashboard with application health, request rate, latency, logs, and GitOps health.
+
+![Grafana SRE Summary overview](assets/observability-sre/02-grafana-sre-overview.png)
+
+### 3. Loki backend metrics in the SRE dashboard
+
+This screenshot shows Loki backend health, ingestion rate, error rate, memory usage, stream count, and request latency.
+
+![Grafana SRE Loki metrics](assets/observability-sre/03-grafana-sre-loki-metrics.png)
+
+### 4. Prometheus availability alert rules
+
+This screenshot shows the platform availability alerts, including `DemoGrpcDown`, `GrafanaDown`, and `LokiDown`.
+
+![Prometheus availability rules](assets/observability-sre/04-prometheus-availability-rules.png)
+
+### 5. Prometheus GitOps alert rules
+
+This screenshot shows the GitOps-related alerts for ArgoCD application health, sync drift, and ArgoCD metrics availability.
+
+![Prometheus GitOps rules](assets/observability-sre/05-prometheus-gitops-rules.png)
+
+### 6. GitHub Actions CI green
+
+This screenshot shows the GitHub Actions CI pipeline with Go test/build, Docker build, Helm validation, and Trivy security scan.
+
+![GitHub Actions CI green](assets/observability-sre/06-github-actions-ci-green.png)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
