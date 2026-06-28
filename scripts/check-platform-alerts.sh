@@ -9,6 +9,7 @@ LOCAL_PROMETHEUS_PORT="${LOCAL_PROMETHEUS_PORT:-9093}"
 ALERT_NAMES=(
   DemoGrpcDown
   GrafanaDown
+  LokiDown
   ArgoCDAppOutOfSync
   ArgoCDAppUnhealthy
   ArgoCDApplicationControllerMetricsDown
@@ -124,6 +125,11 @@ assert_value \
 assert_value \
   "Grafana up" \
   'max(up{namespace="observability", service="kube-prometheus-stack-grafana"})' \
+  '1'
+
+assert_value \
+  "Loki up" \
+  'max(up{namespace="observability", service="loki"})' \
   '1'
 
 assert_value \

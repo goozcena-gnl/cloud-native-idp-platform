@@ -40,6 +40,20 @@ spec:
             summary: "Grafana target is down"
             description: "Prometheus cannot scrape the Grafana target in namespace observability."
 
+        - alert: LokiDown
+          expr: |
+            (max(up{namespace="observability", service="loki"}) == 0)
+            or
+            absent(up{namespace="observability", service="loki"})
+          for: 2m
+          labels:
+            severity: critical
+            service: loki
+            team: platform
+          annotations:
+            summary: "Loki target is down"
+            description: "Prometheus cannot scrape the Loki metrics target in namespace observability."
+
     - name: idp-platform.gitops
       rules:
         - alert: ArgoCDAppOutOfSync
