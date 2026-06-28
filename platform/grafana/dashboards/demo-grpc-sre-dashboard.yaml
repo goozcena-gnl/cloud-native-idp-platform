@@ -21,7 +21,7 @@ data:
         ],
         "timezone": "browser",
         "schemaVersion": 39,
-        "version": 2,
+        "version": 3,
         "refresh": "30s",
         "time": {
             "from": "now-24h",
@@ -791,6 +791,370 @@ data:
                 "options": {
                     "showHeader": true,
                     "cellHeight": "sm"
+                }
+            },
+            {
+                "id": 23,
+                "type": "text",
+                "title": "Logging backend overview",
+                "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 64
+                },
+                "options": {
+                    "mode": "markdown",
+                    "content": "## Logging backend health\n\nThis section shows Loki backend health from Prometheus metrics.\n\nPath: `Loki -> ServiceMonitor/loki -> Prometheus -> Grafana`"
+                }
+            },
+            {
+                "id": 24,
+                "type": "stat",
+                "title": "Loki backend up",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 0,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "max(up{namespace=\"observability\", service=\"loki\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "mappings": [
+                            {
+                                "type": "value",
+                                "options": {
+                                    "0": {
+                                        "text": "DOWN"
+                                    },
+                                    "1": {
+                                        "text": "UP"
+                                    }
+                                }
+                            }
+                        ],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 25,
+                "type": "stat",
+                "title": "Loki metrics count",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 4,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "count({__name__=~\"loki_.*\", namespace=\"observability\", service=\"loki\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short"
+                    }
+                }
+            },
+            {
+                "id": 26,
+                "type": "stat",
+                "title": "Loki 5xx rate",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 8,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(loki_request_duration_seconds_count{namespace=\"observability\", service=\"loki\", status_code=~\"5..\"}[5m])) or vector(0)",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 0.001
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 27,
+                "type": "stat",
+                "title": "Loki 4xx rate",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 12,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(loki_request_duration_seconds_count{namespace=\"observability\", service=\"loki\", status_code=~\"4..\"}[5m])) or vector(0)",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 28,
+                "type": "stat",
+                "title": "Loki ingested bytes/sec",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 16,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(loki_distributor_bytes_received_total{namespace=\"observability\", service=\"loki\"}[5m]))",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "Bps"
+                    }
+                }
+            },
+            {
+                "id": 29,
+                "type": "stat",
+                "title": "Loki ingested lines/sec",
+                "gridPos": {
+                    "h": 5,
+                    "w": 4,
+                    "x": 20,
+                    "y": 68
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(loki_distributor_lines_received_total{namespace=\"observability\", service=\"loki\"}[5m]))",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "ops"
+                    }
+                }
+            },
+            {
+                "id": 30,
+                "type": "stat",
+                "title": "Loki ingester streams",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 0,
+                    "y": 73
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(loki_ingester_memory_streams{namespace=\"observability\", service=\"loki\"})",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short"
+                    }
+                }
+            },
+            {
+                "id": 31,
+                "type": "stat",
+                "title": "Loki memory usage",
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 6,
+                    "y": 73
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "process_resident_memory_bytes{namespace=\"observability\", service=\"loki\"}",
+                        "instant": true,
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "bytes"
+                    }
+                }
+            },
+            {
+                "id": 32,
+                "type": "timeseries",
+                "title": "Loki request rate by route/status",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 73
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(loki_request_duration_seconds_count{namespace=\"observability\", service=\"loki\"}[5m])) by (route, status_code)",
+                        "legendFormat": "{{route}} {{status_code}}",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "reqps"
+                    }
+                }
+            },
+            {
+                "id": 33,
+                "type": "timeseries",
+                "title": "Loki request P95 by route",
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 81
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "histogram_quantile(0.95, sum(rate(loki_request_duration_seconds_bucket{namespace=\"observability\", service=\"loki\"}[5m])) by (le, route))",
+                        "legendFormat": "{{route}}",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "s"
+                    }
                 }
             }
         ]
