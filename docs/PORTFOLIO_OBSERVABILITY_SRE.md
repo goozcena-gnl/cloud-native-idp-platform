@@ -350,7 +350,7 @@ kubectl -n argocd get applications \
 ./scripts/check-grafana-sre-dashboard.sh
 ./scripts/check-loki-metrics.sh
 ./scripts/check-platform-alerts.sh
-gh run list --workflow CI --limit 9
+gh run list --workflow CI --limit 10
 ```
 
 ## CI Evidence
@@ -380,7 +380,7 @@ success  docs: document platform prometheus alerts milestone
 Validation command:
 
 ```bash
-gh run list --workflow CI --limit 9
+gh run list --workflow CI --limit 10
 ```
 
 ## Screenshot Checklist
