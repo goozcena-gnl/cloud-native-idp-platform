@@ -627,3 +627,7 @@ Dashboard UID:
 ```
 demo-grpc-sre
 ```
+
+## Portfolio case studies
+
+- [Observability and SRE Platform](docs/PORTFOLIO_OBSERVABILITY_SRE.md)
