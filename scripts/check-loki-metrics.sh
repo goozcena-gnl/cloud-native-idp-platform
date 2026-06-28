@@ -4,7 +4,7 @@ set -euo pipefail
 
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-idp-local}"
 OBS_NAMESPACE="${OBS_NAMESPACE:-observability}"
-LOCAL_PROMETHEUS_PORT="${LOCAL_PROMETHEUS_PORT:-9094}"
+LOCAL_PROMETHEUS_PORT="${LOCAL_PROMETHEUS_PORT:-19094}"
 
 echo "============================================================"
 echo "Check Loki metrics scraping"
@@ -46,13 +46,13 @@ trap cleanup EXIT
 sleep 4
 
 echo "Checking Prometheus readiness..."
-curl -fsS "http://localhost:${LOCAL_PROMETHEUS_PORT}/-/ready" >/dev/null
+curl -fsS "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/-/ready" >/dev/null
 echo "Prometheus ready OK."
 echo
 
 query_prometheus() {
   local query="$1"
-  curl -G -s "http://localhost:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
+  curl -G -s "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
     --data-urlencode "query=${query}"
 }
 
