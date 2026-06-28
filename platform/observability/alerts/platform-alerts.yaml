@@ -25,6 +25,7 @@ spec:
           annotations:
             summary: "demo-grpc target is down"
             description: "Prometheus cannot scrape the demo-grpc metrics target in namespace apps."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#demogrpcdown"
 
         - alert: GrafanaDown
           expr: |
@@ -39,6 +40,7 @@ spec:
           annotations:
             summary: "Grafana target is down"
             description: "Prometheus cannot scrape the Grafana target in namespace observability."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#grafanadown"
 
         - alert: LokiDown
           expr: |
@@ -53,6 +55,7 @@ spec:
           annotations:
             summary: "Loki target is down"
             description: "Prometheus cannot scrape the Loki metrics target in namespace observability."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#lokidown"
 
     - name: idp-platform.gitops
       rules:
@@ -67,6 +70,7 @@ spec:
           annotations:
             summary: "One or more ArgoCD applications are OutOfSync"
             description: "At least one ArgoCD application in project idp-platform is not Synced."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#argocdappoutofsync"
 
         - alert: ArgoCDAppUnhealthy
           expr: |
@@ -79,6 +83,7 @@ spec:
           annotations:
             summary: "One or more ArgoCD applications are unhealthy"
             description: "At least one ArgoCD application in project idp-platform is not Healthy."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#argocdappunhealthy"
 
         - alert: ArgoCDApplicationControllerMetricsDown
           expr: |
@@ -93,6 +98,7 @@ spec:
           annotations:
             summary: "ArgoCD application-controller metrics target is down"
             description: "Prometheus cannot scrape argocd-application-controller metrics."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#argocdapplicationcontrollermetricsdown"
 
         - alert: ArgoCDRepoServerMetricsDown
           expr: |
@@ -107,6 +113,7 @@ spec:
           annotations:
             summary: "ArgoCD repo-server metrics target is down"
             description: "Prometheus cannot scrape argocd-repo-server metrics."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#argocdreposervermetricsdown"
 
         - alert: ArgoCDServerMetricsDown
           expr: |
@@ -121,3 +128,4 @@ spec:
           annotations:
             summary: "ArgoCD server metrics target is down"
             description: "Prometheus cannot scrape argocd-server metrics."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#argocdservermetricsdown"

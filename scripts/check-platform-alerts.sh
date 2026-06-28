@@ -88,6 +88,13 @@ if [[ "${missing}" -ne 0 ]]; then
   exit 1
 fi
 
+echo "Checking alert runbook_url annotations..."
+RUNBOOK_COUNT="$(echo "${RULES_RESPONSE}" | grep -o "runbook_url" | wc -l | tr -d ' ')"
+if [[ "${RUNBOOK_COUNT}" -lt "${#ALERT_NAMES[@]}" ]]; then
+  echo "ERROR: fewer runbook_url annotations than expected (found ${RUNBOOK_COUNT}, expected ${#ALERT_NAMES[@]})."
+  exit 1
+fi
+echo "Alert runbook_url annotations OK (${RUNBOOK_COUNT}/${#ALERT_NAMES[@]})."
 echo
 
 query_prometheus() {
