@@ -130,6 +130,33 @@ print(f"Alert runbook_url annotations OK ({len(expected_alerts)}/{len(expected_a
 PYRUNBOOKS
 rm -f "${RULES_RESPONSE_FILE}"
 echo
+
+assert_value() {
+  local label="$1"
+  local query="$2"
+  local expected="$3"
+
+  echo "Checking expression: ${label}"
+
+  local response
+  response="$(curl -G -s "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
+    --data-urlencode "query=${query}")"
+
+  if echo "${response}" | grep -q "\"${expected}\""; then
+    echo "OK: ${label}"
+    return 0
+  fi
+
+  echo "ERROR: expression did not return expected value."
+  echo "Label:    ${label}"
+  echo "Query:    ${query}"
+  echo "Expected: ${expected}"
+  echo "Response:"
+  echo "${response}" | head -c 3000
+  echo
+  exit 1
+}
+
 assert_value \
   "demo-grpc up" \
   'max(up{namespace="apps", service="demo-grpc"})' \
