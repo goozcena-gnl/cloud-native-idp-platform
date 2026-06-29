@@ -21,7 +21,7 @@ data:
         ],
         "timezone": "browser",
         "schemaVersion": 39,
-        "version": 4,
+        "version": 5,
         "refresh": "30s",
         "time": {
             "from": "now-24h",
@@ -1207,6 +1207,362 @@ data:
                 "fieldConfig": {
                     "defaults": {
                         "unit": "s"
+                    }
+                }
+            },
+            {
+                "id": 34,
+                "type": "text",
+                "title": "Tracing backend health",
+                "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 89
+                },
+                "options": {
+                    "mode": "markdown",
+                    "content": "## Tracing backend health\n\nThis section shows Tempo backend health from Prometheus metrics.\n\nPath: `demo-grpc -> OpenTelemetry -> OTLP gRPC -> Tempo -> ServiceMonitor/tempo -> Prometheus -> Grafana`"
+                }
+            },
+            {
+                "id": 35,
+                "type": "stat",
+                "title": "Tempo Up",
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 0,
+                    "y": 93
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "max(up{namespace=\"observability\", service=\"tempo\"})",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": ""
+                    },
+                    "orientation": "auto",
+                    "textMode": "auto",
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto"
+                }
+            },
+            {
+                "id": 36,
+                "type": "stat",
+                "title": "Tempo Metrics Count",
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 6,
+                    "x": 6,
+                    "y": 93
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "count({__name__=~\"tempo_.*\", namespace=\"observability\", service=\"tempo\"})",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "options": {
+                    "reduceOptions": {
+                        "values": false,
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": ""
+                    },
+                    "orientation": "auto",
+                    "textMode": "auto",
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto"
+                }
+            },
+            {
+                "id": 37,
+                "type": "timeseries",
+                "title": "Tempo Ingested Spans Rate",
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 93
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(tempo_distributor_spans_received_total{namespace=\"observability\", service=\"tempo\"}[5m])) or sum(rate(tempo_receiver_accepted_spans{namespace=\"observability\", service=\"tempo\"}[5m])) or vector(0)",
+                        "legendFormat": "spans/s",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "ops",
+                        "custom": {
+                            "drawStyle": "line",
+                            "lineInterpolation": "linear",
+                            "barAlignment": 0,
+                            "lineWidth": 1,
+                            "fillOpacity": 10,
+                            "gradientMode": "none",
+                            "spanNulls": false,
+                            "showPoints": "never",
+                            "pointSize": 5,
+                            "stacking": {
+                                "mode": "none",
+                                "group": "A"
+                            },
+                            "axisPlacement": "auto",
+                            "axisLabel": "",
+                            "axisColorMode": "text",
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "hideFrom": {
+                                "tooltip": false,
+                                "viz": false,
+                                "legend": false
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        }
+                    },
+                    "overrides": []
+                },
+                "options": {
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "legend": {
+                        "showLegend": true,
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "calcs": [
+                            "lastNotNull"
+                        ]
+                    }
+                }
+            },
+            {
+                "id": 38,
+                "type": "timeseries",
+                "title": "Tempo Request 5xx Rate",
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 0,
+                    "y": 100
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "sum(rate(tempo_request_duration_seconds_count{namespace=\"observability\", service=\"tempo\", status_code=~\"5..\"}[5m])) or vector(0)",
+                        "legendFormat": "5xx/s",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "ops",
+                        "custom": {
+                            "drawStyle": "line",
+                            "lineInterpolation": "linear",
+                            "barAlignment": 0,
+                            "lineWidth": 1,
+                            "fillOpacity": 10,
+                            "gradientMode": "none",
+                            "spanNulls": false,
+                            "showPoints": "never",
+                            "pointSize": 5,
+                            "stacking": {
+                                "mode": "none",
+                                "group": "A"
+                            },
+                            "axisPlacement": "auto",
+                            "axisLabel": "",
+                            "axisColorMode": "text",
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "hideFrom": {
+                                "tooltip": false,
+                                "viz": false,
+                                "legend": false
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        }
+                    },
+                    "overrides": []
+                },
+                "options": {
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "legend": {
+                        "showLegend": true,
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "calcs": [
+                            "lastNotNull"
+                        ]
+                    }
+                }
+            },
+            {
+                "id": 39,
+                "type": "timeseries",
+                "title": "Tempo Request Duration p95",
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "prometheus"
+                },
+                "gridPos": {
+                    "h": 7,
+                    "w": 12,
+                    "x": 12,
+                    "y": 100
+                },
+                "targets": [
+                    {
+                        "refId": "A",
+                        "expr": "histogram_quantile(0.95, sum(rate(tempo_request_duration_seconds_bucket{namespace=\"observability\", service=\"tempo\"}[5m])) by (le, route)) or vector(0)",
+                        "legendFormat": "{{route}}",
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "prometheus"
+                        }
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "s",
+                        "custom": {
+                            "drawStyle": "line",
+                            "lineInterpolation": "linear",
+                            "barAlignment": 0,
+                            "lineWidth": 1,
+                            "fillOpacity": 10,
+                            "gradientMode": "none",
+                            "spanNulls": false,
+                            "showPoints": "never",
+                            "pointSize": 5,
+                            "stacking": {
+                                "mode": "none",
+                                "group": "A"
+                            },
+                            "axisPlacement": "auto",
+                            "axisLabel": "",
+                            "axisColorMode": "text",
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "hideFrom": {
+                                "tooltip": false,
+                                "viz": false,
+                                "legend": false
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        }
+                    },
+                    "overrides": []
+                },
+                "options": {
+                    "tooltip": {
+                        "mode": "single",
+                        "sort": "none"
+                    },
+                    "legend": {
+                        "showLegend": true,
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "calcs": [
+                            "lastNotNull"
+                        ]
                     }
                 }
             }
