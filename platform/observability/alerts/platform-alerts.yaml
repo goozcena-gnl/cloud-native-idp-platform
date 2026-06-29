@@ -59,6 +59,21 @@ spec:
 
     - name: idp-platform.gitops
       rules:
+        - alert: TempoDown
+          expr: |
+            (max(up{namespace="observability", service="tempo"}) == 0)
+            or
+            absent(up{namespace="observability", service="tempo"})
+          for: 2m
+          labels:
+            severity: critical
+            service: tempo
+            component: tracing
+          annotations:
+            summary: "Tempo is down"
+            description: "Tempo is not being scraped by Prometheus or is not reporting as up."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#tempodown"
+
         - alert: ArgoCDAppOutOfSync
           expr: |
             sum(argocd_app_info{project="idp-platform", sync_status!="Synced"}) > 0

@@ -110,6 +110,74 @@ kubectl -n argocd get application loki-monitoring
 kubectl -n observability rollout status statefulset/loki
 ```
 
+## TempoDown
+
+### Meaning
+
+Tempo is unavailable or Prometheus cannot scrape the Tempo metrics endpoint.
+
+This impacts distributed tracing visibility. Application traffic may still work,
+but traces may not be searchable in Grafana Explore.
+
+### Impact
+
+- `demo-grpc` traces may no longer be stored or queryable.
+- Grafana Tempo Explore may return empty results or errors.
+- Trace-based troubleshooting becomes unavailable.
+
+### Investigation
+
+```bash
+kubectl -n argocd get application tempo
+kubectl -n observability get pods | grep -i tempo
+kubectl -n observability get svc tempo
+kubectl -n observability get servicemonitor tempo
+```
+
+Check Tempo readiness:
+
+```bash
+kubectl -n observability port-forward svc/tempo 19098:3200 &
+curl -fsS http://127.0.0.1:19098/ready
+curl -fsS http://127.0.0.1:19098/metrics | grep tempo_
+```
+
+Check Prometheus scraping:
+
+```bash
+kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus 19099:9090 &
+curl -G -fsS "http://127.0.0.1:19099/api/v1/query" \
+  --data-urlencode 'query=up{namespace="observability", service="tempo"}' \
+  | python -m json.tool
+```
+
+### Common causes
+
+- Tempo pod is not running.
+- Tempo service is missing or has changed labels.
+- Tempo ServiceMonitor is missing the `release=kube-prometheus-stack` label.
+- Prometheus has not discovered the Tempo target yet.
+- Tempo is up but its `/metrics` endpoint is not reachable.
+
+### Remediation
+
+Restart or resync Tempo:
+
+```bash
+kubectl -n argocd annotate application tempo \
+  argocd.argoproj.io/refresh=hard \
+  --overwrite
+kubectl -n observability rollout restart statefulset/tempo
+kubectl -n observability rollout status statefulset/tempo
+```
+
+Validate the full tracing stack:
+
+```bash
+./scripts/check-tempo-stack.sh
+./scripts/check-demo-grpc-traces.sh
+```
+
 ## ArgoCDAppOutOfSync
 
 ### Meaning

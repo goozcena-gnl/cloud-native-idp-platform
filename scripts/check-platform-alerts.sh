@@ -10,6 +10,7 @@ ALERT_NAMES=(
   DemoGrpcDown
   GrafanaDown
   LokiDown
+  TempoDown
   ArgoCDAppOutOfSync
   ArgoCDAppUnhealthy
   ArgoCDApplicationControllerMetricsDown
@@ -99,6 +100,7 @@ expected_alerts = [
     "DemoGrpcDown",
     "GrafanaDown",
     "LokiDown",
+    "TempoDown",
     "ArgoCDAppOutOfSync",
     "ArgoCDAppUnhealthy",
     "ArgoCDApplicationControllerMetricsDown",
@@ -170,6 +172,11 @@ assert_value \
 assert_value \
   "Loki up" \
   'max(up{namespace="observability", service="loki"})' \
+  '1'
+
+assert_value \
+  "Tempo up" \
+  'max(up{namespace="observability", service="tempo"})' \
   '1'
 
 assert_value \
