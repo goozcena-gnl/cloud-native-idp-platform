@@ -38,6 +38,20 @@ echo "Tempo services:"
 kubectl -n "${OBS_NAMESPACE}" get svc | grep -i tempo
 echo
 
+echo "Tempo ServiceMonitor:"
+kubectl -n "${OBS_NAMESPACE}" get servicemonitor tempo
+echo
+
+echo "Checking Tempo ServiceMonitor label..."
+TEMPO_SM_RELEASE_LABEL="$(kubectl -n "${OBS_NAMESPACE}" get servicemonitor tempo -o jsonpath='{.metadata.labels.release}')"
+if [[ "${TEMPO_SM_RELEASE_LABEL}" != "kube-prometheus-stack" ]]; then
+  echo "ERROR: ServiceMonitor/tempo does not have release=kube-prometheus-stack."
+  echo "Current release label: ${TEMPO_SM_RELEASE_LABEL:-<empty>}"
+  exit 1
+fi
+echo "OK: ServiceMonitor/tempo has release=kube-prometheus-stack."
+echo
+
 echo "Tempo datasource ConfigMap:"
 kubectl -n "${OBS_NAMESPACE}" get configmap tempo-datasource
 echo
@@ -104,7 +118,14 @@ wait_for_url "Grafana health" "http://127.0.0.1:${LOCAL_GRAFANA_PORT}/api/health
 echo
 
 echo "Checking Tempo metrics endpoint..."
-curl -fsS "http://127.0.0.1:${LOCAL_TEMPO_PORT}/metrics" | grep -q "tempo_"
+TEMPO_METRICS_FILE="/tmp/check-tempo-metrics.txt"
+curl -fsS "http://127.0.0.1:${LOCAL_TEMPO_PORT}/metrics" -o "${TEMPO_METRICS_FILE}"
+
+if ! grep -q "tempo_" "${TEMPO_METRICS_FILE}"; then
+  echo "ERROR: Tempo metrics endpoint does not expose tempo_* metrics."
+  exit 1
+fi
+
 echo "OK: Tempo metrics endpoint exposes tempo_* metrics."
 echo
 
@@ -116,13 +137,56 @@ echo "${GRAFANA_DATASOURCE_RESPONSE}" | grep -q '"type":"tempo"'
 echo "OK: Tempo datasource is provisioned in Grafana."
 echo
 
-echo "Checking Tempo target in Prometheus, if ServiceMonitor is active..."
-PROM_RESPONSE="$(curl -G -s "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
-  --data-urlencode 'query=up{namespace="observability", service=~".*tempo.*"}')"
+echo "Checking Tempo target in Prometheus..."
+PROM_UP_RESPONSE="$(curl -G -fsS "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
+  --data-urlencode 'query=up{namespace="observability", service="tempo"}')"
 
-echo "${PROM_RESPONSE}"
+echo "${PROM_UP_RESPONSE}"
 
+PROM_UP_RESPONSE="${PROM_UP_RESPONSE}" python - <<'PY'
+import json
+import os
+import sys
+
+data = json.loads(os.environ["PROM_UP_RESPONSE"])
+result = data.get("data", {}).get("result", [])
+
+if not result:
+    sys.exit("ERROR: Prometheus has no up{namespace=\"observability\", service=\"tempo\"} result.")
+
+if not any(item.get("value", [None, "0"])[1] == "1" for item in result):
+    sys.exit("ERROR: Tempo target exists but is not up.")
+
+print("OK: Prometheus scrapes Tempo and up == 1.")
+PY
 echo
+
+echo "Checking Tempo metrics in Prometheus..."
+PROM_TEMPO_METRICS_RESPONSE="$(curl -G -fsS "http://127.0.0.1:${LOCAL_PROMETHEUS_PORT}/api/v1/query" \
+  --data-urlencode 'query=count({__name__=~"tempo_.*", namespace="observability"})')"
+
+echo "${PROM_TEMPO_METRICS_RESPONSE}"
+
+PROM_TEMPO_METRICS_RESPONSE="${PROM_TEMPO_METRICS_RESPONSE}" python - <<'PY'
+import json
+import os
+import sys
+
+data = json.loads(os.environ["PROM_TEMPO_METRICS_RESPONSE"])
+result = data.get("data", {}).get("result", [])
+
+if not result:
+    sys.exit("ERROR: Prometheus returned no count for tempo_* metrics.")
+
+value = float(result[0].get("value", [None, "0"])[1])
+
+if value <= 0:
+    sys.exit(f"ERROR: Expected tempo_* metrics count > 0, got {value}.")
+
+print(f"OK: Prometheus has tempo_* metrics count = {value:.0f}.")
+PY
+echo
+
 echo "============================================================"
-echo "Tempo stack is deployed, reachable, and provisioned in Grafana."
+echo "Tempo stack is deployed, reachable, provisioned in Grafana, and scraped by Prometheus."
 echo "============================================================"
