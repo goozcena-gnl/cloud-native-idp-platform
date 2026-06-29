@@ -512,6 +512,25 @@ This screenshot shows the alert runbook documentation used by the `runbook_url` 
 ![Alert runbooks documentation](assets/observability-sre/09-runbooks-documentation.png)
 
 
+### 10. Grafana Tempo Explore traces
+
+This screenshot shows distributed traces emitted by `demo-grpc`, exported through OpenTelemetry, stored in Tempo, and queried from Grafana Explore.
+
+![Grafana Tempo Explore traces](assets/observability-sre/10-grafana-tempo-explore-traces.png)
+
+### 11. Grafana Tempo trace detail
+
+This screenshot shows a detailed trace view for a gRPC health check span.
+
+![Grafana Tempo trace detail](assets/observability-sre/11-grafana-tempo-trace-detail.png)
+
+### 12. Tempo API trace search
+
+This screenshot shows a direct Tempo API query returning `demo-grpc` traces.
+
+![Tempo API trace search](assets/observability-sre/12-tempo-api-trace-search.png)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:

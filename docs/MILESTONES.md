@@ -1295,5 +1295,24 @@ PrometheusRule annotation -> runbook_url -> docs/RUNBOOKS.md
 The platform now goes beyond simple alert definition. Alerts are discoverable by Prometheus,
 routed through Alertmanager, associated with receivers, and linked to operational runbooks.
 This creates a realistic incident-response foundation for the local platform.
-</content>
-</invoke>
+
+## Milestone 22 — Distributed tracing with OpenTelemetry and Tempo
+
+The platform now includes distributed tracing for the `demo-grpc` reference service.
+
+Implemented capabilities:
+
+- Tempo deployed through ArgoCD using the Grafana Helm chart.
+- Tempo datasource provisioned in Grafana.
+- `demo-grpc` instrumented with OpenTelemetry gRPC server instrumentation.
+- Traces exported over OTLP gRPC to Tempo.
+- Trace validation automated with `scripts/check-demo-grpc-traces.sh`.
+- Grafana Explore can query `demo-grpc` traces by service name.
+- Portfolio screenshots added for Tempo Explore, trace details, and Tempo API search.
+
+Validation commands:
+
+```bash
+./scripts/check-tempo-stack.sh
+./scripts/check-demo-grpc-traces.sh
+```
