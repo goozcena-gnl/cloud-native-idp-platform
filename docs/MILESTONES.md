@@ -1296,6 +1296,8 @@ The platform now goes beyond simple alert definition. Alerts are discoverable by
 routed through Alertmanager, associated with receivers, and linked to operational runbooks.
 This creates a realistic incident-response foundation for the local platform.
 
+---
+
 ## Milestone 22 — Distributed tracing with OpenTelemetry and Tempo
 
 The platform now includes distributed tracing for the `demo-grpc` reference service.
@@ -1315,4 +1317,27 @@ Validation commands:
 ```bash
 ./scripts/check-tempo-stack.sh
 ./scripts/check-demo-grpc-traces.sh
+```
+
+---
+
+## Milestone 23 — Tempo monitoring in the SRE dashboard
+
+The SRE dashboard now includes Tempo tracing backend health panels.
+
+Implemented capabilities:
+
+- Tempo availability panel based on Prometheus `up`.
+- Tempo metrics count panel.
+- Tempo ingested spans rate panel.
+- Tempo request 5xx rate panel.
+- Tempo request duration p95 panel.
+- Dashboard validation through `scripts/check-grafana-sre-dashboard.sh`.
+- Portfolio screenshot added for the Tempo SRE dashboard section.
+
+Validation commands:
+
+```bash
+./scripts/check-tempo-stack.sh
+./scripts/check-grafana-sre-dashboard.sh
 ```

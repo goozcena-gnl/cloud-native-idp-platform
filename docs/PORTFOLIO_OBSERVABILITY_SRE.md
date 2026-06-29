@@ -531,6 +531,13 @@ This screenshot shows a direct Tempo API query returning `demo-grpc` traces.
 ![Tempo API trace search](assets/observability-sre/12-tempo-api-trace-search.png)
 
 
+### 13. Grafana SRE dashboard Tempo panels
+
+This screenshot shows the SRE dashboard extended with Tempo tracing backend health panels, including Tempo availability, metrics count, ingested spans rate, request error rate, and request latency.
+
+![Grafana SRE dashboard Tempo panels](assets/observability-sre/13-grafana-sre-tempo-panels.png)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
