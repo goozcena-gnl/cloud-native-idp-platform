@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tempo-monitoring
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: tempo-monitoring
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: observability
+spec:
+  project: idp-platform
+
+  source:
+    repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+    targetRevision: main
+    path: platform/observability/tempo-monitoring
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+      - PruneLast=true
