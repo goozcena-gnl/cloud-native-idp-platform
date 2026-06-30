@@ -1,0 +1,70 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: demo-grpc-slo-rules
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: demo-grpc-slo-rules
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: observability
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: demo-grpc.slo.recording
+      interval: 30s
+      rules:
+        - record: demo_grpc:slo:availability_target
+          expr: vector(0.995)
+          labels:
+            service: demo-grpc
+            slo: availability
+
+        - record: demo_grpc:slo:error_budget_ratio
+          expr: vector(0.005)
+          labels:
+            service: demo-grpc
+            slo: availability
+
+        - record: demo_grpc:grpc_request_rate5m
+          expr: |
+            sum(rate(demo_grpc_grpc_requests_total{service="demo-grpc"}[5m]))
+
+        - record: demo_grpc:grpc_error_rate5m
+          expr: |
+            sum(rate(demo_grpc_grpc_requests_total{service="demo-grpc", code!="OK"}[5m]))
+            or
+            vector(0)
+
+        - record: demo_grpc:grpc_success_rate5m
+          expr: |
+            sum(rate(demo_grpc_grpc_requests_total{service="demo-grpc", code="OK"}[5m]))
+            or
+            vector(0)
+
+        - record: demo_grpc:grpc_error_ratio5m
+          expr: |
+            (
+              sum(rate(demo_grpc_grpc_requests_total{service="demo-grpc", code!="OK"}[5m]))
+              or
+              vector(0)
+            )
+            /
+            clamp_min(sum(rate(demo_grpc_grpc_requests_total{service="demo-grpc"}[5m])), 0.001)
+
+        - record: demo_grpc:grpc_success_ratio5m
+          expr: |
+            1 - demo_grpc:grpc_error_ratio5m
+
+        - record: demo_grpc:grpc_latency_p95_seconds5m
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum(rate(demo_grpc_grpc_request_duration_seconds_bucket{service="demo-grpc"}[5m])) by (le)
+            )
+
+        - record: demo_grpc:slo:error_budget_burn_rate5m
+          expr: |
+            demo_grpc:grpc_error_ratio5m / 0.005
+          labels:
+            service: demo-grpc
+            slo: availability
