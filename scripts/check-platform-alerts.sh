@@ -7,6 +7,8 @@ OBS_NAMESPACE="${OBS_NAMESPACE:-observability}"
 LOCAL_PROMETHEUS_PORT="${LOCAL_PROMETHEUS_PORT:-9093}"
 
 ALERT_NAMES=(
+  DemoGrpcSLOFastBurn
+  DemoGrpcSLOSlowBurn
   DemoGrpcDown
   GrafanaDown
   LokiDown
@@ -97,6 +99,8 @@ import json
 import sys
 
 expected_alerts = [
+    "DemoGrpcSLOFastBurn",
+    "DemoGrpcSLOSlowBurn",
     "DemoGrpcDown",
     "GrafanaDown",
     "LokiDown",
@@ -162,6 +166,16 @@ assert_value() {
 assert_value \
   "demo-grpc up" \
   'max(up{namespace="apps", service="demo-grpc"})' \
+  '1'
+
+assert_value \
+  "demo-grpc SLO fast burn inactive" \
+  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < 14.4' \
+  '1'
+
+assert_value \
+  "demo-grpc SLO slow burn inactive" \
+  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < 3' \
   '1'
 
 assert_value \

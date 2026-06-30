@@ -12,6 +12,34 @@ spec:
   groups:
     - name: idp-platform.availability
       rules:
+        - alert: DemoGrpcSLOFastBurn
+          expr: |
+            demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} > 14.4
+          for: 2m
+          labels:
+            severity: critical
+            service: demo-grpc
+            team: platform
+            slo: availability
+          annotations:
+            summary: "demo-grpc SLO fast burn"
+            description: "demo-grpc is consuming its availability error budget too quickly over the short window."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#demogrpcslofastburn"
+
+        - alert: DemoGrpcSLOSlowBurn
+          expr: |
+            demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} > 3
+          for: 10m
+          labels:
+            severity: warning
+            service: demo-grpc
+            team: platform
+            slo: availability
+          annotations:
+            summary: "demo-grpc SLO slow burn"
+            description: "demo-grpc is consuming its availability error budget faster than expected over the slow-burn window."
+            runbook_url: "https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/RUNBOOKS.md#demogrpcsloslowburn"
+
         - alert: DemoGrpcDown
           expr: |
             (max(up{namespace="apps", service="demo-grpc"}) == 0)

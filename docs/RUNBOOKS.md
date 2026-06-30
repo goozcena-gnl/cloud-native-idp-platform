@@ -3,6 +3,140 @@
 This document provides investigation steps for the platform alerts defined in
 `platform/observability/alerts/platform-alerts.yaml`.
 
+## DemoGrpcSLOFastBurn
+
+### Meaning
+
+`demo-grpc` is consuming its availability error budget very quickly.
+
+This alert is based on the SLO burn-rate recording rule:
+
+```promql
+demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} > 14.4
+```
+
+### Impact
+
+- The service may still be responding, but reliability is degrading.
+- A high error ratio can exhaust the 99.5% availability error budget quickly.
+- Users may experience failed gRPC requests.
+
+### Investigation
+
+Check the current SLO indicators:
+
+```bash
+./scripts/check-demo-grpc-slo.sh
+```
+
+Inspect Prometheus directly:
+
+```bash
+kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus 19099:9090 &
+curl -G -fsS "http://127.0.0.1:19099/api/v1/query" \
+  --data-urlencode 'query=demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"}' \
+  | python -m json.tool
+curl -G -fsS "http://127.0.0.1:19099/api/v1/query" \
+  --data-urlencode 'query=demo_grpc:grpc_error_ratio5m' \
+  | python -m json.tool
+```
+
+Check the workload:
+
+```bash
+kubectl -n argocd get application demo-grpc
+kubectl -n apps get pods -l app.kubernetes.io/name=demo-grpc
+kubectl -n apps logs deploy/demo-grpc --tail=100
+```
+
+### Common causes
+
+- New deployment introduced errors.
+- gRPC requests are returning non-OK status codes.
+- Service dependency failure.
+- Resource pressure or pod instability.
+- Bad configuration in the deployed image or Helm values.
+
+### Remediation
+
+Rollback or resync the workload if the issue started after a deployment:
+
+```bash
+kubectl -n argocd get application demo-grpc
+kubectl -n apps rollout history deploy/demo-grpc
+```
+
+Validate the service after remediation:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+./scripts/check-demo-grpc-slo.sh
+./scripts/check-demo-grpc-traces.sh
+```
+
+---
+
+## DemoGrpcSLOSlowBurn
+
+### Meaning
+
+`demo-grpc` is consuming its availability error budget faster than expected, but less aggressively than the fast-burn condition.
+
+This alert is based on the SLO burn-rate recording rule:
+
+```promql
+demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} > 3
+```
+
+### Impact
+
+- Reliability is trending in the wrong direction.
+- The issue may not be immediately critical, but it can gradually consume the error budget.
+- This should trigger investigation before it becomes a fast-burn incident.
+
+### Investigation
+
+Check the SLO dashboard and current burn rate:
+
+```bash
+./scripts/check-demo-grpc-slo.sh
+```
+
+Inspect Prometheus:
+
+```bash
+kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus 19099:9090 &
+curl -G -fsS "http://127.0.0.1:19099/api/v1/query" \
+  --data-urlencode 'query=demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"}' \
+  | python -m json.tool
+```
+
+Check service health:
+
+```bash
+./scripts/check-demo-grpc-metrics.sh
+kubectl -n apps logs deploy/demo-grpc --tail=100
+```
+
+### Common causes
+
+- Low but sustained gRPC error rate.
+- Intermittent service instability.
+- Repeated restarts or transient dependency issues.
+- Gradual performance or reliability regression.
+
+### Remediation
+
+Investigate recent changes and validate service behavior:
+
+```bash
+kubectl -n argocd get application demo-grpc
+./scripts/check-demo-grpc-metrics.sh
+./scripts/check-demo-grpc-slo.sh
+```
+
+---
+
 ## DemoGrpcDown
 
 ### Meaning
