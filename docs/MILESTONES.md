@@ -1341,3 +1341,29 @@ Validation commands:
 ./scripts/check-tempo-stack.sh
 ./scripts/check-grafana-sre-dashboard.sh
 ```
+
+---
+
+## Milestone 24 — SLO and error budget dashboard
+
+The SRE dashboard now includes service-level objective panels for the
+`demo-grpc` reference service.
+
+Implemented capabilities:
+
+- Availability target panel based on the 99.5% SLO.
+- Success ratio panel based on Prometheus recording rules.
+- Error ratio panel.
+- Error budget burn-rate panel.
+- Request rate panel.
+- Latency p95 panel.
+- Validation through `scripts/check-demo-grpc-slo.sh`.
+- Dashboard validation through `scripts/check-grafana-sre-dashboard.sh`.
+- Portfolio screenshot added for the SLO dashboard section.
+
+Validation commands:
+
+```bash
+./scripts/check-demo-grpc-slo.sh
+./scripts/check-grafana-sre-dashboard.sh
+```

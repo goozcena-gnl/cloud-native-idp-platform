@@ -538,6 +538,13 @@ This screenshot shows the SRE dashboard extended with Tempo tracing backend heal
 ![Grafana SRE dashboard Tempo panels](assets/observability-sre/13-grafana-sre-tempo-panels.png)
 
 
+### 14. Grafana SRE dashboard SLO panels
+
+This screenshot shows the SRE dashboard extended with service-level objectives for `demo-grpc`, including availability target, success ratio, error ratio, burn rate, request rate, and latency p95.
+
+![Grafana SRE dashboard SLO panels](assets/observability-sre/14-grafana-sre-slo-panels.png)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
