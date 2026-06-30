@@ -170,12 +170,12 @@ assert_value \
 
 assert_value \
   "demo-grpc SLO fast burn inactive" \
-  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < 14.4' \
+  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < bool 14.4' \
   '1'
 
 assert_value \
   "demo-grpc SLO slow burn inactive" \
-  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < 3' \
+  'demo_grpc:slo:error_budget_burn_rate5m{service="demo-grpc", slo="availability"} < bool 3' \
   '1'
 
 assert_value \
