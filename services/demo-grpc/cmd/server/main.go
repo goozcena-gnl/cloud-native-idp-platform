@@ -16,10 +16,13 @@ import (
 	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/telemetry"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -63,7 +66,10 @@ func newGRPCServer(logger *slog.Logger, cfg *config.Config, serverMetrics *telem
 
 	srv := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
-		grpc.UnaryInterceptor(serverMetrics.UnaryServerInterceptor()),
+		grpc.ChainUnaryInterceptor(
+			serverMetrics.UnaryServerInterceptor(),
+			loggingUnaryServerInterceptor(logger, cfg),
+		),
 	)
 	healthSvc := health.NewServer()
 	healthSvc.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
@@ -80,6 +86,47 @@ func newMetricsServer(cfg *config.Config) *http.Server {
 		Addr:              net.JoinHostPort("", cfg.MetricsPort),
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
+	}
+}
+
+func loggingUnaryServerInterceptor(logger *slog.Logger, cfg *config.Config) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req any,
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (any, error) {
+		start := time.Now()
+
+		resp, err := handler(ctx, req)
+
+		code := status.Code(err)
+		duration := time.Since(start)
+
+		attrs := []any{
+			"service", cfg.ServiceName,
+			"version", cfg.AppVersion,
+			"grpc.method", info.FullMethod,
+			"grpc.code", code.String(),
+			"duration_ms", duration.Milliseconds(),
+		}
+
+		spanCtx := trace.SpanContextFromContext(ctx)
+		if spanCtx.IsValid() {
+			attrs = append(attrs,
+				"trace_id", spanCtx.TraceID().String(),
+				"span_id", spanCtx.SpanID().String(),
+			)
+		}
+
+		if err != nil && code != codes.Canceled {
+			attrs = append(attrs, "error", err.Error())
+			logger.Error("grpc request completed", attrs...)
+			return resp, err
+		}
+
+		logger.Info("grpc request completed", attrs...)
+		return resp, err
 	}
 }
 
