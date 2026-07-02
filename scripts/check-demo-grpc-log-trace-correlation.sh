@@ -183,9 +183,27 @@ PY
 
 echo
 echo "Checking Tempo for trace_id..."
-TEMPO_RESPONSE="$(
-  curl -fsS "http://127.0.0.1:${LOCAL_TEMPO_PORT}/api/traces/${TRACE_ID}"
-)"
+TEMPO_RESPONSE=""
+
+for attempt in {1..24}; do
+  if TEMPO_RESPONSE="$(
+    curl -fsS "http://127.0.0.1:${LOCAL_TEMPO_PORT}/api/traces/${TRACE_ID}" 2>/tmp/check-demo-grpc-correlation-tempo-query.err
+  )"; then
+    echo "OK: Tempo returned trace_id=${TRACE_ID}."
+    break
+  fi
+
+  echo "  attempt ${attempt}/24: trace_id not available in Tempo yet"
+  sleep 5
+done
+
+if [[ -z "${TEMPO_RESPONSE}" ]]; then
+  echo "ERROR: Tempo did not return trace_id=${TRACE_ID}."
+  echo
+  echo "Last Tempo query error:"
+  cat /tmp/check-demo-grpc-correlation-tempo-query.err || true
+  exit 1
+fi
 
 RESPONSE="${TEMPO_RESPONSE}" python - <<'PY'
 import base64
