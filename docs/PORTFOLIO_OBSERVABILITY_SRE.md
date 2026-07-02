@@ -716,6 +716,53 @@ Implemented drill scripts:
 ```
 
 
+### 20. Logs and traces correlation
+
+This evidence shows that the application logs and distributed traces are correlated through OpenTelemetry trace context.
+
+The `demo-grpc` service now emits structured JSON logs containing:
+
+```text
+trace_id
+span_id
+grpc.method
+grpc.code
+duration_ms
+service
+version
+```
+
+Validated correlation workflow:
+
+```text
+demo-grpc gRPC request
+  -> JSON log with trace_id and span_id
+  -> Alloy collects Kubernetes pod logs
+  -> Loki stores the log line
+  -> Tempo stores the distributed trace
+  -> the same trace_id links the log to the trace
+```
+
+Automated validation script:
+
+```bash
+./scripts/check-demo-grpc-log-trace-correlation.sh
+```
+
+Validated evidence:
+
+```
+OK: trace_id found in Loki log stream.
+OK: Tempo trace contains service.name=demo-grpc.
+OK: Tempo trace contains service.version=sha-1dba716.
+OK: Tempo trace contains grpc.health.v1.Health/Check span.
+OK: Tempo trace contains rpc.response.status_code=OK.
+Log/trace correlation validated successfully.
+```
+
+This proves that logs and traces are no longer isolated observability signals. A request can now be followed from Loki logs to Tempo traces.
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:

@@ -891,3 +891,62 @@ Validation command:
 ```bash
 ./scripts/check-grafana-sre-dashboard.sh
 ```
+
+---
+
+## Logs and traces correlation
+
+The `demo-grpc` service emits structured JSON logs enriched with OpenTelemetry trace context.
+
+Each completed gRPC request log includes:
+
+- `grpc.method`
+- `grpc.code`
+- `duration_ms`
+- `trace_id`
+- `span_id`
+- `service`
+- `version`
+
+Example log:
+
+```json
+{
+  "msg": "grpc request completed",
+  "service": "demo-grpc",
+  "version": "sha-1dba716",
+  "grpc.method": "/grpc.health.v1.Health/Check",
+  "grpc.code": "OK",
+  "duration_ms": 0,
+  "trace_id": "853e32711cc59a0b0bf1daef0f834500",
+  "span_id": "35571c759583ce1b"
+}
+```
+
+This enables the following workflow:
+
+```text
+Kubernetes pod log
+  -> Alloy
+  -> Loki
+  -> trace_id search
+  -> Tempo trace lookup
+  -> correlated gRPC server span
+```
+
+Automated validation:
+
+```bash
+./scripts/check-demo-grpc-log-trace-correlation.sh
+```
+
+The validation script checks that:
+
+- `demo-grpc` is deployed and healthy;
+- gRPC healthcheck traffic can be generated;
+- a recent `trace_id` is extracted from Kubernetes logs;
+- the same `trace_id` is found in Loki;
+- the same `trace_id` is found in Tempo;
+- the Tempo trace contains `service.name=demo-grpc`;
+- the Tempo trace contains the `grpc.health.v1.Health/Check` span;
+- the Tempo span contains `rpc.response.status_code=OK`.

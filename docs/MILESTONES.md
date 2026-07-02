@@ -1522,3 +1522,39 @@ Validation commands:
 git diff --check
 git status
 ```
+
+---
+
+## Milestone 30 — Logs and traces correlation
+
+The platform now supports correlation between application logs in Loki and distributed traces in Tempo.
+
+Implemented capabilities:
+
+- Added gRPC request logging interceptor to `demo-grpc`.
+- Added structured JSON logs for completed gRPC requests.
+- Added OpenTelemetry trace context to logs:
+  - `trace_id`;
+  - `span_id`.
+- Added gRPC request metadata to logs:
+  - `grpc.method`;
+  - `grpc.code`;
+  - `duration_ms`.
+- Published and deployed the trace-correlated `demo-grpc` image through GHCR and ArgoCD.
+- Validated that the deployed GitOps image is:
+  - `ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:sha-1dba716`.
+- Added automated correlation validation script:
+  - `scripts/check-demo-grpc-log-trace-correlation.sh`.
+- Validated that a `trace_id` from a Kubernetes log line is found in Loki.
+- Validated that the same `trace_id` is found in Tempo.
+- Validated that the Tempo trace contains:
+  - `service.name=demo-grpc`;
+  - `service.version=sha-1dba716`;
+  - `grpc.health.v1.Health/Check`;
+  - `rpc.response.status_code=OK`.
+
+Validation command:
+
+```bash
+./scripts/check-demo-grpc-log-trace-correlation.sh
+```
