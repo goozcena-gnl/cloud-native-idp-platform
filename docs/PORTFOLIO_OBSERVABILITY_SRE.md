@@ -612,6 +612,40 @@ Post-drill validation is performed with:
 Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
 
 
+### 17. Reliability drill — Loki outage simulation
+
+This evidence shows a controlled incident simulation where the Loki logging backend is scaled down to zero replicas to validate the full alerting lifecycle.
+
+Validated incident lifecycle:
+
+```text
+Loki outage
+  -> LokiDown pending in Prometheus
+  -> LokiDown firing in Prometheus
+  -> Alertmanager receives active LokiDown alert
+  -> LokiDown routes to platform-critical
+  -> Loki is restored
+  -> LokiDown clears
+  -> Loki metrics health checks pass
+```
+
+The drill is automated by:
+
+```bash
+./scripts/drill-loki-down.sh
+```
+
+Post-drill validation is performed with:
+
+```bash
+./scripts/check-loki-metrics.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:

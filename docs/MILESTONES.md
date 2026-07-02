@@ -1426,3 +1426,33 @@ Validation commands:
 ./scripts/check-platform-alerts.sh
 ./scripts/check-alertmanager.sh
 ```
+
+---
+
+## Milestone 27 — Reliability drill: Loki outage simulation
+
+The platform now includes a controlled incident drill for the Loki logging backend.
+
+Implemented capabilities:
+
+- Automated Loki outage simulation by scaling the Loki StatefulSet to zero replicas.
+- Temporary ArgoCD automated sync suspension for controlled incident testing.
+- Prometheus alert lifecycle validation:
+  - `LokiDown` pending.
+  - `LokiDown` firing.
+  - `LokiDown` cleared after recovery.
+- Alertmanager reception validation for the active critical alert.
+- `LokiDown` routed to the `platform-critical` receiver.
+- Automatic restoration of the Loki StatefulSet replica count.
+- Automatic restoration of ArgoCD automated sync.
+- Post-drill validation through Loki metrics, platform alert, and Alertmanager health checks.
+- Incident drill documentation in `docs/INCIDENT_DRILLS.md`.
+
+Validation commands:
+
+```bash
+./scripts/drill-loki-down.sh
+./scripts/check-loki-metrics.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```

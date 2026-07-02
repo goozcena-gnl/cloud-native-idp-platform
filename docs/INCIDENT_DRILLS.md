@@ -176,3 +176,87 @@ Validated capabilities:
 - Runbook-linked alerting for tracing backend failure.
 - Automatic restoration of Tempo.
 - Post-incident validation of Tempo, platform alerts, and Alertmanager.
+
+---
+
+## Drill 3 — Loki outage simulation
+
+### Objective
+
+Validate that the platform detects a Loki logging backend outage and routes the `LokiDown` alert to the critical platform receiver.
+
+### Scenario
+
+The Loki StatefulSet is temporarily scaled down to zero replicas.
+
+Expected behavior:
+
+```text
+loki replicas = 0
+  -> Prometheus target becomes down or absent
+  -> LokiDown becomes pending
+  -> LokiDown becomes firing
+  -> Alertmanager receives LokiDown
+  -> LokiDown is routed to platform-critical
+  -> Loki is restored
+  -> LokiDown clears
+```
+
+### Drill command
+
+```bash
+./scripts/drill-loki-down.sh
+```
+
+### Evidence
+
+The drill validated the complete incident lifecycle:
+
+```
+OK: LokiDown is pending in Prometheus.
+OK: LokiDown is firing in Prometheus.
+OK: Alertmanager has active alert LokiDown.
+Reliability drill LokiDown completed successfully.
+```
+
+The alert was routed to the expected critical receiver:
+
+```
+receivers:
+  - platform-critical
+```
+
+### Recovery validation
+
+After restoration, the following checks passed:
+
+```bash
+./scripts/check-loki-metrics.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Validated final state:
+
+```text
+loki                    Synced / Healthy
+loki-monitoring         Synced / Healthy
+platform-alerts         Synced / Healthy
+kube-prometheus-stack   Synced / Healthy
+Loki pod                2/2 Running
+Loki Prometheus up      1
+No platform alert firing
+```
+
+### What this proves
+
+This drill proves that the logging backend is monitored by the platform itself.
+
+Validated capabilities:
+
+- Failure injection on the Loki logging backend.
+- Prometheus alert lifecycle validation for `LokiDown`.
+- Critical routing through Alertmanager.
+- Runbook-linked alerting for logging backend failure.
+- Automatic restoration of Loki.
+- Post-incident validation of Loki metrics, platform alerts, and Alertmanager.
