@@ -578,6 +578,40 @@ Post-drill validation is performed with:
 Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
 
 
+### 16. Reliability drill — Tempo outage simulation
+
+This evidence shows a controlled incident simulation where the Tempo tracing backend is scaled down to zero replicas to validate the full alerting lifecycle.
+
+Validated incident lifecycle:
+
+```text
+Tempo outage
+  -> TempoDown pending in Prometheus
+  -> TempoDown firing in Prometheus
+  -> Alertmanager receives active TempoDown alert
+  -> TempoDown routes to platform-critical
+  -> Tempo is restored
+  -> TempoDown clears
+  -> Tempo stack health checks pass
+```
+
+The drill is automated by:
+
+```bash
+./scripts/drill-tempo-down.sh
+```
+
+Post-drill validation is performed with:
+
+```bash
+./scripts/check-tempo-stack.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:

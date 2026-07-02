@@ -93,3 +93,86 @@ Validated capabilities:
 - Automated recovery cleanup in the drill script.
 - Post-incident validation through platform health checks.
 - SLO and alert validation after recovery.
+
+---
+
+## Drill 2 — Tempo outage simulation
+
+### Objective
+
+Validate that the platform detects a Tempo tracing backend outage and routes the `TempoDown` alert to the critical platform receiver.
+
+### Scenario
+
+The Tempo StatefulSet is temporarily scaled down to zero replicas.
+
+Expected behavior:
+
+```text
+tempo replicas = 0
+  -> Prometheus target becomes down or absent
+  -> TempoDown becomes pending
+  -> TempoDown becomes firing
+  -> Alertmanager receives TempoDown
+  -> TempoDown is routed to platform-critical
+  -> Tempo is restored
+  -> TempoDown clears
+```
+
+### Drill command
+
+```bash
+./scripts/drill-tempo-down.sh
+```
+
+### Evidence
+
+The drill validated the complete incident lifecycle:
+
+```
+OK: TempoDown is pending in Prometheus.
+OK: TempoDown is firing in Prometheus.
+OK: Alertmanager has active alert TempoDown.
+Reliability drill TempoDown completed successfully.
+```
+
+The alert was routed to the expected critical receiver:
+
+```
+receivers:
+  - platform-critical
+```
+
+### Recovery validation
+
+After restoration, the following checks passed:
+
+```bash
+./scripts/check-tempo-stack.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Validated final state:
+
+```text
+tempo                   Synced / Healthy
+platform-alerts         Synced / Healthy
+kube-prometheus-stack   Synced / Healthy
+Tempo pod               1/1 Running
+Tempo Prometheus up     1
+No platform alert firing
+```
+
+### What this proves
+
+This drill proves that the tracing backend is monitored by the platform itself.
+
+Validated capabilities:
+
+- Failure injection on a stateful observability backend.
+- Prometheus alert lifecycle validation for `TempoDown`.
+- Critical routing through Alertmanager.
+- Runbook-linked alerting for tracing backend failure.
+- Automatic restoration of Tempo.
+- Post-incident validation of Tempo, platform alerts, and Alertmanager.

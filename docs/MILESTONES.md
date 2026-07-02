@@ -1396,3 +1396,33 @@ Validation commands:
 ./scripts/check-platform-alerts.sh
 ./scripts/check-alertmanager.sh
 ```
+
+---
+
+## Milestone 26 — Reliability drill: Tempo outage simulation
+
+The platform now includes a controlled incident drill for the Tempo tracing backend.
+
+Implemented capabilities:
+
+- Automated Tempo outage simulation by scaling the Tempo StatefulSet to zero replicas.
+- Temporary ArgoCD automated sync suspension for controlled incident testing.
+- Prometheus alert lifecycle validation:
+  - `TempoDown` pending.
+  - `TempoDown` firing.
+  - `TempoDown` cleared after recovery.
+- Alertmanager reception validation for the active critical alert.
+- `TempoDown` routed to the `platform-critical` receiver.
+- Automatic restoration of the Tempo StatefulSet replica count.
+- Automatic restoration of ArgoCD automated sync.
+- Post-drill validation through Tempo, platform alert, and Alertmanager health checks.
+- Incident drill documentation in `docs/INCIDENT_DRILLS.md`.
+
+Validation commands:
+
+```bash
+./scripts/drill-tempo-down.sh
+./scripts/check-tempo-stack.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
