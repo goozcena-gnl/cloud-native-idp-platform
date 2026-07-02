@@ -18,7 +18,7 @@ spec:
       values: |
         image:
           repository: ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
-          tag: sha-bd97683
+          tag: sha-1dba716
           pullPolicy: IfNotPresent
 
         imagePullSecrets:
@@ -26,7 +26,7 @@ spec:
 
         env:
           SERVICE_NAME: demo-grpc
-          APP_VERSION: sha-bd97683
+          APP_VERSION: sha-1dba716
 
         service:
           port: 50051
