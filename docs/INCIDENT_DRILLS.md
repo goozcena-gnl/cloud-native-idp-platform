@@ -4,6 +4,51 @@ This document records reliability drills executed on the local cloud-native IDP 
 
 The goal is to validate that the observability and alerting pipeline works under realistic failure scenarios.
 
+## Reliability Drill Suite Summary
+
+This project includes a controlled reliability drill suite for validating incident detection, alert routing, recovery, and post-incident health checks.
+
+| Drill | Component | Failure simulated | Alert | Severity | Alertmanager receiver | Recovery validation |
+|---|---|---|---|---|---|---|
+| Drill 1 | Application workload | `demo-grpc` scaled to zero replicas | `DemoGrpcDown` | critical | `platform-critical` | SLO, platform alerts, Alertmanager |
+| Drill 2 | Tracing backend | `Tempo` scaled to zero replicas | `TempoDown` | critical | `platform-critical` | Tempo stack, platform alerts, Alertmanager |
+| Drill 3 | Logging backend | `Loki` scaled to zero replicas | `LokiDown` | critical | `platform-critical` | Loki metrics, platform alerts, Alertmanager |
+| Drill 4 | Observability frontend | `Grafana` scaled to zero replicas | `GrafanaDown` | warning | `platform-warning` | Grafana dashboard, platform alerts, Alertmanager |
+
+Validated incident lifecycle pattern:
+
+```text
+failure injection
+  -> Prometheus detects the failure
+  -> alert enters pending state
+  -> alert enters firing state
+  -> Alertmanager receives the alert
+  -> alert is routed to the expected receiver
+  -> workload is restored
+  -> alert clears
+  -> post-incident health checks pass
+```
+
+Reliability drill scripts:
+
+```bash
+./scripts/drill-demo-grpc-down.sh
+./scripts/drill-tempo-down.sh
+./scripts/drill-loki-down.sh
+./scripts/drill-grafana-down.sh
+```
+
+Post-drill validation scripts:
+
+```bash
+./scripts/check-demo-grpc-slo.sh
+./scripts/check-tempo-stack.sh
+./scripts/check-loki-metrics.sh
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
 Pipeline validated by the drills:
 
 ```text

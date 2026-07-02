@@ -1486,3 +1486,39 @@ Validation commands:
 ./scripts/check-platform-alerts.sh
 ./scripts/check-alertmanager.sh
 ```
+
+---
+
+## Milestone 29 — Reliability drill suite summary
+
+The platform now includes a documented reliability drill suite covering application, tracing, logging, and observability frontend outages.
+
+Implemented capabilities:
+
+- Reliability drill matrix added to `docs/INCIDENT_DRILLS.md`.
+- Portfolio evidence section added for the full drill suite.
+- Four controlled incident drills documented:
+  - `DemoGrpcDown` for application workload failure.
+  - `TempoDown` for tracing backend failure.
+  - `LokiDown` for logging backend failure.
+  - `GrafanaDown` for observability frontend failure.
+- Alertmanager routing expectations documented:
+  - `platform-critical` for application, Tempo, and Loki failures.
+  - `platform-warning` for Grafana frontend failure.
+- Recovery validation commands documented for each layer.
+- Incident lifecycle standardized across all drills:
+  - failure injection;
+  - Prometheus detection;
+  - pending alert;
+  - firing alert;
+  - Alertmanager routing;
+  - service recovery;
+  - alert clearing;
+  - post-incident validation.
+
+Validation commands:
+
+```bash
+git diff --check
+git status
+```

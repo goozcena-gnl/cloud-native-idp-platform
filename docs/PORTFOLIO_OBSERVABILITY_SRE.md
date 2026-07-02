@@ -680,6 +680,42 @@ Post-drill validation is performed with:
 Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
 
 
+### 19. Reliability drill suite summary
+
+This evidence summarizes the complete reliability drill coverage implemented in the platform.
+
+| Layer | Drill | Alert | Receiver | Recovery validation |
+|---|---|---|---|---|
+| Application workload | `demo-grpc` outage | `DemoGrpcDown` | `platform-critical` | SLO + alerts + Alertmanager |
+| Tracing backend | Tempo outage | `TempoDown` | `platform-critical` | Tempo + alerts + Alertmanager |
+| Logging backend | Loki outage | `LokiDown` | `platform-critical` | Loki metrics + alerts + Alertmanager |
+| Observability frontend | Grafana outage | `GrafanaDown` | `platform-warning` | Dashboard + alerts + Alertmanager |
+
+The suite proves that the platform can validate the full SRE incident lifecycle:
+
+```text
+failure injection
+  -> Prometheus detection
+  -> pending alert
+  -> firing alert
+  -> Alertmanager routing
+  -> service recovery
+  -> alert clearing
+  -> post-incident validation
+```
+
+Detailed documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
+
+Implemented drill scripts:
+
+```bash
+./scripts/drill-demo-grpc-down.sh
+./scripts/drill-tempo-down.sh
+./scripts/drill-loki-down.sh
+./scripts/drill-grafana-down.sh
+```
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
