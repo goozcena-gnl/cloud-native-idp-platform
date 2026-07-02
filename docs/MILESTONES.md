@@ -1367,3 +1367,32 @@ Validation commands:
 ./scripts/check-demo-grpc-slo.sh
 ./scripts/check-grafana-sre-dashboard.sh
 ```
+
+---
+
+## Milestone 25 — Reliability drill: demo-grpc outage simulation
+
+The platform now includes a controlled incident drill for the `demo-grpc` reference service.
+
+Implemented capabilities:
+
+- Automated outage simulation by scaling `demo-grpc` to zero replicas.
+- Temporary ArgoCD automated sync suspension for controlled incident testing.
+- Prometheus alert lifecycle validation:
+  - `DemoGrpcDown` pending.
+  - `DemoGrpcDown` firing.
+  - `DemoGrpcDown` cleared after recovery.
+- Alertmanager reception validation for the active critical alert.
+- Automatic restoration of the workload replica count.
+- Automatic restoration of ArgoCD automated sync.
+- Post-drill platform validation through existing health-check scripts.
+- Incident drill documentation in `docs/INCIDENT_DRILLS.md`.
+
+Validation commands:
+
+```bash
+./scripts/drill-demo-grpc-down.sh
+./scripts/check-demo-grpc-slo.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```

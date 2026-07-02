@@ -545,6 +545,39 @@ This screenshot shows the SRE dashboard extended with service-level objectives f
 ![Grafana SRE dashboard SLO panels](assets/observability-sre/14-grafana-sre-slo-panels.png)
 
 
+### 15. Reliability drill — demo-grpc outage simulation
+
+This evidence shows a controlled incident simulation where `demo-grpc` is scaled down to zero replicas to validate the full alerting lifecycle.
+
+Validated incident lifecycle:
+
+```text
+demo-grpc outage
+  -> DemoGrpcDown pending in Prometheus
+  -> DemoGrpcDown firing in Prometheus
+  -> Alertmanager receives active DemoGrpcDown alert
+  -> demo-grpc is restored
+  -> DemoGrpcDown clears
+  -> platform health checks pass
+```
+
+The drill is automated by:
+
+```bash
+./scripts/drill-demo-grpc-down.sh
+```
+
+Post-drill validation is performed with:
+
+```bash
+./scripts/check-demo-grpc-slo.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:
