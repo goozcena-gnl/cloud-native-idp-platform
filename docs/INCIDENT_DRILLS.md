@@ -260,3 +260,86 @@ Validated capabilities:
 - Runbook-linked alerting for logging backend failure.
 - Automatic restoration of Loki.
 - Post-incident validation of Loki metrics, platform alerts, and Alertmanager.
+
+---
+
+## Drill 4 — Grafana outage simulation
+
+### Objective
+
+Validate that the platform detects a Grafana outage and routes the `GrafanaDown` alert to the warning platform receiver.
+
+### Scenario
+
+The Grafana Deployment from `kube-prometheus-stack` is temporarily scaled down to zero replicas.
+
+Expected behavior:
+
+```text
+grafana replicas = 0
+  -> Prometheus target becomes down or absent
+  -> GrafanaDown becomes pending
+  -> GrafanaDown becomes firing
+  -> Alertmanager receives GrafanaDown
+  -> GrafanaDown is routed to platform-warning
+  -> Grafana is restored
+  -> GrafanaDown clears
+```
+
+### Drill command
+
+```bash
+./scripts/drill-grafana-down.sh
+```
+
+### Evidence
+
+The drill validated the complete incident lifecycle:
+
+```
+OK: GrafanaDown is pending in Prometheus.
+OK: GrafanaDown is firing in Prometheus.
+OK: Alertmanager has active alert GrafanaDown.
+Reliability drill GrafanaDown completed successfully.
+```
+
+The alert was routed to the expected warning receiver:
+
+```
+receivers:
+  - platform-warning
+```
+
+### Recovery validation
+
+After restoration, the following checks passed:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Validated final state:
+
+```text
+kube-prometheus-stack   Synced / Healthy
+grafana-dashboards      Synced / Healthy
+platform-alerts         Synced / Healthy
+Grafana deployment      1/1 available
+Grafana dashboard       reachable
+No platform alert firing
+```
+
+### What this proves
+
+This drill proves that the observability frontend is monitored without depending on itself.
+
+Validated capabilities:
+
+- Failure injection on the Grafana UI layer.
+- Prometheus alert lifecycle validation for `GrafanaDown`.
+- Warning routing through Alertmanager.
+- Runbook-linked alerting for Grafana failure.
+- Automatic restoration of Grafana.
+- Post-incident validation of dashboard provisioning, platform alerts, and Alertmanager.

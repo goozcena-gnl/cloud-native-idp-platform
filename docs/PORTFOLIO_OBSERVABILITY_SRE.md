@@ -646,6 +646,40 @@ Post-drill validation is performed with:
 Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
 
 
+### 18. Reliability drill — Grafana outage simulation
+
+This evidence shows a controlled incident simulation where the Grafana observability frontend is scaled down to zero replicas to validate the full alerting lifecycle.
+
+Validated incident lifecycle:
+
+```text
+Grafana outage
+  -> GrafanaDown pending in Prometheus
+  -> GrafanaDown firing in Prometheus
+  -> Alertmanager receives active GrafanaDown alert
+  -> GrafanaDown routes to platform-warning
+  -> Grafana is restored
+  -> GrafanaDown clears
+  -> Grafana dashboard health checks pass
+```
+
+The drill is automated by:
+
+```bash
+./scripts/drill-grafana-down.sh
+```
+
+Post-drill validation is performed with:
+
+```bash
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
+
+Detailed drill documentation: [docs/INCIDENT_DRILLS.md](INCIDENT_DRILLS.md)
+
+
 ## Skills Demonstrated
 
 This phase demonstrates practical DevOps and SRE skills:

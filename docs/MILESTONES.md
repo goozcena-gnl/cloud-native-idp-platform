@@ -1456,3 +1456,33 @@ Validation commands:
 ./scripts/check-platform-alerts.sh
 ./scripts/check-alertmanager.sh
 ```
+
+---
+
+## Milestone 28 — Reliability drill: Grafana outage simulation
+
+The platform now includes a controlled incident drill for the Grafana observability frontend.
+
+Implemented capabilities:
+
+- Automated Grafana outage simulation by scaling the Grafana Deployment to zero replicas.
+- Temporary ArgoCD automated sync suspension for controlled incident testing.
+- Prometheus alert lifecycle validation:
+  - `GrafanaDown` pending.
+  - `GrafanaDown` firing.
+  - `GrafanaDown` cleared after recovery.
+- Alertmanager reception validation for the active warning alert.
+- `GrafanaDown` routed to the `platform-warning` receiver.
+- Automatic restoration of the Grafana Deployment replica count.
+- Automatic restoration of ArgoCD automated sync.
+- Post-drill validation through Grafana dashboard, platform alert, and Alertmanager health checks.
+- Incident drill documentation in `docs/INCIDENT_DRILLS.md`.
+
+Validation commands:
+
+```bash
+./scripts/drill-grafana-down.sh
+./scripts/check-grafana-sre-dashboard.sh
+./scripts/check-platform-alerts.sh
+./scripts/check-alertmanager.sh
+```
