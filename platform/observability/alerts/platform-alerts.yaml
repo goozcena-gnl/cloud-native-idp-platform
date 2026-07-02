@@ -95,6 +95,7 @@ spec:
           for: 2m
           labels:
             severity: critical
+            team: platform
             service: tempo
             component: tracing
           annotations:
