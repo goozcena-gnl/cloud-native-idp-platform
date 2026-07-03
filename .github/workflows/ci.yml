@@ -22,6 +22,7 @@ jobs:
   detect-changes:
     name: Detect CI-relevant changes
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     outputs:
       run_full_ci: ${{ steps.detect.outputs.run_full_ci }}
@@ -132,6 +133,7 @@ jobs:
   secret-scan:
     name: Lightweight secret scan
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -151,6 +153,7 @@ jobs:
   go:
     name: Go test and build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs:
       - detect-changes
 
@@ -183,8 +186,11 @@ jobs:
           gofmt -w .
           git diff --exit-code
 
+      - name: Vet
+        run: go vet ./...
+
       - name: Run tests
-        run: go test ./...
+        run: go test -race ./...
 
       - name: Build server
         run: go build -o /tmp/demo-grpc-server ./cmd/server
@@ -195,6 +201,7 @@ jobs:
   docker:
     name: Docker build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs:
       - detect-changes
       - go
@@ -233,6 +240,7 @@ jobs:
   helm:
     name: Helm chart validation
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs:
       - detect-changes
       - go
@@ -271,6 +279,7 @@ jobs:
   security:
     name: Trivy security scan
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs:
       - detect-changes
       - docker
@@ -304,6 +313,9 @@ jobs:
           key: trivy-db-${{ steps.trivy-date.outputs.date }}
           restore-keys: |
             trivy-db-
+
+      - name: Warm Trivy vulnerability DB
+        run: trivy image --download-db-only
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -353,6 +365,7 @@ jobs:
   ci-result:
     name: CI result
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs:
       - detect-changes
       - secret-scan
