@@ -950,3 +950,37 @@ The validation script checks that:
 - the Tempo trace contains `service.name=demo-grpc`;
 - the Tempo trace contains the `grpc.health.v1.Health/Check` span;
 - the Tempo span contains `rpc.response.status_code=OK`.
+
+---
+
+## Grafana Loki to Tempo trace links
+
+Grafana Loki is configured with a derived field that extracts `trace_id` from structured JSON logs and links it to the Tempo datasource.
+
+Loki datasource derived field:
+
+```yaml
+jsonData:
+  derivedFields:
+    - name: TraceID
+      matcherRegex: '"trace_id":"([a-f0-9]{32})"'
+      datasourceUid: tempo
+      url: '${__value.raw}'
+```
+
+This enables the following workflow in Grafana Explore:
+
+```text
+Loki log line
+  -> trace_id extracted by derivedFields
+  -> TraceID link displayed in Grafana
+  -> click opens the matching Tempo trace
+```
+
+Validated behavior:
+
+- Loki logs contain `trace_id`;
+- Grafana displays a `TraceID` link on matching log lines;
+- the link opens the matching Tempo trace;
+- the trace contains the `demo-grpc` server span;
+- the span name is `grpc.health.v1.Health/Check`.

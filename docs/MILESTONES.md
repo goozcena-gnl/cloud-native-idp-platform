@@ -1558,3 +1558,34 @@ Validation command:
 ```bash
 ./scripts/check-demo-grpc-log-trace-correlation.sh
 ```
+
+---
+
+## Milestone 31 — Grafana Loki to Tempo trace links
+
+Grafana now supports direct navigation from Loki log lines to Tempo traces.
+
+Implemented capabilities:
+
+- Added `derivedFields` to the Loki datasource.
+- Extracted `trace_id` from structured JSON logs using a regex matcher.
+- Linked the extracted `trace_id` to the Tempo datasource.
+- Validated the datasource through:
+  - GitOps ConfigMap;
+  - Grafana provisioning file;
+  - Grafana datasource API;
+  - Grafana Explore UI.
+- Validated that a `demo-grpc` log line in Loki exposes a `TraceID` link.
+- Validated that clicking the link opens the matching Tempo trace.
+- Validated that the trace contains the `grpc.health.v1.Health/Check` server span.
+
+Validated workflow:
+
+```text
+demo-grpc request
+  -> JSON log with trace_id
+  -> Loki
+  -> Grafana Explore
+  -> TraceID derived field
+  -> Tempo trace
+```

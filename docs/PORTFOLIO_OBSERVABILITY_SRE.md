@@ -819,3 +819,29 @@ Potential next steps:
 - Add SLOs and error budget panels.
 - Add screenshots directly into this documentation page.
 - Add a public portfolio summary in the repository README.
+
+### 21. Grafana Loki to Tempo trace link
+
+This evidence shows that Grafana can navigate directly from a Loki log line to the matching Tempo trace.
+
+Implemented configuration:
+
+```yaml
+derivedFields:
+  - name: TraceID
+    matcherRegex: '"trace_id":"([a-f0-9]{32})"'
+    datasourceUid: tempo
+    url: '${__value.raw}'
+```
+
+Validated workflow:
+
+```text
+demo-grpc JSON log in Loki
+  -> trace_id detected by Grafana derived field
+  -> TraceID link shown in Explore
+  -> click opens Tempo trace
+  -> matching grpc.health.v1.Health/Check span displayed
+```
+
+This completes the observability correlation loop from logs to traces inside Grafana.
