@@ -1,0 +1,23 @@
+name: Setup Trivy
+description: Install a pinned Trivy CLI from the official GitHub release archive.
+
+inputs:
+  version:
+    description: Trivy version to install (without the leading "v").
+    required: false
+    default: "0.69.3"
+
+runs:
+  using: composite
+  steps:
+    - name: Install Trivy CLI
+      shell: bash
+      env:
+        TRIVY_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+          -o /tmp/trivy.tar.gz
+        tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
+        sudo install -m 0755 /tmp/trivy /usr/local/bin/trivy
+        trivy --version

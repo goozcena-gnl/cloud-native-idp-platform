@@ -1,9 +1,12 @@
 name: CI
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
@@ -16,9 +19,142 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect CI-relevant changes
+    runs-on: ubuntu-latest
+
+    outputs:
+      run_full_ci: ${{ steps.detect.outputs.run_full_ci }}
+      changed_files_count: ${{ steps.detect.outputs.changed_files_count }}
+      reason: ${{ steps.detect.outputs.reason }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+
+          RUN_FULL_CI="false"
+          REASON="No CI-relevant file changes detected."
+          MAX_CHANGED_FILES=300
+          CHANGED_FILES="/tmp/changed-files.txt"
+
+          : > "${CHANGED_FILES}"
+
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            RUN_FULL_CI="true"
+            REASON="Manual workflow run."
+          elif [ "${EVENT_NAME}" = "pull_request" ]; then
+            echo "Detecting pull request changes against origin/${BASE_REF}..."
+
+            git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+            if ! git diff --name-only "origin/${BASE_REF}...HEAD" > "${CHANGED_FILES}"; then
+              RUN_FULL_CI="true"
+              REASON="Could not compute pull request diff; running full CI as a safety fallback."
+            fi
+          elif [ "${EVENT_NAME}" = "push" ]; then
+            echo "Detecting push changes..."
+
+            if [ -z "${BEFORE_SHA}" ] || [[ "${BEFORE_SHA}" =~ ^0+$ ]]; then
+              if ! git diff-tree --no-commit-id --name-only -r "${AFTER_SHA}" > "${CHANGED_FILES}"; then
+                RUN_FULL_CI="true"
+                REASON="Could not compute push diff for new or unusual ref state; running full CI as a safety fallback."
+              fi
+            else
+              if ! git diff --name-only "${BEFORE_SHA}" "${AFTER_SHA}" > "${CHANGED_FILES}"; then
+                RUN_FULL_CI="true"
+                REASON="Could not compute push diff; running full CI as a safety fallback."
+              fi
+            fi
+          else
+            RUN_FULL_CI="true"
+            REASON="Unsupported event type for change detection; running full CI as a safety fallback."
+          fi
+
+          CHANGED_FILES_COUNT="$(wc -l < "${CHANGED_FILES}" | tr -d ' ')"
+
+          echo "Changed files count: ${CHANGED_FILES_COUNT}"
+          if [ "${CHANGED_FILES_COUNT}" -gt 0 ]; then
+            echo "Changed files:"
+            sed 's/^/ - /' "${CHANGED_FILES}"
+          fi
+
+          if [ "${RUN_FULL_CI}" != "true" ] && [ "${CHANGED_FILES_COUNT}" -gt "${MAX_CHANGED_FILES}" ]; then
+            RUN_FULL_CI="true"
+            REASON="Large diff detected (${CHANGED_FILES_COUNT} files > ${MAX_CHANGED_FILES}); running full CI as a safety valve."
+          fi
+
+          if [ "${RUN_FULL_CI}" != "true" ]; then
+            while IFS= read -r file; do
+              case "${file}" in
+                .github/workflows/ci.yml|\
+                .github/actions/*|\
+                services/demo-grpc/*|\
+                charts/demo-grpc/*|\
+                go.work|\
+                go.work.sum|\
+                .trivyignore|\
+                .trivy.yaml|\
+                .trivy.yml|\
+                trivy.yaml|\
+                trivy.yml|\
+                k8s/*|\
+                manifests/*|\
+                deploy/*|\
+                scripts/ci/*)
+                  RUN_FULL_CI="true"
+                  REASON="CI-relevant file changed: ${file}"
+                  break
+                  ;;
+              esac
+            done < "${CHANGED_FILES}"
+          fi
+
+          echo "run_full_ci=${RUN_FULL_CI}" >> "${GITHUB_OUTPUT}"
+          echo "changed_files_count=${CHANGED_FILES_COUNT}" >> "${GITHUB_OUTPUT}"
+          echo "reason=${REASON}" >> "${GITHUB_OUTPUT}"
+
+          echo "run_full_ci=${RUN_FULL_CI}"
+          echo "reason=${REASON}"
+
+  secret-scan:
+    name: Lightweight secret scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Trivy
+        uses: ./.github/actions/setup-trivy
+
+      - name: Run lightweight repository secret scan
+        run: |
+          trivy fs \
+            --scanners secret \
+            --skip-dirs .git \
+            --exit-code 1 \
+            .
+
   go:
     name: Go test and build
     runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+
+    if: ${{ needs.detect-changes.outputs.run_full_ci == 'true' }}
 
     defaults:
       run:
@@ -60,7 +196,10 @@ jobs:
     name: Docker build
     runs-on: ubuntu-latest
     needs:
+      - detect-changes
       - go
+
+    if: ${{ needs.detect-changes.outputs.run_full_ci == 'true' && needs.go.result == 'success' }}
 
     steps:
       - name: Checkout repository
@@ -77,6 +216,8 @@ jobs:
           push: false
           tags: demo-grpc:ci
           load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Inspect built image
         run: |
@@ -89,11 +230,24 @@ jobs:
             exit 1
           fi
 
+      - name: Export image tarball
+        run: docker save demo-grpc:ci -o /tmp/demo-grpc-ci.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-grpc-ci-image
+          path: /tmp/demo-grpc-ci.tar
+          retention-days: 1
+
   helm:
     name: Helm chart validation
     runs-on: ubuntu-latest
     needs:
+      - detect-changes
       - go
+
+    if: ${{ needs.detect-changes.outputs.run_full_ci == 'true' && needs.go.result == 'success' }}
 
     steps:
       - name: Checkout repository
@@ -124,12 +278,27 @@ jobs:
           grep -q "livenessProbe:" /tmp/rendered/demo-grpc.yaml
           grep -q "grpc:" /tmp/rendered/demo-grpc.yaml
 
+      - name: Upload rendered manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-grpc-rendered-manifest
+          path: /tmp/rendered/demo-grpc.yaml
+          retention-days: 1
+
   security:
     name: Trivy security scan
     runs-on: ubuntu-latest
     needs:
+      - detect-changes
       - docker
       - helm
+
+    if: >-
+      ${{
+        needs.detect-changes.outputs.run_full_ci == 'true' &&
+        needs.docker.result == 'success' &&
+        needs.helm.result == 'success'
+      }}
 
     permissions:
       contents: read
@@ -138,31 +307,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v5
+      - name: Set up Trivy
+        uses: ./.github/actions/setup-trivy
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+      - name: Resolve Trivy DB cache date
+        id: trivy-date
+        run: echo "date=$(date +%Y-%m-%d)" >> "${GITHUB_OUTPUT}"
 
-      - name: Build demo-grpc image for scanning
-        uses: docker/build-push-action@v7
+      - name: Cache Trivy vulnerability DB
+        uses: actions/cache@v4
         with:
-          context: services/demo-grpc
-          file: services/demo-grpc/Dockerfile
-          push: false
-          tags: demo-grpc:local
-          load: true
+          path: ~/.cache/trivy
+          key: trivy-db-${{ steps.trivy-date.outputs.date }}
+          restore-keys: |
+            trivy-db-
 
-      - name: Install Trivy CLI
-        env:
-          TRIVY_VERSION: "0.69.3"
-        run: |
-          set -euo pipefail
-          curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
-            -o /tmp/trivy.tar.gz
-          tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
-          sudo install -m 0755 /tmp/trivy /usr/local/bin/trivy
-          trivy --version
+      - name: Download demo-grpc image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: demo-grpc-ci-image
+          path: /tmp
+
+      - name: Load demo-grpc image
+        run: docker load -i /tmp/demo-grpc-ci.tar
+
+      - name: Download rendered Helm manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: demo-grpc-rendered-manifest
+          path: /tmp/rendered
 
       - name: Run Trivy filesystem scan
         run: |
@@ -172,22 +345,92 @@ jobs:
             --exit-code 1 \
             .
 
-      - name: Render Helm chart for config scan
-        run: |
-          helm template demo-grpc charts/demo-grpc \
-            --namespace apps \
-            > /tmp/demo-grpc-rendered.yaml
-
       - name: Run Trivy Kubernetes config scan
         run: |
           trivy config \
             --severity HIGH,CRITICAL \
             --exit-code 1 \
-            /tmp/demo-grpc-rendered.yaml
+            /tmp/rendered/demo-grpc.yaml
 
       - name: Run Trivy image scan
         run: |
           trivy image \
             --severity HIGH,CRITICAL \
             --exit-code 1 \
-            demo-grpc:local
+            demo-grpc:ci
+
+  ci-result:
+    name: CI result
+    runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+      - secret-scan
+      - go
+      - docker
+      - helm
+      - security
+
+    if: ${{ always() }}
+
+    steps:
+      - name: Evaluate CI result
+        shell: bash
+        env:
+          DETECT_CHANGES_RESULT: ${{ needs.detect-changes.result }}
+          SECRET_SCAN_RESULT: ${{ needs.secret-scan.result }}
+          RUN_FULL_CI: ${{ needs.detect-changes.outputs.run_full_ci }}
+          CHANGE_DETECTION_REASON: ${{ needs.detect-changes.outputs.reason }}
+          CHANGED_FILES_COUNT: ${{ needs.detect-changes.outputs.changed_files_count }}
+          GO_RESULT: ${{ needs.go.result }}
+          DOCKER_RESULT: ${{ needs.docker.result }}
+          HELM_RESULT: ${{ needs.helm.result }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+        run: |
+          set -euo pipefail
+
+          echo "detect-changes result: ${DETECT_CHANGES_RESULT}"
+          echo "secret-scan result: ${SECRET_SCAN_RESULT}"
+          echo "run_full_ci: ${RUN_FULL_CI}"
+          echo "changed_files_count: ${CHANGED_FILES_COUNT}"
+          echo "reason: ${CHANGE_DETECTION_REASON}"
+          echo "go result: ${GO_RESULT}"
+          echo "docker result: ${DOCKER_RESULT}"
+          echo "helm result: ${HELM_RESULT}"
+          echo "security result: ${SECURITY_RESULT}"
+
+          if [ "${DETECT_CHANGES_RESULT}" != "success" ]; then
+            echo "Change detection failed."
+            exit 1
+          fi
+
+          if [ "${SECRET_SCAN_RESULT}" != "success" ]; then
+            echo "Lightweight secret scan failed."
+            exit 1
+          fi
+
+          if [ "${RUN_FULL_CI}" = "true" ]; then
+            if [ "${GO_RESULT}" != "success" ]; then
+              echo "Go job failed or did not complete successfully."
+              exit 1
+            fi
+
+            if [ "${DOCKER_RESULT}" != "success" ]; then
+              echo "Docker job failed or did not complete successfully."
+              exit 1
+            fi
+
+            if [ "${HELM_RESULT}" != "success" ]; then
+              echo "Helm job failed or did not complete successfully."
+              exit 1
+            fi
+
+            if [ "${SECURITY_RESULT}" != "success" ]; then
+              echo "Full Trivy security scan failed or did not complete successfully."
+              exit 1
+            fi
+
+            echo "Full CI completed successfully."
+          else
+            echo "No CI-relevant changes detected. Expensive jobs were skipped intentionally."
+            echo "Lightweight secret scan completed successfully."
+          fi
