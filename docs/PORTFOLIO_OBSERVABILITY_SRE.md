@@ -803,6 +803,8 @@ This completes the observability correlation loop from logs to traces inside Gra
 
 ![Grafana Loki to Tempo split view](assets/observability-sre/22-grafana-loki-to-tempo-split-view.png)
 
+![Grafana Loki datasource derivedFields API](assets/observability-sre/23-grafana-loki-datasource-derivedfields-api.png)
+
 
 ## Skills Demonstrated
 
