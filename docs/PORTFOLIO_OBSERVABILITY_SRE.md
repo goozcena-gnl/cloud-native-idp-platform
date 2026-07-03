@@ -87,6 +87,9 @@ Prometheus
 | Logs        | Loki               | Stores and serves logs                                        |
 | Alerts      | PrometheusRule     | Defines platform alerts                                       |
 | Application | demo-grpc          | Sample gRPC service with health, metrics, and logs            |
+| Tracing     | Tempo              | Stores and serves distributed traces                          |
+| Tracing     | OpenTelemetry      | Instruments demo-grpc and exports traces to Tempo             |
+| Correlation | Grafana derivedFields | Links Loki trace_id to Tempo traces in Explore             |
 | CI          | GitHub Actions     | Runs tests, Docker build, Helm validation, and Trivy scan     |
 
 ## GitOps Applications
@@ -340,7 +343,9 @@ The following scripts were created to make the platform easy to validate:
 | `scripts/check-platform-alerts.sh`       | Validates Prometheus alert rules and live alert expressions          |
 | `scripts/check-demo-grpc-metrics.sh`     | Validates application metrics                                        |
 | `scripts/check-demo-grpc-logs.sh`        | Validates application logs in Loki                                   |
-| `scripts/check-argocd-metrics.sh`        | Validates ArgoCD metrics scraping                                    |
+| `scripts/check-argocd-metrics.sh`                     | Validates ArgoCD metrics scraping                                    |
+| `scripts/check-tempo-stack.sh`                        | Validates Tempo stack and tracing backend health                     |
+| `scripts/check-demo-grpc-log-trace-correlation.sh`    | Validates log/trace correlation through Loki and Tempo               |
 
 Recommended validation sequence:
 
@@ -452,7 +457,10 @@ Recommended screenshots for the portfolio:
 | Grafana Loki metrics section                 | Logging backend is monitored                                     |
 | Prometheus `idp-platform.availability` rules | Availability alerts are loaded                                   |
 | Prometheus `idp-platform.gitops` rules       | GitOps alerts are loaded                                         |
-| GitHub Actions CI green                      | CI validates build, Helm, Docker, and security                   |
+| GitHub Actions CI green                              | CI validates build, Helm, Docker, and security                   |
+| Log/trace correlation script output                  | Logs and traces are correlated end to end                        |
+| Grafana Loki TraceID link in Explore                 | One-click navigation from log line to Tempo trace                |
+| Grafana Loki to Tempo split view                     | Trace detail visible alongside the originating log line          |
 
 ## Evidence Screenshots
 
@@ -762,6 +770,39 @@ Log/trace correlation validated successfully.
 
 This proves that logs and traces are no longer isolated observability signals. A request can now be followed from Loki logs to Tempo traces.
 
+![Log trace correlation script](assets/observability-sre/20-log-trace-correlation-script.png)
+
+
+### 21. Grafana Loki to Tempo trace link
+
+This evidence shows that Grafana can navigate directly from a Loki log line to the matching Tempo trace.
+
+Implemented configuration:
+
+```yaml
+derivedFields:
+  - name: TraceID
+    matcherRegex: '"trace_id":"([a-f0-9]{32})"'
+    datasourceUid: tempo
+    url: '${__value.raw}'
+```
+
+Validated workflow:
+
+```text
+demo-grpc JSON log in Loki
+  -> trace_id detected by Grafana derived field
+  -> TraceID link shown in Explore
+  -> click opens Tempo trace
+  -> matching grpc.health.v1.Health/Check span displayed
+```
+
+This completes the observability correlation loop from logs to traces inside Grafana.
+
+![Grafana Loki TraceID link](assets/observability-sre/21-grafana-loki-traceid-link.png)
+
+![Grafana Loki to Tempo split view](assets/observability-sre/22-grafana-loki-to-tempo-split-view.png)
+
 
 ## Skills Demonstrated
 
@@ -819,29 +860,3 @@ Potential next steps:
 - Add SLOs and error budget panels.
 - Add screenshots directly into this documentation page.
 - Add a public portfolio summary in the repository README.
-
-### 21. Grafana Loki to Tempo trace link
-
-This evidence shows that Grafana can navigate directly from a Loki log line to the matching Tempo trace.
-
-Implemented configuration:
-
-```yaml
-derivedFields:
-  - name: TraceID
-    matcherRegex: '"trace_id":"([a-f0-9]{32})"'
-    datasourceUid: tempo
-    url: '${__value.raw}'
-```
-
-Validated workflow:
-
-```text
-demo-grpc JSON log in Loki
-  -> trace_id detected by Grafana derived field
-  -> TraceID link shown in Explore
-  -> click opens Tempo trace
-  -> matching grpc.health.v1.Health/Check span displayed
-```
-
-This completes the observability correlation loop from logs to traces inside Grafana.
