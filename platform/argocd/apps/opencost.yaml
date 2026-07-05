@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opencost
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: opencost
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: cost
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://opencost.github.io/opencost-helm-chart
+    chart: opencost
+    targetRevision: 2.5.26
+    helm:
+      values: |
+        opencost:
+          prometheus:
+            internal:
+              namespaceName: observability
+              serviceName: kube-prometheus-stack-prometheus
+              port: 9090
+
+          dataRetention:
+            dailyResolutionDays: 15
+
+          exporter:
+            defaultClusterId: idp-local
+            replicas: 1
+            persistence:
+              enabled: false
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "128Mi"
+              limits:
+                memory: "512Mi"
+
+          metrics:
+            kubeStateMetrics:
+              emitKsmV1Metrics: false
+              emitKsmV1MetricsOnly: false
+            serviceMonitor:
+              enabled: true
+              additionalLabels:
+                release: kube-prometheus-stack
+
+          ui:
+            enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: opencost
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/name: opencost
+        app.kubernetes.io/part-of: idp-platform
+        idp.platform/tier: cost
+        pod-security.kubernetes.io/warn: restricted
+        pod-security.kubernetes.io/audit: restricted
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
