@@ -11,6 +11,7 @@ metadata:
     policies.kyverno.io/category: Pod Security
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
+    pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/description: >-
       Audits the baseline security requirements expected for workloads running
       in the apps namespace. The policy is intentionally deployed in Audit mode
