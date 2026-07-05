@@ -1737,3 +1737,43 @@ Documentation:
 docs/SECURITY_GOVERNANCE.md
 docs/assets/security-governance/
 ```
+
+---
+
+## Milestone 38 — OpenCost GitOps installation
+
+OpenCost is now deployed through ArgoCD and managed declaratively.
+
+Implemented capabilities:
+
+- OpenCost Helm chart deployed through ArgoCD;
+- dedicated `opencost` namespace;
+- integration with the existing Prometheus stack;
+- OpenCost exporter and UI deployed;
+- ServiceMonitor created for Prometheus scraping.
+
+Validated ArgoCD state:
+
+```text
+opencost   Synced   Healthy
+```
+
+---
+
+## Milestone 39 — OpenCost allocation API validation
+
+The platform now validates OpenCost cost allocation data through a repeatable script.
+
+Validation command:
+
+```bash
+./scripts/check-opencost-stack.sh
+```
+
+Validated behavior:
+
+- OpenCost deployment is rolled out;
+- OpenCost service is reachable through port-forwarding;
+- allocation API returns valid JSON;
+- response contains a `data` field;
+- all ArgoCD applications remain Synced and Healthy.
