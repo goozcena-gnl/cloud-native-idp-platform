@@ -1,0 +1,117 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: idp-apps-pod-security-baseline
+  labels:
+    app.kubernetes.io/name: idp-apps-pod-security-baseline
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: security
+  annotations:
+    policies.kyverno.io/title: IDP Apps Pod Security Baseline
+    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Audits the baseline security requirements expected for workloads running
+      in the apps namespace. The policy is intentionally deployed in Audit mode
+      first to observe impact before moving selected rules to Enforce.
+spec:
+  background: true
+  rules:
+    - name: require-pod-security-context
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - apps
+      validate:
+        failureAction: Audit
+        message: >-
+          Pods in the apps namespace must run as non-root and use the RuntimeDefault seccomp profile.
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+
+    - name: disallow-privilege-escalation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - apps
+      validate:
+        failureAction: Audit
+        message: >-
+          Containers in the apps namespace must set allowPrivilegeEscalation=false.
+        foreach:
+          - list: request.object.spec.containers
+            pattern:
+              securityContext:
+                allowPrivilegeEscalation: false
+
+    - name: require-read-only-root-filesystem
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - apps
+      validate:
+        failureAction: Audit
+        message: >-
+          Containers in the apps namespace must set readOnlyRootFilesystem=true.
+        foreach:
+          - list: request.object.spec.containers
+            pattern:
+              securityContext:
+                readOnlyRootFilesystem: true
+
+    - name: require-drop-all-capabilities
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - apps
+      validate:
+        failureAction: Audit
+        message: >-
+          Containers in the apps namespace must drop all Linux capabilities.
+        foreach:
+          - list: request.object.spec.containers
+            pattern:
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+
+    - name: require-resource-requests-and-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - apps
+      validate:
+        failureAction: Audit
+        message: >-
+          Containers in the apps namespace must define CPU and memory requests and limits.
+        foreach:
+          - list: request.object.spec.containers
+            pattern:
+              resources:
+                requests:
+                  cpu: "?*"
+                  memory: "?*"
+                limits:
+                  cpu: "?*"
+                  memory: "?*"
