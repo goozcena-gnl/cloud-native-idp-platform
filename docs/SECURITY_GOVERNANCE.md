@@ -231,3 +231,28 @@ Potential next improvements:
 - add Falco runtime detection;
 - add Vault Kubernetes authentication;
 - add security dashboards for Kyverno policy reports.
+
+---
+
+## Evidence screenshots
+
+### demo-grpc security baseline
+
+![demo-grpc security baseline](assets/security-governance/01-demo-grpc-security-baseline.png)
+
+### Kyverno stack validation
+
+![Kyverno stack validation](assets/security-governance/02-kyverno-stack-validation.png)
+
+### Kyverno Audit mode violations
+
+![Kyverno Audit mode violations](assets/security-governance/03-kyverno-audit-mode-violations.png)
+
+### NetworkPolicy baseline validation
+
+![NetworkPolicy baseline validation](assets/security-governance/04-network-policy-baseline-validation.png)
+
+### ArgoCD security applications
+
+![ArgoCD security applications synced](assets/security-governance/05-argocd-security-apps-synced.png)
+

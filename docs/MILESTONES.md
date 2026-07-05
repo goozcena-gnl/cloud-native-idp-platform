@@ -1706,3 +1706,34 @@ Validation command:
 ```bash
 ./scripts/check-network-policies.sh
 ```
+
+---
+
+## Milestone 37 — Security governance portfolio evidence
+
+The security and governance phase now includes portfolio-ready visual evidence.
+
+Added screenshots:
+
+```text
+01-demo-grpc-security-baseline.png
+02-kyverno-stack-validation.png
+03-kyverno-audit-mode-violations.png
+04-network-policy-baseline-validation.png
+05-argocd-security-apps-synced.png
+```
+
+The screenshots prove:
+
+- hardened workload configuration;
+- Kyverno installed and healthy;
+- Kyverno Audit mode detects non-compliant workloads;
+- NetworkPolicies allow expected traffic and block unrelated namespaces;
+- security-related ArgoCD applications are Synced and Healthy.
+
+Documentation:
+
+```text
+docs/SECURITY_GOVERNANCE.md
+docs/assets/security-governance/
+```
