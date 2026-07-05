@@ -10,6 +10,7 @@ spec:
   description: Local-first IDP platform GitOps project
 
   sourceRepos:
+    - https://kyverno.github.io/kyverno/
     - https://github.com/goozdu12/cloud-native-idp-platform.git
     - https://prometheus-community.github.io/helm-charts
     - https://grafana-community.github.io/helm-charts
