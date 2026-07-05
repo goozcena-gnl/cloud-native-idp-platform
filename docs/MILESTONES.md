@@ -1589,3 +1589,120 @@ demo-grpc request
   -> TraceID derived field
   -> Tempo trace
 ```
+
+---
+
+## Milestone 32 — Security baseline validation
+
+The platform now includes a repeatable security baseline validation for the `demo-grpc` workload.
+
+Validated controls:
+
+- non-root execution;
+- fixed non-root UID/GID;
+- RuntimeDefault seccomp profile;
+- privilege escalation disabled;
+- read-only root filesystem;
+- Linux capabilities dropped;
+- CPU and memory requests and limits;
+- Pod Security Admission warn/audit labels.
+
+Validation command:
+
+```bash
+./scripts/check-demo-grpc-security-baseline.sh
+```
+
+---
+
+## Milestone 33 — Kyverno GitOps installation
+
+Kyverno is now installed through ArgoCD and managed declaratively.
+
+Validated components:
+
+- Kyverno admission controller;
+- Kyverno background controller;
+- Kyverno cleanup controller;
+- Kyverno reports controller;
+- Kyverno CRDs;
+- validating webhooks;
+- mutating webhooks.
+
+Validation command:
+
+```bash
+./scripts/check-kyverno-stack.sh
+```
+
+---
+
+## Milestone 34 — Kyverno baseline policies in Audit mode
+
+The platform now includes a baseline Kyverno `ClusterPolicy` for workloads in the `apps` namespace.
+
+Policy:
+
+```text
+idp-apps-pod-security-baseline
+```
+
+Validated rules:
+
+- require pod security context;
+- disallow privilege escalation;
+- require read-only root filesystem;
+- require dropping all Linux capabilities;
+- require CPU and memory requests and limits.
+
+Validation command:
+
+```bash
+./scripts/check-kyverno-policies.sh
+```
+
+---
+
+## Milestone 35 — Kyverno Audit mode proof
+
+The platform now proves that Kyverno can detect non-compliant workloads without blocking them.
+
+Validated behavior:
+
+- an intentionally non-compliant pod is admitted;
+- Pod Security Admission emits warnings;
+- Kyverno records violations in a PolicyReport;
+- five policy violations are detected;
+- the test pod is cleaned up automatically.
+
+Validation command:
+
+```bash
+./scripts/check-kyverno-audit-mode.sh
+```
+
+---
+
+## Milestone 36 — NetworkPolicy baseline
+
+The `apps` namespace now has ingress isolation through Kubernetes NetworkPolicies.
+
+Implemented policies:
+
+```text
+apps-default-deny-ingress
+demo-grpc-allow-ingress
+```
+
+Validated behavior:
+
+- traffic from `apps` to `demo-grpc` metrics is allowed;
+- traffic from `observability` to `demo-grpc` metrics is allowed;
+- traffic from an unrelated namespace to `demo-grpc` metrics is blocked;
+- observability checks continue to pass after isolation.
+
+Validation command:
+
+```bash
+./scripts/check-network-policies.sh
+```
