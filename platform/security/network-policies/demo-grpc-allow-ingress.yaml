@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: demo-grpc-allow-ingress
+  namespace: apps
+  labels:
+    app.kubernetes.io/name: demo-grpc-allow-ingress
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: security
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: demo-grpc
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow in-namespace clients and validation pods to reach demo-grpc.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: apps
+      ports:
+        - protocol: TCP
+          port: 50051
+        - protocol: TCP
+          port: 9090
+
+    # Allow observability stack to scrape demo-grpc metrics.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - protocol: TCP
+          port: 9090
