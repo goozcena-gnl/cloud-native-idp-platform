@@ -93,6 +93,39 @@ data:
   proof: velero-backup-restore-ok
 ```
 
+## Screenshot evidence
+
+### 1. Velero and MinIO managed by ArgoCD
+
+![Velero ArgoCD applications synced](assets/backup-disaster-recovery/01-argocd-velero-apps-synced.png)
+
+This screenshot proves that both `velero` and `velero-minio` are managed declaratively through ArgoCD and are `Synced` / `Healthy`.
+
+### 2. BackupStorageLocation available
+
+![Velero BackupStorageLocation available](assets/backup-disaster-recovery/02-velero-backupstoragelocation-available.png)
+
+This screenshot proves that Velero can reach the MinIO S3-compatible backend and that the default `BackupStorageLocation` is `Available`.
+
+### 3. Backup and restore drill success
+
+![Velero backup restore script success](assets/backup-disaster-recovery/03-velero-backup-restore-script-success.png)
+
+This screenshot proves the complete disaster recovery flow: backup creation, namespace deletion, restore execution, and restored ConfigMap validation.
+
+### 4. Velero resource tree in ArgoCD
+
+![Velero ArgoCD resource tree](assets/backup-disaster-recovery/04-argocd-velero-resource-tree.png)
+
+This screenshot shows the live Velero resources managed by the GitOps application.
+
+### 5. MinIO backend resource tree in ArgoCD
+
+![Velero MinIO ArgoCD resource tree](assets/backup-disaster-recovery/05-argocd-velero-minio-resource-tree.png)
+
+This screenshot shows the local S3-compatible backend used by Velero, including the MinIO workload and bucket creation job.
+
+
 ## Operational value
 
 This validates that the platform can recover Kubernetes resources after accidental deletion or namespace-level data loss.
