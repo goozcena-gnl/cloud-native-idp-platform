@@ -111,7 +111,10 @@ metadata:
     app.kubernetes.io/name: minio-create-velero-bucket
     app.kubernetes.io/part-of: idp-platform
     idp.platform/tier: backup
+  annotations:
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
 spec:
+  backoffLimit: 10
   ttlSecondsAfterFinished: 3600
   template:
     metadata:
@@ -127,6 +130,9 @@ spec:
         runAsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir: {}
       containers:
         - name: mc
           image: quay.io/minio/mc:latest
@@ -136,12 +142,14 @@ spec:
             - |
               set -eu
 
-              MC_CONFIG_DIR=/tmp/.mc
               mkdir -p "${MC_CONFIG_DIR}"
 
               echo "Waiting for MinIO API..."
+              connected="false"
+
               for attempt in $(seq 1 30); do
                 if mc --config-dir "${MC_CONFIG_DIR}" alias set local http://minio.velero.svc.cluster.local:9000 "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"; then
+                  connected="true"
                   echo "MinIO API is reachable."
                   break
                 fi
@@ -150,9 +158,18 @@ spec:
                 sleep 5
               done
 
+              if [ "${connected}" != "true" ]; then
+                echo "ERROR: MinIO API did not become reachable."
+                exit 1
+              fi
+
               mc --config-dir "${MC_CONFIG_DIR}" mb --ignore-existing local/velero
-              mc --config-dir "${MC_CONFIG_DIR}" ls local/velero
+              mc --config-dir "${MC_CONFIG_DIR}" ls local
           env:
+            - name: HOME
+              value: /tmp
+            - name: MC_CONFIG_DIR
+              value: /tmp/.mc
             - name: MINIO_ROOT_USER
               valueFrom:
                 secretKeyRef:
@@ -175,3 +192,6 @@ spec:
               memory: 64Mi
             limits:
               memory: 256Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
