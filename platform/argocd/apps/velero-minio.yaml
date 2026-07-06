@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero-minio
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: velero-minio
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: backup
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+    targetRevision: main
+    path: platform/backup/minio
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
