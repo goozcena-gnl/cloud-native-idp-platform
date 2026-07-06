@@ -1821,3 +1821,62 @@ Validated behavior:
 - the test namespace is cleaned up automatically.
 
 This proves runtime detection beyond static manifest security.
+
+---
+
+## Milestone 42 — Velero GitOps installation
+
+### Goal
+
+Install Velero through ArgoCD with an S3-compatible MinIO backend.
+
+### Delivered
+
+- Velero ArgoCD application.
+- MinIO local object storage backend.
+- Velero cloud credentials Secret.
+- BackupStorageLocation configured against MinIO.
+- Velero deployment running successfully.
+- BackupStorageLocation marked as Available.
+
+### Validation
+
+```bash
+kubectl -n argocd get application velero velero-minio \
+  -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+kubectl -n velero get backupstoragelocation
+```
+
+### Result
+
+Velero and MinIO are managed by GitOps and are both Synced and Healthy.
+
+---
+
+## Milestone 43 — Velero backup and restore drill
+
+### Goal
+
+Prove disaster recovery capability by restoring Kubernetes resources after simulated namespace deletion.
+
+### Delivered
+
+- Automated backup and restore validation script.
+- Test namespace creation.
+- ConfigMap backup.
+- Namespace deletion simulation.
+- Velero Restore execution.
+- Restored ConfigMap validation.
+- Cleanup automation.
+
+### Validation
+
+```bash
+./scripts/check-velero-backup-restore.sh
+```
+
+### Result
+
+The platform successfully restored a deleted namespace resource from a Velero backup.
+
+This proves real recovery capability rather than a simple tool installation.
