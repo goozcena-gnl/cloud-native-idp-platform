@@ -10,6 +10,7 @@ spec:
   description: Local-first IDP platform GitOps project
 
   sourceRepos:
+    - https://falcosecurity.github.io/charts
     - https://opencost.github.io/opencost-helm-chart
     - https://kyverno.github.io/kyverno/
     - https://github.com/goozdu12/cloud-native-idp-platform.git

@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: runtime-security
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://falcosecurity.github.io/charts
+    chart: falco
+    targetRevision: 9.1.0
+    helm:
+      values: |
+        tty: true
+
+        controller:
+          kind: daemonset
+
+        driver:
+          enabled: true
+          kind: auto
+
+        falco:
+          jsonOutput: true
+          priority: debug
+          bufferedOutputs: false
+
+        metrics:
+          enabled: true
+          service:
+            create: true
+            type: ClusterIP
+            labels:
+              app.kubernetes.io/part-of: idp-platform
+
+        serviceMonitor:
+          create: true
+          labels:
+            release: kube-prometheus-stack
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 1024Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: falco
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/name: falco
+        app.kubernetes.io/part-of: idp-platform
+        idp.platform/tier: runtime-security
+        pod-security.kubernetes.io/warn: privileged
+        pod-security.kubernetes.io/audit: privileged
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
