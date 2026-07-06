@@ -134,9 +134,24 @@ spec:
             - sh
             - -c
             - |
-              mc alias set local http://minio.velero.svc.cluster.local:9000 "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"
-              mc mb --ignore-existing local/velero
-              mc ls local/velero
+              set -eu
+
+              MC_CONFIG_DIR=/tmp/.mc
+              mkdir -p "${MC_CONFIG_DIR}"
+
+              echo "Waiting for MinIO API..."
+              for attempt in $(seq 1 30); do
+                if mc --config-dir "${MC_CONFIG_DIR}" alias set local http://minio.velero.svc.cluster.local:9000 "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}"; then
+                  echo "MinIO API is reachable."
+                  break
+                fi
+
+                echo "  attempt ${attempt}/30: MinIO API not ready yet"
+                sleep 5
+              done
+
+              mc --config-dir "${MC_CONFIG_DIR}" mb --ignore-existing local/velero
+              mc --config-dir "${MC_CONFIG_DIR}" ls local/velero
           env:
             - name: MINIO_ROOT_USER
               valueFrom:
