@@ -10,6 +10,7 @@ spec:
   description: Local-first IDP platform GitOps project
 
   sourceRepos:
+  - https://helm.releases.hashicorp.com
     - https://vmware-tanzu.github.io/helm-charts
     - https://falcosecurity.github.io/charts
     - https://opencost.github.io/opencost-helm-chart

@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: secrets
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://helm.releases.hashicorp.com
+    chart: vault
+    targetRevision: 0.34.0
+    helm:
+      values: |
+        global:
+          enabled: true
+
+        injector:
+          enabled: true
+          replicas: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+
+        server:
+          dev:
+            enabled: true
+            devRootToken: root
+
+          ha:
+            enabled: false
+
+          standalone:
+            enabled: false
+
+          dataStorage:
+            enabled: false
+
+          auditStorage:
+            enabled: false
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+
+        ui:
+          enabled: true
+          serviceType: ClusterIP
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/name: vault
+        app.kubernetes.io/part-of: idp-platform
+        idp.platform/tier: secrets
+        pod-security.kubernetes.io/warn: restricted
+        pod-security.kubernetes.io/audit: restricted
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
