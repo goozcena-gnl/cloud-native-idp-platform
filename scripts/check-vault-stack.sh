@@ -40,10 +40,24 @@ echo "Vault workloads:"
 kubectl -n "${NAMESPACE}" get deploy,statefulset,pods,svc -o wide
 
 echo
-kubectl -n "${NAMESPACE}" rollout status statefulset/vault --timeout=240s
+echo "Checking Vault StatefulSet readiness..."
+kubectl -n "${NAMESPACE}" wait \
+  --for=condition=Ready \
+  pod \
+  -l app.kubernetes.io/instance=vault,app.kubernetes.io/name=vault,component=server \
+  --timeout=240s
+
+desired_replicas="$(kubectl -n "${NAMESPACE}" get statefulset vault -o jsonpath='{.spec.replicas}')"
+ready_replicas="$(kubectl -n "${NAMESPACE}" get statefulset vault -o jsonpath='{.status.readyReplicas}')"
+ready_replicas="${ready_replicas:-0}"
+
+[[ "${ready_replicas}" == "${desired_replicas}" ]]
+
+echo "OK: Vault StatefulSet has ${ready_replicas}/${desired_replicas} ready replicas."
 
 if kubectl -n "${NAMESPACE}" get deployment vault-agent-injector >/dev/null 2>&1; then
   kubectl -n "${NAMESPACE}" rollout status deployment/vault-agent-injector --timeout=240s
+  echo "OK: Vault Agent Injector deployment rolled out."
 fi
 
 echo
