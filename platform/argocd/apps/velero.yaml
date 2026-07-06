@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: backup
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://vmware-tanzu.github.io/helm-charts
+    chart: velero
+    targetRevision: 12.1.0
+    helm:
+      values: |
+        credentials:
+          useSecret: true
+          existingSecret: cloud-credentials
+
+        initContainers:
+          - name: velero-plugin-for-aws
+            image: velero/velero-plugin-for-aws:
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+              - mountPath: /target
+                name: plugins
+
+        configuration:
+          backupStorageLocation:
+            - name: default
+              provider: aws
+              bucket: velero
+              default: true
+              config:
+                region: minio
+                s3ForcePathStyle: "true"
+                s3Url: http://minio.velero.svc.cluster.local:9000
+                publicUrl: http://minio.velero.svc.cluster.local:9000
+
+          volumeSnapshotLocation: []
+
+        deployNodeAgent: false
+
+        snapshotsEnabled: false
+
+        serviceMonitor:
+          enabled: true
+          additionalLabels:
+            release: kube-prometheus-stack
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
