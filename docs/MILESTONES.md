@@ -1777,3 +1777,47 @@ Validated behavior:
 - allocation API returns valid JSON;
 - response contains a `data` field;
 - all ArgoCD applications remain Synced and Healthy.
+
+---
+
+## Milestone 40 — Falco GitOps installation
+
+Falco is now deployed through ArgoCD as the platform runtime security layer.
+
+Implemented capabilities:
+
+- Falco Helm chart deployed through ArgoCD;
+- dedicated `falco` namespace;
+- Falco DaemonSet running on all nodes;
+- metrics service exposed;
+- ServiceMonitor created for Prometheus scraping;
+- privileged Pod Security Admission labels documented for the Falco namespace.
+
+Validated ArgoCD state:
+
+```text
+falco   Synced   Healthy
+```
+
+---
+
+## Milestone 41 — Falco runtime detection validation
+
+The platform now validates runtime threat detection through a repeatable script.
+
+Validation command:
+
+```bash
+./scripts/check-falco-stack.sh
+```
+
+Validated behavior:
+
+- Falco DaemonSet is rolled out;
+- Falco starts without blocking configuration errors;
+- a temporary test workload is created;
+- reading `/etc/shadow` triggers a Falco rule;
+- Falco emits a `Sensitive file opened` warning;
+- the test namespace is cleaned up automatically.
+
+This proves runtime detection beyond static manifest security.
