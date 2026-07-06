@@ -27,7 +27,6 @@ spec:
         falco:
           jsonOutput: true
           priority: debug
-          bufferedOutputs: false
 
         metrics:
           enabled: true
