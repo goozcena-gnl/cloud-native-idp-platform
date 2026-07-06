@@ -4,8 +4,9 @@ set -euo pipefail
 CONTEXT="${CONTEXT:-kind-idp-local}"
 VELERO_NAMESPACE="${VELERO_NAMESPACE:-velero}"
 TEST_NAMESPACE="${TEST_NAMESPACE:-velero-restore-test}"
-BACKUP_NAME="${BACKUP_NAME:-idp-velero-drill}"
-RESTORE_NAME="${RESTORE_NAME:-idp-velero-drill-restore}"
+RUN_ID="${RUN_ID:-$(date +%Y%m%d%H%M%S)}"
+BACKUP_NAME="${BACKUP_NAME:-idp-velero-drill-${RUN_ID}}"
+RESTORE_NAME="${RESTORE_NAME:-${BACKUP_NAME}-restore}"
 CONFIGMAP_NAME="${CONFIGMAP_NAME:-restore-proof}"
 
 echo "============================================================"
