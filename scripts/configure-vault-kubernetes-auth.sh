@@ -44,7 +44,7 @@ done
 echo
 echo "Configuring Vault auth method, policy, role and demo secret..."
 
-kubectl -n "${VAULT_NAMESPACE}" exec statefulset/vault -- sh -s <<'VAULT_SH'
+kubectl -n "${VAULT_NAMESPACE}" exec -i statefulset/vault -- sh -s <<'VAULT_SH'
 set -eu
 
 export VAULT_ADDR="http://127.0.0.1:8200"
