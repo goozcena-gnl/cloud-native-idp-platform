@@ -116,6 +116,28 @@ OK: Kubernetes-authenticated Vault token can read the expected secret.
 Vault Kubernetes auth validated successfully.
 ```
 
+## Evidence
+
+### 1. ArgoCD Vault applications synced and healthy
+
+![ArgoCD Vault apps synced](assets/secrets-management/01-argocd-vault-apps-synced.png)
+
+### 2. Vault stack validation
+
+![Vault stack validation](assets/secrets-management/02-vault-stack-validation.png)
+
+### 3. Vault Kubernetes auth validation
+
+![Vault Kubernetes auth validation](assets/secrets-management/03-vault-kubernetes-auth-validation.png)
+
+### 4. Vault ArgoCD resource tree
+
+![ArgoCD Vault resource tree](assets/secrets-management/04-argocd-vault-resource-tree.png)
+
+### 5. Vault Kubernetes Auth ArgoCD resource tree
+
+![ArgoCD Vault Kubernetes Auth resource tree](assets/secrets-management/05-argocd-vault-kubernetes-auth-resource-tree.png)
+
 ## Security value
 
 This demonstrates workload identity-based secret access.
