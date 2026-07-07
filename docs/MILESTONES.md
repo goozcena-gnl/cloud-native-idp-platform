@@ -1941,3 +1941,43 @@ A Kubernetes-authenticated Vault token successfully reads the expected secret:
 Vault secret value: hello-from-vault
 Vault Kubernetes auth validated successfully.
 ```
+
+---
+
+## Milestone 46 — Platform service catalog foundation
+
+### Goal
+
+Introduce a developer-facing service catalog foundation for the platform.
+
+### Delivered
+
+- Backstage-compatible `catalog-info.yaml`.
+- Platform system entity.
+- Demo gRPC service component entity.
+- Demo gRPC API entity.
+- Kubernetes cluster resource entity.
+- Observability stack resource entity.
+- Secrets management stack resource entity.
+- Developer experience documentation.
+
+### Validation
+
+```bash
+python - <<'PY'
+from pathlib import Path
+import yaml
+
+path = Path("catalog-info.yaml")
+docs = list(yaml.safe_load_all(path.read_text(encoding="utf-8")))
+
+for doc in docs:
+  print(f"{doc['kind']}/{doc['metadata']['name']}")
+
+print(f"Validated {len(docs)} Backstage catalog entities.")
+PY
+```
+
+### Result
+
+The platform now has a service catalog foundation that can be imported into Backstage or reviewed directly from the repository.
