@@ -77,12 +77,12 @@ Implemented:
 - API metadata;
 - platform resource metadata;
 - documentation links;
-- developer golden path onboarding documentation.
+- developer golden path onboarding documentation;
+- production readiness scorecard.
 
 Next improvements:
 
 - deploy Backstage locally through GitOps;
 - import the catalog into Backstage;
 - add TechDocs;
-- add software templates;
-- add production readiness scorecards.
+- add software templates.

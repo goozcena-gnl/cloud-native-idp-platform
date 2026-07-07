@@ -2008,3 +2008,30 @@ Document the standard onboarding path for adding a new service to the platform.
 ### Result
 
 The platform now provides a clear developer-facing onboarding path for future services.
+
+---
+
+## Milestone 48 — Production Readiness Scorecard
+
+### Goal
+
+Define a practical production-readiness model for services onboarded to the platform.
+
+### Delivered
+
+- Production readiness scorecard.
+- 12 evaluation categories.
+- 0 to 3 scoring model.
+- Minimum readiness criteria.
+- Demo service assessment.
+- Validation script.
+
+### Validation
+
+```bash
+./scripts/check-production-readiness-scorecard.sh
+```
+
+### Result
+
+The platform now includes a repeatable service readiness model covering ownership, GitOps, CI/CD, reliability, observability, security, secrets, runtime operations and documentation.
