@@ -1981,3 +1981,30 @@ PY
 ### Result
 
 The platform now has a service catalog foundation that can be imported into Backstage or reviewed directly from the repository.
+
+---
+
+## Milestone 47 — Developer Golden Path
+
+### Goal
+
+Document the standard onboarding path for adding a new service to the platform.
+
+### Delivered
+
+- Developer Golden Path documentation.
+- Service onboarding model.
+- Definition of Ready.
+- Definition of Done.
+- Platform-ready service checklist.
+- Developer Experience validation script.
+
+### Validation
+
+```bash
+./scripts/check-developer-experience.sh
+```
+
+### Result
+
+The platform now provides a clear developer-facing onboarding path for future services.
