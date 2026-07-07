@@ -76,7 +76,8 @@ Implemented:
 - service metadata;
 - API metadata;
 - platform resource metadata;
-- documentation links.
+- documentation links;
+- developer golden path onboarding documentation.
 
 Next improvements:
 
@@ -84,5 +85,4 @@ Next improvements:
 - import the catalog into Backstage;
 - add TechDocs;
 - add software templates;
-- add production readiness scorecards;
-- add golden path onboarding documentation.
+- add production readiness scorecards.
