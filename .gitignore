@@ -12,7 +12,6 @@ Thumbs.db
 *.crt
 *.kubeconfig
 kubeconfig*
-secrets/
 *.tfvars
 
 # Terraform
