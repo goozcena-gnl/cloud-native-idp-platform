@@ -1880,3 +1880,64 @@ Prove disaster recovery capability by restoring Kubernetes resources after simul
 The platform successfully restored a deleted namespace resource from a Velero backup.
 
 This proves real recovery capability rather than a simple tool installation.
+
+---
+
+## Milestone 44 — Vault GitOps installation
+
+### Goal
+
+Deploy Vault through ArgoCD as the platform secrets management layer.
+
+### Delivered
+
+- Vault ArgoCD application.
+- Vault namespace managed through GitOps.
+- Vault server running in controlled dev mode.
+- Vault Agent Injector deployed.
+- Vault UI exposed internally through ClusterIP.
+- Validation script for Vault health and dev secret read/write.
+
+### Validation
+
+```bash
+./scripts/check-vault-stack.sh
+```
+
+### Result
+
+Vault is deployed, unsealed, healthy, and able to write and read a dev secret.
+
+---
+
+## Milestone 45 — Vault Kubernetes authentication validation
+
+### Goal
+
+Prove that a Kubernetes ServiceAccount can authenticate to Vault and read an authorized secret.
+
+### Delivered
+
+- `vault-kubernetes-auth` ArgoCD application.
+- `vault-auth-smoke` ServiceAccount in the `apps` namespace.
+- `vault-token-reviewer` ClusterRoleBinding.
+- Vault Kubernetes auth method configuration script.
+- Vault policy `demo-grpc-read`.
+- Vault role `demo-grpc`.
+- Validation script using a short-lived Kubernetes token.
+
+### Validation
+
+```bash
+./scripts/configure-vault-kubernetes-auth.sh
+./scripts/check-vault-kubernetes-auth.sh
+```
+
+### Result
+
+A Kubernetes-authenticated Vault token successfully reads the expected secret:
+
+```text
+Vault secret value: hello-from-vault
+Vault Kubernetes auth validated successfully.
+```
