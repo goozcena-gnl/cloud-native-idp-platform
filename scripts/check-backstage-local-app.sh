@@ -29,14 +29,26 @@ done
 echo
 echo "Checking catalog location references..."
 
-for file in "${APP_DIR}/app-config.yaml" "${APP_DIR}/app-config.production.yaml"; do
-  if ! grep -q "./catalog/platform-catalog-info.yaml" "${file}"; then
-    echo "ERROR: ${file} does not reference platform catalog."
-    exit 1
-  fi
+if ! grep -q "../../catalog/platform-catalog-info.yaml" "${APP_DIR}/app-config.yaml"; then
+  echo "ERROR: ${APP_DIR}/app-config.yaml does not reference local platform catalog path."
+  exit 1
+fi
 
-  echo "OK: ${file} references platform catalog."
-done
+echo "OK: ${APP_DIR}/app-config.yaml references local platform catalog path."
+
+if ! grep -q "./catalog/platform-catalog-info.yaml" "${APP_DIR}/app-config.production.yaml"; then
+  echo "ERROR: ${APP_DIR}/app-config.production.yaml does not reference production platform catalog path."
+  exit 1
+fi
+
+echo "OK: ${APP_DIR}/app-config.production.yaml references production platform catalog path."
+
+if [[ "$(grep -c "^catalog:" "${APP_DIR}/app-config.production.yaml")" != "1" ]]; then
+  echo "ERROR: ${APP_DIR}/app-config.production.yaml must contain exactly one top-level catalog block."
+  exit 1
+fi
+
+echo "OK: production config contains a single catalog block."
 
 echo
 echo "Checking platform catalog entities..."

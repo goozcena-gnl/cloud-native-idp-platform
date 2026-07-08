@@ -106,7 +106,7 @@ catalog:
     - allow: [Component, System, API, Resource, Location]
   locations:
     - type: file
-      target: ./catalog/platform-catalog-info.yaml
+      target: ../../catalog/platform-catalog-info.yaml
       rules:
         - allow: [System, Component, API, Resource]
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
