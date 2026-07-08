@@ -1,0 +1,138 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: cloud-native-idp-platform
+  title: Cloud Native IDP Platform
+  description: Local-first Internal Developer Platform built with Kubernetes, GitOps, observability, security, backup, cost visibility and secrets management.
+  tags:
+    - kubernetes
+    - gitops
+    - platform-engineering
+    - devops
+    - sre
+spec:
+  owner: platform-team
+  domain: platform-engineering
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: demo-grpc
+  title: Demo gRPC Service
+  description: Go gRPC demo service used to validate deployment, CI/CD, observability, security policies, runtime operations and platform capabilities.
+  tags:
+    - go
+    - grpc
+    - kubernetes
+    - opentelemetry
+    - prometheus
+    - loki
+    - tempo
+  annotations:
+    github.com/project-slug: goozdu12/cloud-native-idp-platform
+    argocd/app-name: demo-grpc
+    backstage.io/kubernetes-id: demo-grpc
+  links:
+    - url: https://github.com/goozdu12/cloud-native-idp-platform
+      title: GitHub Repository
+      icon: github
+    - url: docs/PORTFOLIO_OBSERVABILITY_SRE.md
+      title: Observability Documentation
+      icon: dashboard
+    - url: docs/SECURITY_GOVERNANCE.md
+      title: Security Governance Documentation
+      icon: security
+    - url: docs/BACKUP_AND_DISASTER_RECOVERY.md
+      title: Backup and Disaster Recovery Documentation
+      icon: docs
+    - url: docs/SECRETS_MANAGEMENT.md
+      title: Secrets Management Documentation
+      icon: docs
+spec:
+  type: service
+  lifecycle: experimental
+  owner: platform-team
+  system: cloud-native-idp-platform
+  providesApis:
+    - demo-grpc-api
+  dependsOn:
+    - resource:idp-local-kind-cluster
+    - resource:observability-stack
+    - resource:secrets-management-stack
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: demo-grpc-api
+  title: Demo gRPC API
+  description: gRPC API exposed by the demo service for platform validation.
+  tags:
+    - grpc
+    - protobuf
+    - go
+spec:
+  type: grpc
+  lifecycle: experimental
+  owner: platform-team
+  system: cloud-native-idp-platform
+  definition: |
+    syntax = "proto3";
+
+    package demo;
+
+    service DemoService {
+      rpc Health(HealthRequest) returns (HealthResponse);
+    }
+
+    message HealthRequest {}
+
+    message HealthResponse {
+      string status = 1;
+    }
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: idp-local-kind-cluster
+  title: Local kind Kubernetes Cluster
+  description: Local Kubernetes cluster used to run and validate the cloud-native IDP platform.
+  tags:
+    - kubernetes
+    - kind
+    - local-development
+spec:
+  type: kubernetes-cluster
+  owner: platform-team
+  system: cloud-native-idp-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: observability-stack
+  title: Observability Stack
+  description: Prometheus, Grafana, Loki, Tempo and OpenTelemetry-based observability stack.
+  tags:
+    - prometheus
+    - grafana
+    - loki
+    - tempo
+    - opentelemetry
+spec:
+  type: observability
+  owner: platform-team
+  system: cloud-native-idp-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: secrets-management-stack
+  title: Secrets Management Stack
+  description: Vault-based secrets management with Kubernetes authentication.
+  tags:
+    - vault
+    - secrets
+    - kubernetes-auth
+spec:
+  type: secrets-management
+  owner: platform-team
+  system: cloud-native-idp-platform
