@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: developer-experience
+spec:
+  project: idp-platform
+  source:
+    repoURL: https://github.com/goozdu12/cloud-native-idp-platform.git
+    targetRevision: main
+    path: platform/developer-portal/backstage
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backstage
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/name: backstage
+        app.kubernetes.io/part-of: idp-platform
+        idp.platform/tier: developer-experience
+        pod-security.kubernetes.io/warn: restricted
+        pod-security.kubernetes.io/audit: restricted
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

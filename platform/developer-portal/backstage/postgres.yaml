@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage-postgresql
+  namespace: backstage
+  labels:
+    app.kubernetes.io/name: backstage-postgresql
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: developer-experience
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backstage-postgresql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: backstage-postgresql
+        app.kubernetes.io/part-of: idp-platform
+        idp.platform/tier: developer-experience
+    spec:
+      securityContext:
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgresql
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgresql
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: backstage
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgres
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-postgres
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "${POSTGRES_USER}" -d backstage
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "${POSTGRES_USER}" -d backstage
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            runAsGroup: 999
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgresql-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backstage-postgresql
+  namespace: backstage
+  labels:
+    app.kubernetes.io/name: backstage-postgresql
+    app.kubernetes.io/part-of: idp-platform
+    idp.platform/tier: developer-experience
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: backstage-postgresql
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
