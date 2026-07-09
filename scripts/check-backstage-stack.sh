@@ -46,7 +46,7 @@ kubectl -n "${NAMESPACE}" rollout status deployment/backstage-postgresql --timeo
 kubectl -n "${NAMESPACE}" rollout status deployment/backstage --timeout=300s
 
 echo
-echo "Checking local port-forward health endpoint..."
+echo "Checking local port-forward UI and catalog API..."
 
 kubectl -n "${NAMESPACE}" port-forward svc/backstage "${LOCAL_PORT}:7007" >/tmp/backstage-port-forward.log 2>&1 &
 PF_PID="$!"
@@ -67,10 +67,8 @@ for i in {1..30}; do
   sleep 5
 done
 
-curl -fsS "http://127.0.0.1:${LOCAL_PORT}/healthcheck"
-
-echo
-echo "OK: Backstage healthcheck endpoint is reachable."
+grep -qi "Backstage" /tmp/backstage-healthcheck.txt
+echo "OK: Backstage UI is reachable."
 
 echo
 echo "Checking Backstage catalog API for demo-grpc entity..."
