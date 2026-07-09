@@ -15,6 +15,18 @@ spec:
   domain: platform-engineering
 ---
 apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-team
+  title: Platform Team
+  description: Platform engineering team owning the local cloud-native IDP platform.
+spec:
+  type: team
+  profile:
+    displayName: Platform Team
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: demo-grpc
@@ -36,16 +48,16 @@ metadata:
     - url: https://github.com/goozdu12/cloud-native-idp-platform
       title: GitHub Repository
       icon: github
-    - url: docs/PORTFOLIO_OBSERVABILITY_SRE.md
+    - url: https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/PORTFOLIO_OBSERVABILITY_SRE.md
       title: Observability Documentation
       icon: dashboard
-    - url: docs/SECURITY_GOVERNANCE.md
+    - url: https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/SECURITY_GOVERNANCE.md
       title: Security Governance Documentation
       icon: security
-    - url: docs/BACKUP_AND_DISASTER_RECOVERY.md
+    - url: https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/BACKUP_AND_DISASTER_RECOVERY.md
       title: Backup and Disaster Recovery Documentation
       icon: docs
-    - url: docs/SECRETS_MANAGEMENT.md
+    - url: https://github.com/goozdu12/cloud-native-idp-platform/blob/main/docs/SECRETS_MANAGEMENT.md
       title: Secrets Management Documentation
       icon: docs
 spec:

@@ -42,4 +42,4 @@ catalog:
     - type: file
       target: ./catalog/platform-catalog-info.yaml
       rules:
-        - allow: [System, Component, API, Resource]
+        - allow: [System, Component, API, Resource, Group]

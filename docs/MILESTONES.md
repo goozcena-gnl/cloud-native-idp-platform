@@ -2035,3 +2035,35 @@ Define a practical production-readiness model for services onboarded to the plat
 ### Result
 
 The platform now includes a repeatable service readiness model covering ownership, GitOps, CI/CD, reliability, observability, security, secrets, runtime operations and documentation.
+
+---
+
+## Milestone 49 — Backstage Developer Portal GitOps deployment
+
+### Goal
+
+Deploy a local Backstage developer portal through GitOps and connect it to the platform service catalog.
+
+### Delivered
+
+- Generated Backstage application.
+- Backstage catalog connected to the platform `catalog-info.yaml`.
+- Local Docker image build script.
+- Backstage image loaded into kind.
+- PostgreSQL backend for Backstage.
+- ArgoCD application for Backstage.
+- Kubernetes manifests for Backstage and PostgreSQL.
+- Validation script for UI and catalog API.
+- Documentation and screenshot evidence.
+
+### Validation
+
+```bash
+./scripts/build-backstage-kind-image.sh
+./scripts/configure-backstage-secrets.sh
+./scripts/check-backstage-stack.sh
+```
+
+### Result
+
+Backstage is deployed through ArgoCD, reachable locally, and the `demo-grpc` service is visible through the Backstage catalog API.

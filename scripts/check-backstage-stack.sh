@@ -71,17 +71,26 @@ grep -qi "Backstage" /tmp/backstage-healthcheck.txt
 echo "OK: Backstage UI is reachable."
 
 echo
-echo "Checking Backstage catalog API for demo-grpc entity..."
-if curl -fsS "http://127.0.0.1:${LOCAL_PORT}/api/catalog/entities" >/tmp/backstage-catalog-entities.json; then
-  if grep -q "demo-grpc" /tmp/backstage-catalog-entities.json; then
-    echo "OK: demo-grpc entity is visible through the Backstage catalog API."
-  else
-    echo "WARN: Backstage catalog API is reachable, but demo-grpc was not found yet."
-    echo "      Catalog ingestion may need more time. Check the Backstage UI."
-  fi
-else
-  echo "WARN: Backstage catalog API check failed. Healthcheck succeeded, so the stack is running."
-fi
+echo "Checking Backstage catalog API for demo-grpc component..."
+
+COMPONENT_URL="http://127.0.0.1:${LOCAL_PORT}/api/catalog/entities/by-name/component/default/demo-grpc"
+GROUP_URL="http://127.0.0.1:${LOCAL_PORT}/api/catalog/entities/by-name/group/default/platform-team"
+API_URL="http://127.0.0.1:${LOCAL_PORT}/api/catalog/entities/by-name/api/default/demo-grpc-api"
+
+curl -fsS "${COMPONENT_URL}" >/tmp/backstage-demo-grpc-component.json
+grep -q '"kind":"Component"' /tmp/backstage-demo-grpc-component.json
+grep -q '"name":"demo-grpc"' /tmp/backstage-demo-grpc-component.json
+echo "OK: Component/demo-grpc is visible through the Backstage catalog API."
+
+curl -fsS "${GROUP_URL}" >/tmp/backstage-platform-team-group.json
+grep -q '"kind":"Group"' /tmp/backstage-platform-team-group.json
+grep -q '"name":"platform-team"' /tmp/backstage-platform-team-group.json
+echo "OK: Group/platform-team is visible through the Backstage catalog API."
+
+curl -fsS "${API_URL}" >/tmp/backstage-demo-grpc-api.json
+grep -q '"kind":"API"' /tmp/backstage-demo-grpc-api.json
+grep -q '"name":"demo-grpc-api"' /tmp/backstage-demo-grpc-api.json
+echo "OK: API/demo-grpc-api is visible through the Backstage catalog API."
 
 echo
 echo "============================================================"
