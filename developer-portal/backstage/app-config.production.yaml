@@ -3,6 +3,8 @@ app:
   baseUrl: http://localhost:7007
 
 backend:
+  auth:
+    dangerouslyDisableDefaultAuthPolicy: true
   # Note that the baseUrl should be the URL that the browser and other clients
   # should use when communicating with the backend, i.e. it needs to be
   # reachable not just from within the backend host, but from all of your
@@ -31,6 +33,9 @@ backend:
 auth:
   providers:
     guest: {}
+
+permission:
+  enabled: false
 
 catalog:
   locations:
