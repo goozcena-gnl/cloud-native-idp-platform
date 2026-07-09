@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  title: ${{ values.name }}
+  description: ${{ values.description }}
+  tags:
+    - go
+    - grpc
+    - kubernetes
+    - opentelemetry
+  annotations:
+    backstage.io/kubernetes-id: ${{ values.name }}
+    argocd/app-name: ${{ values.name }}
+spec:
+  type: service
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: ${{ values.system }}

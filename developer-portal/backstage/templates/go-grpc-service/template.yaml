@@ -1,0 +1,65 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: go-grpc-service
+  title: Go gRPC Service
+  description: Scaffold a Go gRPC service following the cloud-native IDP platform golden path.
+  tags:
+    - go
+    - grpc
+    - kubernetes
+    - gitops
+    - opentelemetry
+    - platform-engineering
+spec:
+  owner: platform-team
+  type: service
+
+  parameters:
+    - title: Service information
+      required:
+        - name
+        - description
+      properties:
+        name:
+          title: Service name
+          type: string
+          description: Unique service name.
+          pattern: '^([a-z0-9]+)(-[a-z0-9]+)*$'
+        description:
+          title: Description
+          type: string
+          description: Short description of the service.
+        owner:
+          title: Owner
+          type: string
+          default: platform-team
+        system:
+          title: System
+          type: string
+          default: cloud-native-idp-platform
+
+    - title: Runtime configuration
+      properties:
+        grpcPort:
+          title: gRPC port
+          type: number
+          default: 50051
+        metricsPort:
+          title: Metrics port
+          type: number
+          default: 9090
+
+  steps:
+    - id: fetch-base
+      name: Fetch base service skeleton
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+          grpcPort: ${{ parameters.grpcPort }}
+          metricsPort: ${{ parameters.metricsPort }}

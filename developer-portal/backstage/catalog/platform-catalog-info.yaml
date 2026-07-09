@@ -148,3 +148,12 @@ spec:
   type: secrets-management
   owner: platform-team
   system: cloud-native-idp-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: go-grpc-service-template-location
+  description: Location for the Go gRPC software template.
+spec:
+  type: file
+  target: /app/templates/go-grpc-service/template.yaml

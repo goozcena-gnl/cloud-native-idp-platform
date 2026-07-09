@@ -58,7 +58,7 @@ integrations:
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token: ${GHE_TOKEN}
 
-proxy:
+proxy: {}
   ### Example for how to add a proxy endpoint for the frontend.
   ### A typical reason to do this is to handle HTTPS and CORS for internal services.
   # endpoints:
@@ -95,7 +95,7 @@ auth:
     #   - 'http://localhost:*'
     #   - 'https://*.example.com/*'
 
-scaffolder:
+scaffolder: {}
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
 catalog:
@@ -103,12 +103,16 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Group, Template, Location]
   locations:
     - type: file
       target: ../../catalog/platform-catalog-info.yaml
       rules:
-        - allow: [System, Component, API, Resource, Group]
+        - allow: [System, Component, API, Resource, Group, Location]
+    - type: file
+      target: ../../templates/go-grpc-service/template.yaml
+      rules:
+        - allow: [Template]
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
       target: ../../examples/entities.yaml
@@ -135,7 +139,7 @@ catalog:
     #   rules:
     #     - allow: [User, Group]
 
-kubernetes:
+kubernetes: {}
   # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework

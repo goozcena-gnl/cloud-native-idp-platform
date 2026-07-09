@@ -38,8 +38,14 @@ permission:
   enabled: false
 
 catalog:
+  rules:
+    - allow: [Component, System, API, Resource, Group, Template, Location]
   locations:
     - type: file
       target: ./catalog/platform-catalog-info.yaml
       rules:
-        - allow: [System, Component, API, Resource, Group]
+        - allow: [System, Component, API, Resource, Group, Location]
+    - type: file
+      target: ./templates/go-grpc-service/template.yaml
+      rules:
+        - allow: [Template]

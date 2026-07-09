@@ -57,7 +57,9 @@ backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 
 // kubernetes plugin
-backend.add(import('@backstage/plugin-kubernetes-backend'));
+// Kubernetes backend plugin is intentionally disabled for the local portfolio deployment.
+// It requires kubernetes.clusterLocatorMethods configuration before being enabled.
+// backend.add(import('@backstage/plugin-kubernetes-backend'));
 
 // notifications and signals plugins
 backend.add(import('@backstage/plugin-notifications-backend'));
