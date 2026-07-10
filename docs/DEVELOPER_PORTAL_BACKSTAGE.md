@@ -104,6 +104,51 @@ Backstage stack validated successfully.
 
 ### 5. ArgoCD Backstage resource tree
 
+## Software Template
+
+Backstage also exposes a software template for the platform golden path:
+
+```text
+Go gRPC Service
+```
+
+The template is defined in:
+
+```text
+developer-portal/backstage/templates/go-grpc-service/template.yaml
+```
+
+It provides a starting point for scaffolding a Go gRPC service aligned with the platform conventions:
+
+- service metadata;
+- owner and system parameters;
+- gRPC port;
+- metrics port;
+- generated `catalog-info.yaml`;
+- generated golden path checklist;
+- reminder to follow the Developer Golden Path and Production Readiness Scorecard.
+
+The template is validated by:
+
+```text
+./scripts/check-backstage-software-template.sh
+```
+
+Successful result:
+
+```text
+OK: Template/go-grpc-service is visible through the Backstage catalog API.
+Backstage software template validated successfully.
+```
+
+### 6. Backstage software template validation
+
+![Backstage software template validation](assets/developer-portal/06-backstage-software-template-validation.png)
+
+### 7. Go gRPC Service software template
+
+![Go gRPC Service software template](assets/developer-portal/07-backstage-go-grpc-software-template.png)
+
 ## Developer Experience value
 
 Backstage turns the platform into a more discoverable Internal Developer Platform.
@@ -129,14 +174,13 @@ Current limitations:
 - authentication is simplified for local validation;
 - permissions are disabled for the local portfolio deployment;
 - no production ingress is configured yet;
-- TechDocs and software templates are future improvements.
+- TechDocs is still a future improvement.
 
 ## Future improvements
 
 Possible next steps:
 
 - add TechDocs;
-- add Backstage software templates;
 - integrate GitHub authentication;
 - add Kubernetes plugin configuration;
 - add ArgoCD plugin integration;

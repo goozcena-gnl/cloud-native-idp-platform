@@ -2067,3 +2067,32 @@ Deploy a local Backstage developer portal through GitOps and connect it to the p
 ### Result
 
 Backstage is deployed through ArgoCD, reachable locally, and the `demo-grpc` service is visible through the Backstage catalog API.
+
+---
+
+## Milestone 50 — Backstage Software Template
+
+### Goal
+
+Add a self-service software template to the Backstage developer portal.
+
+### Delivered
+
+- Backstage `Template/go-grpc-service`.
+- Go gRPC service skeleton content.
+- Generated `catalog-info.yaml` skeleton.
+- Generated golden path checklist.
+- Template copied into the Backstage image.
+- Template registered in the Backstage catalog.
+- Validation script for the software template.
+- Kubernetes backend plugin disabled for the local portfolio deployment until proper Kubernetes plugin configuration is added.
+
+### Validation
+
+```bash
+./scripts/check-backstage-software-template.sh
+```
+
+### Result
+
+The Backstage Create page now exposes a `Go gRPC Service` template, proving the platform has a first self-service developer experience capability.
