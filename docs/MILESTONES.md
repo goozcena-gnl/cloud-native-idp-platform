@@ -2096,3 +2096,29 @@ Add a self-service software template to the Backstage developer portal.
 ### Result
 
 The Backstage Create page now exposes a `Go gRPC Service` template, proving the platform has a first self-service developer experience capability.
+
+---
+
+## Milestone 51 — Final portfolio packaging foundation
+
+### Goal
+
+Create the final portfolio packaging foundation for the cloud-native IDP platform project.
+
+### Delivered
+
+- Portfolio project overview.
+- Documentation index.
+- Final package validation script.
+- Documentation and evidence structure validation.
+- Catalog entity validation.
+
+### Validation
+
+```bash
+./scripts/check-portfolio-package.sh
+```
+
+### Result
+
+The repository now includes a portfolio-ready overview and documentation index that make the project easier to review without reading the full implementation history.
