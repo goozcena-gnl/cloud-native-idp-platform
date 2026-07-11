@@ -2122,3 +2122,32 @@ Create the final portfolio packaging foundation for the cloud-native IDP platfor
 ### Result
 
 The repository now includes a portfolio-ready overview and documentation index that make the project easier to review without reading the full implementation history.
+
+---
+
+## Milestone 52 — Portfolio README polish
+
+### Goal
+
+Polish the repository README so the project is understandable as a professional DevOps and Platform Engineering portfolio.
+
+### Delivered
+
+- Recruiter-friendly README.
+- Architecture overview.
+- Capability summary.
+- Documentation entry points.
+- Evidence model.
+- Local-first and production-readiness notes.
+- README validation script.
+
+### Validation
+
+```bash
+./scripts/check-readme-portfolio.sh
+./scripts/check-portfolio-package.sh
+```
+
+### Result
+
+The repository now has a clear landing page for technical reviewers, recruiters and hiring managers.

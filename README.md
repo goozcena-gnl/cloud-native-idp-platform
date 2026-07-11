@@ -1,633 +1,291 @@
-# Cloud-Native Internal Developer Platform
+# Cloud Native IDP Platform
 
-A local-first, production-inspired DevOps / Platform Engineering portfolio project.
+Local-first Internal Developer Platform built with Kubernetes, GitOps, observability, security, runtime operations and developer experience.
 
-## Goal
+This project is a professional DevOps / Platform Engineering portfolio project. It demonstrates how to build and operate a cloud-native platform progressively, with real validation scripts, GitOps delivery and documented evidence.
 
-Build a reproducible Internal Developer Platform demonstrating:
+## What this project demonstrates
 
-- Kubernetes-based workload orchestration
-- GitOps delivery with ArgoCD
-- Go gRPC microservices
-- CI/CD with GitHub Actions
-- Container and IaC security scanning
-- Observability with metrics, logs, and traces
-- Admission control and runtime security
-- Secrets management
-- Cost visibility
-- Backup and recovery
-- Developer self-service with Backstage
+This repository demonstrates practical skills around:
 
-## Strategy
+- Kubernetes platform engineering;
+- GitOps with ArgoCD;
+- Go gRPC service delivery;
+- CI/CD with GitHub Actions;
+- observability with Prometheus, Grafana, Loki, Tempo and OpenTelemetry;
+- SRE practices with alerts, SLOs and incident drills;
+- Kubernetes security governance with Kyverno and NetworkPolicies;
+- runtime security with Falco;
+- cost visibility with OpenCost;
+- backup and restore with Velero and MinIO;
+- secrets management with Vault and Kubernetes authentication;
+- developer experience with Backstage;
+- production readiness documentation and scorecards.
 
-This project is implemented progressively:
+## Target roles
 
-1. Local-first MVP
-2. GitOps foundation
-3. Go gRPC reference workload
-4. Observability and security
-5. Advanced IDP capabilities
+This project is relevant for:
 
-## Cost warning
+- DevOps Engineer;
+- Cloud Engineer;
+- Platform Engineer;
+- Site Reliability Engineer;
+- DevSecOps Engineer;
+- Kubernetes / GitOps Engineer.
 
-The first version is designed to run locally where possible.  
-Cloud resources are optional and may generate costs.
+## Architecture overview
 
-## Status
-
-Current phase: GitOps foundation.
-
-**Latest milestone (2026-06-17):** Platform namespaces are reconciled through
-GitOps. ArgoCD runs locally against the private repository, with `idp-root` and
-`platform-namespaces` both **Synced** and **Healthy**. Git is the source of
-truth for namespace state.
-
-See [docs/MILESTONES.md](docs/MILESTONES.md).
-
-## Local environment
-
-Before creating local Kubernetes resources, verify the workstation prerequisites:
-
-```bash
-bash scripts/check-prereqs.sh
+```text
+Developer
+  -> GitHub repository
+  -> GitHub Actions CI
+  -> ArgoCD app-of-apps
+  -> kind Kubernetes cluster
+      -> demo-grpc service
+      -> observability stack
+      -> security governance
+      -> runtime operations
+      -> Backstage developer portal
 ```
 
-For PowerShell users:
+Core platform layers:
 
-```powershell
-.\scripts\check-prereqs.ps1
+```text
+GitOps             ArgoCD
+Workload           Go gRPC demo service
+Packaging          Docker + Helm
+Observability      Prometheus, Grafana, Loki, Tempo, OpenTelemetry
+Security           Kyverno, NetworkPolicies, Pod Security Admission
+Runtime Security   Falco
+Cost Visibility    OpenCost
+Backup / DR        Velero + MinIO
+Secrets            Vault + Kubernetes Auth
+Developer Portal   Backstage
 ```
 
-See [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
+## Current platform capabilities
 
-## Local execution strategy
+### GitOps
 
-The MVP uses a Windows/Git Bash-first workflow with Docker Desktop and kind.
+- ArgoCD AppProject;
+- app-of-apps pattern;
+- automated sync;
+- prune and self-heal;
+- all platform applications managed declaratively.
 
-See:
+### Demo service
 
-- [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md)
-- [`docs/adr/0004-local-execution-strategy.md`](docs/adr/0004-local-execution-strategy.md)
+The reference service is `demo-grpc`, a Go gRPC service used to validate the full platform lifecycle.
 
-Ansible is deferred to an advanced phase unless Linux host configuration becomes necessary.
+It includes:
 
-## Local Kubernetes cluster
+- Docker image;
+- Helm chart;
+- Kubernetes deployment;
+- gRPC health checks;
+- Prometheus metrics;
+- OpenTelemetry traces;
+- structured logs;
+- log-to-trace correlation;
+- hardened security context.
 
-Create it:
+### Observability and SRE
 
-```bash
-./scripts/create-kind-cluster.sh
-```
+The observability layer includes:
 
-Validate it:
+- Prometheus metrics;
+- Grafana dashboards;
+- Loki logs;
+- Tempo traces;
+- OpenTelemetry instrumentation;
+- alerting rules;
+- SLO documentation;
+- incident drills.
 
-```bash
-kubectl get nodes -o wide
-kubectl get pods -A
-```
+Documentation:
 
-Delete it:
+- [Observability and SRE](docs/PORTFOLIO_OBSERVABILITY_SRE.md)
+- [Incident drills](docs/INCIDENT_DRILLS.md)
 
-```bash
-./scripts/delete-kind-cluster.sh
-```
+### Security governance
 
-See [docs/LOCAL_CLUSTER.md](docs/LOCAL_CLUSTER.md).
+The security layer includes:
 
-## Platform namespaces
+- Pod Security Admission labels;
+- hardened workload baseline;
+- Kyverno policies;
+- Kyverno audit-mode validation;
+- NetworkPolicy default-deny model;
+- security validation scripts.
 
-Apply the MVP namespaces:
+Documentation:
 
-```bash
-./scripts/apply-platform-namespaces.sh
-```
+- [Security governance](docs/SECURITY_GOVERNANCE.md)
 
-Validate:
+### Runtime operations
 
-```bash
-kubectl get namespaces argocd platform-system apps observability security --show-labels
-```
+The runtime operations layer includes:
 
-See [docs/NAMESPACES.md](docs/NAMESPACES.md).
+- OpenCost for cost visibility;
+- Falco for runtime threat detection;
+- Velero and MinIO for backup and restore;
+- Vault for secrets management;
+- Vault Kubernetes auth validation.
 
-## GitOps (ArgoCD)
+Documentation:
 
-Install ArgoCD (local, private, ClusterIP only):
+- [Runtime operations summary](docs/PHASE_7_RUNTIME_OPERATIONS.md)
+- [Cost visibility](docs/COST_VISIBILITY.md)
+- [Runtime security](docs/RUNTIME_SECURITY.md)
+- [Backup and disaster recovery](docs/BACKUP_AND_DISASTER_RECOVERY.md)
+- [Secrets management](docs/SECRETS_MANAGEMENT.md)
 
-```bash
-./scripts/install-argocd.sh
-```
+### Developer Experience
 
-Check the Git repository URL and visibility before creating ArgoCD Applications:
+The developer experience layer includes:
 
-```bash
-./scripts/check-gitops-repo.sh
-```
+- Backstage service catalog;
+- Backstage developer portal;
+- `Component/demo-grpc`;
+- `API/demo-grpc-api`;
+- `Group/platform-team`;
+- Developer Golden Path;
+- Production Readiness Scorecard;
+- Go gRPC Backstage software template.
 
-The preferred MVP model is a public GitHub repository with an HTTPS `repoURL`
-and no committed credentials.
+Documentation:
 
-For a private GitOps repository, configure local ArgoCD repository access:
+- [Platform Engineering and Developer Experience](docs/PHASE_8_PLATFORM_ENGINEERING_DEVELOPER_EXPERIENCE.md)
+- [Developer Golden Path](docs/DEVELOPER_GOLDEN_PATH.md)
+- [Production Readiness Scorecard](docs/PRODUCTION_READINESS_SCORECARD.md)
+- [Developer Portal with Backstage](docs/DEVELOPER_PORTAL_BACKSTAGE.md)
 
-```bash
-./scripts/configure-argocd-private-repo.sh
-```
+## Validation model
 
-Validate without printing the token:
+This project is validated through three evidence layers:
 
-```bash
-./scripts/check-argocd-repo-secret.sh
-```
+1. **GitOps state**
 
-The MVP uses a temporary, short-lived PAT with repository read access only,
-stored solely in a Kubernetes Secret and never committed to Git. The advanced
-target is a read-only deploy key, a GitHub App, or a Vault-managed credential.
-See [docs/security/GITHUB_TOKEN_STRATEGY.md](docs/security/GITHUB_TOKEN_STRATEGY.md).
+ArgoCD applications must be `Synced` and `Healthy`.
+2. **Executable validation scripts**
 
-After committing and pushing the ArgoCD bootstrap manifests, create the root
-GitOps Application:
+Each important platform capability has a validation script under `scripts/`.
+3. **Visual evidence**
 
-```bash
-./scripts/bootstrap-argocd-apps.sh
-```
+Screenshots are stored under `docs/assets/`.
 
-Validate ArgoCD Applications:
+## Key validation scripts
 
-```bash
+```text
+./scripts/check-portfolio-package.sh
 ./scripts/check-argocd-apps.sh
-```
-
-Access the UI locally via port-forward:
-
-```bash
-./scripts/argocd-port-forward.sh
-# then open http://localhost:8081
-```
-
-Validated ArgoCD Applications:
-
-```text
-idp-root              Synced   Healthy
-platform-namespaces   Synced   Healthy
-demo-grpc             Synced   Healthy
-```
-
-See [docs/GITOPS.md](docs/GITOPS.md),
-[docs/GITOPS_REPOSITORY.md](docs/GITOPS_REPOSITORY.md),
-[docs/MILESTONES.md](docs/MILESTONES.md), and
-[docs/security/GITHUB_TOKEN_STRATEGY.md](docs/security/GITHUB_TOKEN_STRATEGY.md).
-
-## Go gRPC reference service
-
-A minimal Go gRPC service is the first real application workload.
-
-```bash
-# Run the server (from services/demo-grpc):
-go run ./cmd/server
-
-# Healthcheck in a second terminal:
-go run ./cmd/healthcheck -addr localhost:50051
-```
-
-Local integration test (build, start, healthcheck, stop):
-
-```bash
-./scripts/test-demo-grpc.sh
-```
-
-See [services/demo-grpc/README.md](services/demo-grpc/README.md).
-
-### Container
-
-Build and run the service as a minimal, non-root container image:
-
-```bash
-docker build -t demo-grpc:local services/demo-grpc
-docker run -d --name demo-grpc -p 50052:50051 demo-grpc:local
-```
-
-Automated container test (build, run, healthcheck, inspect, clean up):
-
-```bash
-./scripts/test-demo-grpc-container.sh
-```
-
-See [docs/CONTAINERIZATION.md](docs/CONTAINERIZATION.md).
-
-### Helm chart
-
-Validate the Helm chart (lint + template + server-side dry-run):
-
-```bash
-./scripts/validate-demo-grpc-helm.sh
-```
-
-See [docs/HELM.md](docs/HELM.md).
-
-### GitOps deployment
-
-Load the local image into kind (required before ArgoCD can pull it):
-
-```bash
-./scripts/load-demo-grpc-kind-image.sh
-```
-
-After committing and pushing `platform/argocd/apps/demo-grpc-app.yaml`,
-ArgoCD picks up the Application automatically via `idp-root`. Validate:
-
-```bash
-./scripts/check-demo-grpc-k8s.sh
-```
-
-## CI (GitHub Actions)
-
-The CI workflow runs on every push and pull request to `main`.
-
-It validates:
-
-- Go tests and builds;
-- Docker image build and non-root runtime user check;
-- Helm lint and `helm template` rendering;
-- rendered Kubernetes security settings (`runAsNonRoot`, `allowPrivilegeEscalation`,
-  `readOnlyRootFilesystem`, seccomp `RuntimeDefault`, capabilities drop, gRPC probes).
-
-See [docs/CI.md](docs/CI.md) and [.github/workflows/ci.yml](.github/workflows/ci.yml).
-
-## DevSecOps (Trivy)
-
-The `security` CI job scans for vulnerabilities, secrets, and
-misconfigurations using [Trivy](https://trivy.dev/):
-
-- filesystem and Go dependency CVEs;
-- hardcoded secrets;
-- Dockerfile misconfigurations;
-- rendered Helm manifest Kubernetes config issues;
-- Docker image OS and application CVEs.
-
-Trivy is installed from the official GitHub release archive and pinned to a
-specific version. `aquasecurity/trivy-action` is not used (supply-chain
-advisory, March 2026).
-
-Run locally (requires Trivy and Helm in `PATH`):
-
-```bash
-docker build -t demo-grpc:local services/demo-grpc
-./scripts/security-scan.sh
-```
-
-See [docs/DEVSECOPS.md](docs/DEVSECOPS.md).
-
-## Container registry (GHCR)
-
-The `demo-grpc` image is published to GHCR on every push to `main` that
-changes `services/demo-grpc/**`.
-
-Published image:
-
-```
-ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
-```
-
-Tags: `main` (latest build) and `sha-<short>` (immutable per-commit tag).
-
-Authentication uses `GITHUB_TOKEN` — no personal access token is required.
-
-See [docs/GHCR.md](docs/GHCR.md).
-
-## Observability
-
-The first observability stack uses `kube-prometheus-stack` (Prometheus Operator,
-Prometheus, Grafana, kube-state-metrics, node-exporter, default dashboards and
-rules), deployed by ArgoCD via the multi-source pattern:
-
-```text
-platform/argocd/apps/kube-prometheus-stack-app.yaml
-```
-
-Validate:
-
-```bash
-./scripts/check-observability-stack.sh
-```
-
-Access Grafana locally:
-
-```bash
-./scripts/grafana-port-forward.sh
-# then open http://localhost:3000  (admin / admin)
-```
-
-See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
-
-## Observability milestone
-
-The platform now includes a GitOps-managed observability stack:
-
-```text
-kube-prometheus-stack
-```
-
-Validated components: Prometheus Operator, Prometheus, Grafana,
-kube-state-metrics, node-exporter, Kubernetes dashboards.
-
-Access Grafana locally:
-
-```bash
-./scripts/grafana-port-forward.sh
-```
-
-Grafana health check:
-
-```bash
-curl -i http://localhost:3000/api/health
-```
-
-## Application metrics
-
-`demo-grpc` exposes Prometheus metrics on `/metrics`.
-
-Validate Kubernetes scraping:
-
-```bash
-./scripts/check-demo-grpc-metrics.sh
-```
-
-## Application metrics scraping
-
-`demo-grpc` exposes Prometheus metrics on `/metrics`.
-
-Kubernetes scraping is configured with:
-
-```text
-ServiceMonitor apps/demo-grpc
-```
-
-Validate:
-
-```bash
-./scripts/check-demo-grpc-metrics.sh
-```
-
-Expected result:
-
-```
-Service /metrics endpoint OK.
-Prometheus target discovery OK.
-Prometheus scrape query OK.
-```
-
-## Custom application metrics
-
-`demo-grpc` now exposes custom Prometheus metrics:
-
-```text
-demo_grpc_build_info
-demo_grpc_grpc_requests_total
-demo_grpc_grpc_request_duration_seconds
-```
-
-These metrics are scraped by Prometheus through the `apps/demo-grpc` ServiceMonitor.
-
-Validate:
-
-```bash
-./scripts/check-demo-grpc-metrics.sh
-```
-
-## Grafana dashboard
-
-A `demo-grpc` dashboard is provisioned via GitOps (ConfigMap + Grafana sidecar).
-
-Panels: service info, goroutines, total requests, error rate, request rate, p50/p95 latency.
-
-```bash
-./scripts/grafana-port-forward.sh
-# then open http://localhost:3000/d/demo-grpc
-```
-
-Validate provisioning:
-
-```bash
-./scripts/check-grafana-dashboard.sh
-```
-
-## Centralized logs
-
-The platform includes centralized Kubernetes logging with:
-
-```text
-Grafana Alloy -> Loki -> Grafana
-```
-
-Validate the logs stack:
-
-```bash
-./scripts/check-loki-stack.sh
-./scripts/check-demo-grpc-logs.sh
-```
-
-Example LogQL query:
-
-```logql
-{namespace="apps", container="demo-grpc"}
-```
-
-See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md).
-
-## Structured application logs
-
-`demo-grpc` emits structured JSON logs to stdout.
-These logs are collected by Grafana Alloy and stored in Loki.
-
-Validate:
-
-```bash
-./scripts/check-demo-grpc-logs.sh
-```
-
-Example LogQL query:
-
-```logql
-{namespace="apps", container="demo-grpc"} |= `"msg":"starting service"`
-```
-
-## Grafana logs dashboard
-
-The platform includes a GitOps-provisioned Grafana dashboard for `demo-grpc` logs.
-
-Validate it with:
-
-```bash
-./scripts/check-grafana-logs-dashboard.sh
-```
-
-Dashboard UID:
-
-```
-demo-grpc-logs
-```
-
-## Grafana logs dashboard variables
-
-The `demo-grpc Logs` dashboard supports filtering by:
-
-```text
-namespace
-pod
-container
-```
-
-Main LogQL pattern:
-
-```logql
-{namespace="$namespace", pod=~"$pod", container=~"$container"}
-```
-
-Validate the dashboard and variables:
-
-```bash
-./scripts/check-grafana-logs-dashboard.sh
-```
-
-## Grafana SRE summary dashboard
-
-The platform includes a GitOps-provisioned SRE summary dashboard for `demo-grpc`.
-
-It combines:
-
-```text
-Prometheus metrics
-Loki logs
-```
-
-Validate it with:
-
-```bash
-./scripts/check-grafana-sre-dashboard.sh
-```
-
-Dashboard UID:
-
-```
-demo-grpc-sre
-```
-
-## SRE dashboard with Loki metrics
-
-The `demo-grpc SRE Summary` dashboard includes Loki backend metrics.
-
-It combines:
-
-```text
-Application metrics
-Application logs
-ArgoCD GitOps metrics
-Loki backend metrics
-```
-
-Validate the dashboard:
-
-```bash
-./scripts/check-grafana-sre-dashboard.sh
-```
-
-Validate Loki metrics scraping:
-
-```bash
-./scripts/check-loki-metrics.sh
-```
-
-Dashboard UID:
-
-```
-demo-grpc-sre
-```
-
-## Loki metrics and alerting
-
-The platform scrapes Loki metrics with Prometheus and includes a `LokiDown` alert.
-
-Validate Loki metrics:
-
-```bash
-./scripts/check-loki-metrics.sh
-```
-
-Validate platform alerts:
-
-```bash
+./scripts/check-demo-grpc-security-baseline.sh
+./scripts/check-demo-grpc-log-trace-correlation.sh
 ./scripts/check-platform-alerts.sh
+./scripts/check-kyverno-stack.sh
+./scripts/check-network-policies.sh
+./scripts/check-opencost-stack.sh
+./scripts/check-falco-stack.sh
+./scripts/check-velero-backup-restore.sh
+./scripts/check-vault-kubernetes-auth.sh
+./scripts/check-backstage-stack.sh
+./scripts/check-backstage-software-template.sh
 ```
 
-Current Loki observability path:
+## Documentation index
+
+Start here:
+
+- [Portfolio project overview](docs/PORTFOLIO_PROJECT_OVERVIEW.md)
+- [Documentation index](docs/DOCUMENTATION_INDEX.md)
+- [Milestones](docs/MILESTONES.md)
+
+## Evidence assets
+
+Screenshots and visual proof are stored under:
 
 ```text
-Loki -> ServiceMonitor -> Prometheus -> PrometheusRule/LokiDown
+docs/assets/
 ```
 
-## Platform alerts
-
-The platform includes GitOps-managed Prometheus alert rules.
-
-Validate:
-
-```bash
-./scripts/check-platform-alerts.sh
-```
-
-Current alert coverage:
+Main evidence folders:
 
 ```text
-demo-grpc availability
-Grafana availability
-ArgoCD application sync status
-ArgoCD application health status
-ArgoCD metrics target availability
+docs/assets/observability-sre/
+docs/assets/security-governance/
+docs/assets/backup-disaster-recovery/
+docs/assets/secrets-management/
+docs/assets/developer-portal/
 ```
 
-## ArgoCD metrics
-
-The platform scrapes ArgoCD metrics with Prometheus.
-
-Validate:
-
-```bash
-./scripts/check-argocd-metrics.sh
-```
-
-Useful metrics:
+## Repository structure
 
 ```text
-argocd_app_info
-argocd_info
-argocd_git_request_duration_seconds_count
+.
+├── catalog-info.yaml
+├── charts/
+├── developer-portal/
+│   └── backstage/
+├── docs/
+│   ├── assets/
+│   └── *.md
+├── platform/
+│   ├── argocd/
+│   ├── backup/
+│   ├── developer-portal/
+│   ├── grafana/
+│   ├── namespaces/
+│   ├── observability/
+│   └── security/
+├── scripts/
+└── services/
+    └── demo-grpc/
 ```
 
-## SRE dashboard with GitOps metrics
+## Local-first design
 
-The `demo-grpc SRE Summary` dashboard combines:
+This project is intentionally local-first.
 
-```text
-Application metrics
-Application logs
-ArgoCD GitOps metrics
-```
+It uses:
 
-It shows workload health, deployment version, logs, ArgoCD sync/health status,
-and Git repository activity.
+- kind for Kubernetes;
+- local Docker images;
+- local MinIO for Velero;
+- Vault dev mode for secrets validation;
+- local Backstage image;
+- simplified local authentication.
 
-Validate:
+These choices make the platform reproducible on a local workstation while still demonstrating real DevOps, SRE, GitOps and platform engineering concepts.
 
-```bash
-./scripts/check-grafana-sre-dashboard.sh
-```
+## Production note
 
-Dashboard UID:
+This is not presented as a production deployment.
 
-```
-demo-grpc-sre
-```
+Production improvements would include:
 
-## Portfolio case studies
+- managed Kubernetes;
+- real ingress and TLS;
+- external DNS;
+- production-grade Vault storage and unseal;
+- persistent PostgreSQL for Backstage;
+- external object storage for Velero;
+- production authentication and RBAC;
+- hardened supply chain and image signing;
+- cloud billing integration;
+- high availability and disaster recovery across failure domains.
 
-- [Observability and SRE Platform](docs/PORTFOLIO_OBSERVABILITY_SRE.md)
+## Portfolio outcome
+
+This project demonstrates the ability to:
+
+- design a platform roadmap;
+- deliver Kubernetes workloads through GitOps;
+- build observability and SRE evidence;
+- enforce security governance;
+- validate backup and restore;
+- integrate workload identity with Vault;
+- build a Backstage developer portal;
+- expose a self-service software template;
+- document trade-offs and limitations clearly.
+
+The repository is intended to support technical discussions for DevOps, Cloud, Platform Engineering, SRE and DevSecOps roles.
