@@ -34,6 +34,8 @@
 
 ## Evidence assets
 
+- [Evidence index](EVIDENCE_INDEX.md)
+
 Screenshots and visual evidence are stored under:
 
 ```text

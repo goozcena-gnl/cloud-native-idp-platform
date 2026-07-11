@@ -2151,3 +2151,30 @@ Polish the repository README so the project is understandable as a professional 
 ### Result
 
 The repository now has a clear landing page for technical reviewers, recruiters and hiring managers.
+
+---
+
+## Milestone 54 — Final evidence index
+
+### Goal
+
+Create a centralized evidence index for the portfolio project.
+
+### Delivered
+
+- Evidence index page.
+- Links to visual proof under `docs/assets/`.
+- Final validation reference.
+- Documentation index integration.
+- Evidence index validation script.
+
+### Validation
+
+```bash
+./scripts/check-evidence-index.sh
+./scripts/check-portfolio-package.sh
+```
+
+### Result
+
+The portfolio now has a single page that helps reviewers quickly find visual proof for observability, security, runtime operations, secrets management and developer experience.
