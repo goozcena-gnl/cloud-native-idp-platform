@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+TMP_DIR="${TMP_DIR:-.tmp}"
+mkdir -p "${TMP_DIR}"
+
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-idp-local}"
 OBS_NAMESPACE="${OBS_NAMESPACE:-observability}"
 LOCAL_PROMETHEUS_PORT="${LOCAL_PROMETHEUS_PORT:-9093}"
@@ -92,7 +95,7 @@ if [[ "${missing}" -ne 0 ]]; then
 fi
 
 echo "Checking alert runbook_url annotations..."
-RULES_RESPONSE_FILE="$(mktemp)"
+RULES_RESPONSE_FILE="$(mktemp "${TMP_DIR}/check-platform-alerts.XXXXXX")"
 printf '%s' "${RULES_RESPONSE}" > "${RULES_RESPONSE_FILE}"
 python - "${RULES_RESPONSE_FILE}" <<'PYRUNBOOKS'
 import json
