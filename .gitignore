@@ -50,3 +50,6 @@ environment-check*.txt
 *.exe
 services/demo-grpc/server
 services/demo-grpc/healthcheck
+
+# Archives
+*.zip
