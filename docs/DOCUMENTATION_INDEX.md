@@ -2,6 +2,8 @@
 
 ## Portfolio overview
 
+- [Final release checklist](FINAL_RELEASE_CHECKLIST.md)
+
 - [Architecture and capabilities summary](ARCHITECTURE_AND_CAPABILITIES.md)
 - [Portfolio project overview](PORTFOLIO_PROJECT_OVERVIEW.md)
 - [Milestones](MILESTONES.md)

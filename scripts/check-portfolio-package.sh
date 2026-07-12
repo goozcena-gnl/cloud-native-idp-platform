@@ -24,6 +24,7 @@ required_docs=(
   "docs/DEVELOPER_PORTAL_BACKSTAGE.md"
   "docs/ARCHITECTURE_AND_CAPABILITIES.md"
   "docs/EVIDENCE_INDEX.md"
+  "docs/FINAL_RELEASE_CHECKLIST.md"
   "catalog-info.yaml"
 )
 
@@ -57,6 +58,7 @@ required_scripts=(
   "scripts/check-evidence-index.sh"
   "scripts/check-final-platform.sh"
   "scripts/check-readme-portfolio.sh"
+  "scripts/check-release-readiness.sh"
 )
 
 echo
