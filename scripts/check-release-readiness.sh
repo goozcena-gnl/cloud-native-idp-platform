@@ -26,6 +26,36 @@ check_heading() {
   fi
 }
 
+check_term() {
+  local term="$1"
+
+  if grep -qiF "${term}" "${DOC}"; then
+    echo "OK: ${term}"
+  else
+    echo "ERROR: missing term: ${term}"
+    exit 1
+  fi
+}
+
+check_term_any() {
+  local label="$1"
+  shift
+
+  for term in "$@"; do
+    if grep -qiF "${term}" "${DOC}"; then
+      echo "OK: ${label}"
+      return 0
+    fi
+  done
+
+  echo "ERROR: missing term variant for: ${label}"
+  echo "Accepted variants:"
+  for term in "$@"; do
+    echo "- ${term}"
+  done
+  exit 1
+}
+
 if ! grep -qiF "# Final Release Checklist" "${DOC}"; then
   echo "ERROR: missing section: # Final Release Checklist"
   exit 1
@@ -44,33 +74,22 @@ check_heading "Known Local-First Limitations"
 check_heading "Final Release Criteria"
 check_heading "Final Status"
 
-required_terms=(
-  "GitHub Actions CI"
-  "ArgoCD"
-  "Synced"
-  "Healthy"
-  "FULL_VALIDATION=true ./scripts/check-final-platform.sh"
-  "docs/ARCHITECTURE_AND_CAPABILITIES.md"
-  "docs/assets/observability-sre/"
-  "docs/assets/security-governance/"
-  "docs/assets/backup-disaster-recovery/"
-  "docs/assets/secrets-management/"
-  "docs/assets/developer-portal/"
-  "Vault dev mode"
-  "Backstage Kubernetes plugin disabled"
-)
-
 echo
 echo "Checking release checklist terms..."
 
-for term in "${required_terms[@]}"; do
-  if ! grep -qF "${term}" "${DOC}"; then
-    echo "ERROR: missing term: ${term}"
-    exit 1
-  fi
-
-  echo "OK: ${term}"
-done
+check_term "GitHub Actions CI"
+check_term_any "ArgoCD / Argo CD" "ArgoCD" "Argo CD"
+check_term "Synced"
+check_term "Healthy"
+check_term "FULL_VALIDATION=true ./scripts/check-final-platform.sh"
+check_term "docs/ARCHITECTURE_AND_CAPABILITIES.md"
+check_term "docs/assets/observability-sre/"
+check_term "docs/assets/security-governance/"
+check_term "docs/assets/backup-disaster-recovery/"
+check_term "docs/assets/secrets-management/"
+check_term "docs/assets/developer-portal/"
+check_term "Vault dev mode"
+check_term "Backstage Kubernetes plugin disabled"
 
 echo
 echo "Checking documentation validation scripts..."
