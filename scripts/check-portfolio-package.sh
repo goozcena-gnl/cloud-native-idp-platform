@@ -22,6 +22,8 @@ required_docs=(
   "docs/DEVELOPER_GOLDEN_PATH.md"
   "docs/PRODUCTION_READINESS_SCORECARD.md"
   "docs/DEVELOPER_PORTAL_BACKSTAGE.md"
+  "docs/ARCHITECTURE_AND_CAPABILITIES.md"
+  "docs/EVIDENCE_INDEX.md"
   "catalog-info.yaml"
 )
 
@@ -51,6 +53,10 @@ required_scripts=(
   "scripts/check-network-policies.sh"
   "scripts/check-kyverno-stack.sh"
   "scripts/check-platform-alerts.sh"
+  "scripts/check-architecture-summary.sh"
+  "scripts/check-evidence-index.sh"
+  "scripts/check-final-platform.sh"
+  "scripts/check-readme-portfolio.sh"
 )
 
 echo
