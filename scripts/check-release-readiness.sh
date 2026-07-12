@@ -12,29 +12,37 @@ if [[ ! -f "${DOC}" ]]; then
   exit 1
 fi
 
-required_sections=(
-  "# Final Release Checklist"
-  "## Goal"
-  "## 1. Git and CI readiness"
-  "## 2. GitOps readiness"
-  "## 3. Portfolio documentation readiness"
-  "## 4. Platform capability readiness"
-  "## 5. Full operational validation"
-  "## 6. Evidence readiness"
-  "## 7. Interview readiness"
-  "## 8. Known local-first limitations"
-  "## 9. Final release criteria"
-  "## Final status"
-)
+check_heading() {
+  local heading="$1"
 
-for section in "${required_sections[@]}"; do
-  if ! grep -qF "${section}" "${DOC}"; then
-    echo "ERROR: missing section: ${section}"
+  if grep -Eiq "^##[[:space:]]+([0-9]+\\.[[:space:]]+)?${heading}$" "${DOC}"; then
+    echo "OK: ## ${heading}"
+  else
+    echo "ERROR: missing section: ## ${heading}"
+    echo
+    echo "Existing headings:"
+    grep -n "^##" "${DOC}" || true
     exit 1
   fi
+}
 
-  echo "OK: ${section}"
-done
+if ! grep -qiF "# Final Release Checklist" "${DOC}"; then
+  echo "ERROR: missing section: # Final Release Checklist"
+  exit 1
+fi
+echo "OK: # Final Release Checklist"
+
+check_heading "Goal"
+check_heading "Git and CI Readiness"
+check_heading "GitOps Readiness"
+check_heading "Portfolio Documentation Readiness"
+check_heading "Platform Capability Readiness"
+check_heading "Full Operational Validation"
+check_heading "Evidence Readiness"
+check_heading "Interview Readiness"
+check_heading "Known Local-First Limitations"
+check_heading "Final Release Criteria"
+check_heading "Final Status"
 
 required_terms=(
   "GitHub Actions CI"
