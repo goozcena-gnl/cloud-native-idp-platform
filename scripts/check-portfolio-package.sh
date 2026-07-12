@@ -25,6 +25,7 @@ required_docs=(
   "docs/ARCHITECTURE_AND_CAPABILITIES.md"
   "docs/EVIDENCE_INDEX.md"
   "docs/FINAL_RELEASE_CHECKLIST.md"
+  "docs/PORTFOLIO_CLOSEOUT.md"
   "catalog-info.yaml"
 )
 
@@ -59,6 +60,7 @@ required_scripts=(
   "scripts/check-final-platform.sh"
   "scripts/check-readme-portfolio.sh"
   "scripts/check-release-readiness.sh"
+  "scripts/check-portfolio-closeout.sh"
 )
 
 echo

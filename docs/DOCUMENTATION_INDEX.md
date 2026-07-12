@@ -2,6 +2,8 @@
 
 ## Portfolio overview
 
+- [Portfolio closeout](PORTFOLIO_CLOSEOUT.md)
+
 - [Final release checklist](FINAL_RELEASE_CHECKLIST.md)
 
 - [Architecture and capabilities summary](ARCHITECTURE_AND_CAPABILITIES.md)
