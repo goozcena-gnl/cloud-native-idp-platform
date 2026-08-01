@@ -46,11 +46,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051  # v5.10.0
         with:
-          # This personal GHCR namespace is intentional and documented in docs/GHCR.md.
-          images: ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
+          # Publish under the current repository owner so GITHUB_TOKEN can write the package.
+          images: ghcr.io/goozcena-gnl/cloud-native-idp-platform/demo-grpc
           tags: |
-            # Convenience tag for the latest trusted main build; sha-* is immutable.
-            type=raw,value=main
+            # Only a trusted default-branch publication may move the convenience tag.
+            type=raw,value=main,enable={{is_default_branch}}
+            # Every push or maintainer dispatch also receives an immutable full commit tag.
             type=sha,prefix=sha-,format=long
 
       - name: Build and push image
