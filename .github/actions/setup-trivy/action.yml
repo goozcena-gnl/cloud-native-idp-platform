@@ -6,6 +6,10 @@ inputs:
     description: Trivy version to install (without the leading "v").
     required: false
     default: "0.69.3"
+  sha256:
+    description: Expected SHA-256 for the matching Linux 64-bit release archive.
+    required: false
+    default: "1816b632dfe529869c740c0913e36bd1629cb7688bd5634f4a858c1d57c88b75"
 
 runs:
   using: composite
@@ -14,10 +18,32 @@ runs:
       shell: bash
       env:
         TRIVY_VERSION: ${{ inputs.version }}
+        TRIVY_SHA256: ${{ inputs.sha256 }}
       run: |
         set -euo pipefail
-        curl -sSfL "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
-          -o /tmp/trivy.tar.gz
-        tar -xzf /tmp/trivy.tar.gz -C /tmp trivy
-        sudo install -m 0755 /tmp/trivy /usr/local/bin/trivy
+
+        archive="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        checksums="trivy_${TRIVY_VERSION}_checksums.txt"
+        release_url="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}"
+        install_dir="$(mktemp -d)"
+        trap 'rm -rf "${install_dir}"' EXIT
+
+        curl -sSfL "${release_url}/${archive}" -o "${install_dir}/${archive}"
+        curl -sSfL "${release_url}/${checksums}" -o "${install_dir}/${checksums}"
+
+        checksum_line="$(grep -E "^[[:xdigit:]]{64}  ${archive}$" "${install_dir}/${checksums}" || true)"
+        if [ -z "${checksum_line}" ]; then
+          echo "Checksum for ${archive} is missing from the official release manifest." >&2
+          exit 1
+        fi
+
+        published_sha256="${checksum_line%% *}"
+        if [ "${published_sha256}" != "${TRIVY_SHA256}" ]; then
+          echo "Published checksum does not match the repository-pinned checksum." >&2
+          exit 1
+        fi
+
+        printf '%s  %s\n' "${TRIVY_SHA256}" "${install_dir}/${archive}" | sha256sum --check --strict -
+        tar -xzf "${install_dir}/${archive}" -C "${install_dir}" trivy
+        sudo install -m 0755 "${install_dir}/trivy" /usr/local/bin/trivy
         trivy --version

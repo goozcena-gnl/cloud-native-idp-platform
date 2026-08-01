@@ -25,10 +25,16 @@ The workflow uses `GITHUB_TOKEN` with:
 ```yaml
 permissions:
   contents: read
-  packages: write
+jobs:
+  publish:
+    permissions:
+      contents: read
+      packages: write
 ```
 
-No personal access token is stored in repository secrets.
+`packages: write` is scoped only to the publishing job. No personal access
+token is stored in repository secrets. The checkout step does not persist Git
+credentials after fetching the repository.
 
 ## Tags
 
@@ -37,7 +43,19 @@ Each publish produces two tags:
 | Tag | Value |
 |-----|-------|
 | `main` | always points to the latest build from `main` |
-| `sha-<short>` | immutable tag for the exact commit (e.g. `sha-a3c1446`) |
+| `sha-<full-commit>` | immutable tag for the exact commit |
+
+The `main` tag is intentionally mutable for the local-first MVP. Each trusted
+publish also emits the full commit-derived `sha-*` tag so consumers can select
+an immutable image reference.
+
+The `goozdu12` namespace is retained intentionally because it is the historical
+personal GHCR target used by this project, even though the repository now lives
+under `goozcena-gnl`. During the Plumber integration review, the package was not
+visible through the GitHub Packages API. The next trusted `main` publish must
+confirm that the package exists and grants this repository Actions write access;
+if it does not, migrate the package or namespace in a separate, deliberate
+change together with all deployment references and pull-secret documentation.
 
 ## GitOps deployment from GHCR
 

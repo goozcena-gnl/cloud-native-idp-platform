@@ -53,3 +53,9 @@ services/demo-grpc/healthcheck
 
 # Archives
 *.zip
+
+# Plumber local reports (the CI copies are retained as short-lived artifacts)
+plumber-report.json
+plumber.sarif
+plumber-pbom.json
+plumber-cyclonedx-sbom.json
