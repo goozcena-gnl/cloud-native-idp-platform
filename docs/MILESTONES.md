@@ -91,6 +91,9 @@ the full credential strategy and migration path.
 
 ### Summary
 
+> Historical record: this milestone predates the 2026-08 repository-owner
+> namespace migration. The `goozdu12` image path below is retired.
+
 The `demo-grpc` Go gRPC service is now fully wired through the supply chain:
 
 ```text
@@ -406,7 +409,7 @@ When a new version of `demo-grpc` is ready to deploy:
 kubectl -n apps get deployment demo-grpc \
   -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
 
-# Should print:
+# Historical output at this milestone (retired namespace and short tag):
 # ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:sha-1b1db1a
 
 # Full metrics and dashboard validation
@@ -1541,7 +1544,8 @@ Implemented capabilities:
   - `grpc.code`;
   - `duration_ms`.
 - Published and deployed the trace-correlated `demo-grpc` image through GHCR and ArgoCD.
-- Validated that the deployed GitOps image is:
+- Historically validated before the repository-owner namespace migration that
+  the deployed GitOps image was:
   - `ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:sha-1dba716`.
 - Added automated correlation validation script:
   - `scripts/check-demo-grpc-log-trace-correlation.sh`.

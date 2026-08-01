@@ -129,15 +129,11 @@ Repository-level residual governance risks are not suppressed in Plumber:
   defense in depth;
 - no CodeQL or dependency-review workflow is currently configured; adding them
   is outside this Plumber integration; and
-- the GHCR target remains the historically documented personal namespace
-  `goozdu12`. Repository history and successful publish runs through 2026-07-02
-  confirm that it was intentional and previously usable. Current verification
-  did not confirm accessibility: anonymous access was denied, authenticated
-  registry requests for its tags and `main` manifest returned 404, and current
-  package metadata points to a private package URL under `goozcena-gnl` linked
-  to this repository. The image reference was therefore not changed
-  automatically; namespace ownership and migration must be resolved in a
-  separate, deliberate change.
+- the historical GHCR owner `goozdu12` is no longer a valid publication target.
+  Run `30702883740` failed with `denied: not_found: owner not found`; publication
+  and consumers now use `ghcr.io/goozcena-gnl/...`. Controlled run
+  `30704056484` successfully published the full-SHA tag, and authenticated
+  index, child-manifest, configuration-blob, and layer reads succeeded.
 
 The Docker Buildx `type=gha` cache remains enabled. Pull requests cannot publish
 an image, and the publishing workflow runs only from trusted `main` pushes or a

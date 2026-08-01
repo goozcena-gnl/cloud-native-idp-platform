@@ -176,15 +176,14 @@ See [GITOPS.md](GITOPS.md) for the full GitOps deployment flow.
 ## Pulling from a private registry (GHCR)
 
 The chart supports `imagePullSecrets` for private registries. The ArgoCD
-Application now deploys the GHCR image
-`ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:main` and references a
-pull secret:
+Application deploys the verified immutable GHCR image and references a pull
+secret:
 
 ```yaml
 image:
-  repository: ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
-  tag: main
-  pullPolicy: Always
+  repository: ghcr.io/goozcena-gnl/cloud-native-idp-platform/demo-grpc
+  tag: sha-39b20cec49939fd4e90dcd5aef74ee71ee22c800
+  pullPolicy: IfNotPresent
 
 imagePullSecrets:
   - name: ghcr-demo-grpc-pull
@@ -193,7 +192,7 @@ imagePullSecrets:
 Create the pull secret locally (never committed to Git):
 
 ```bash
-GITHUB_USERNAME=goozdu12 ./scripts/configure-ghcr-pull-secret.sh
+GITHUB_USERNAME=goozcena-gnl ./scripts/configure-ghcr-pull-secret.sh
 ```
 
 See [GHCR.md](GHCR.md) for details.

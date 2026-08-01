@@ -5,7 +5,7 @@ The `demo-grpc` image is published to the GitHub Container Registry (GHCR).
 Published image:
 
 ```
-ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
+ghcr.io/goozcena-gnl/cloud-native-idp-platform/demo-grpc
 ```
 
 ## Publishing workflow
@@ -42,34 +42,43 @@ Each publish produces two tags:
 
 | Tag | Value |
 |-----|-------|
-| `main` | always points to the latest build from `main` |
-| `sha-<full-commit>` | immutable tag for the exact commit |
+| `main` | mutable; updated only by a trusted default-branch publication |
+| `sha-<full-commit>` | immutable tag emitted for every publication, including a maintainer dispatch |
 
-The `main` tag is intentionally mutable for the local-first MVP. Each trusted
-publish also emits the full commit-derived `sha-*` tag so consumers can select
-an immutable image reference.
+The `main` tag is intentionally mutable for convenience. A non-default-branch
+manual dispatch cannot move it; that validation path publishes only the full
+commit-derived `sha-*` tag.
 
-The `goozdu12` namespace is retained because it is the historical personal GHCR
-target used by this project, even though the repository now lives under
-`goozcena-gnl`. Repository history and successful publish workflow runs through
-2026-07-02 confirm that this target was intentional and previously usable.
+## Namespace migration evidence
 
-Current verification did not confirm that the old namespace remains accessible:
+The historical `goozdu12` target became unusable after the repository owner
+changed. Post-merge workflow run `30702883740` authenticated and built the image
+successfully, then failed while pushing with:
 
-- anonymous GHCR access was denied;
-- authenticated registry requests for the old path's tag list and `main`
-  manifest returned 404;
-- the available credential recorded under the former `goozdu12` login now
-  resolves through the GitHub API as `goozcena-gnl`; and
-- GitHub package metadata exposes a private package named
-  `cloud-native-idp-platform/demo-grpc`, linked to this repository, with its
-  package URL under `goozcena-gnl`.
+```text
+denied: not_found: owner not found
+```
 
-This is evidence of historical intent, but not evidence of current pull or push
-access to `ghcr.io/goozdu12/...`. The reference is intentionally unchanged in
-this security-gate PR. Before relying on the next publish, an owner must confirm
-the namespace in GitHub Packages or migrate it in a separate, deliberate change
-together with all deployment references and pull-secret documentation.
+Authenticated registry inventory returned 404 for the old path and 200 for the
+current `goozcena-gnl` path. GitHub Packages identifies the current package as
+private, linked to `goozcena-gnl/cloud-native-idp-platform`, so publication and
+all runtime consumers use the repository-owner namespace.
+
+A controlled branch publication (`30704056484`) validated the new target without
+moving `main`. It published:
+
+```text
+ghcr.io/goozcena-gnl/cloud-native-idp-platform/demo-grpc:sha-39b20cec49939fd4e90dcd5aef74ee71ee22c800
+```
+
+The OCI index digest is:
+
+```text
+sha256:cb481413930b3e15521e418bfddde9835c132d01db219c77049c875d98d30e58
+```
+
+Authenticated reads of the index, Linux/amd64 child manifest, configuration
+blob, and first layer all succeeded.
 
 ## GitOps deployment from GHCR
 
@@ -77,10 +86,11 @@ The ArgoCD Application `platform/argocd/apps/demo-grpc-app.yaml` deploys the
 GHCR image:
 
 ```
-ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc:main
+ghcr.io/goozcena-gnl/cloud-native-idp-platform/demo-grpc:sha-39b20cec49939fd4e90dcd5aef74ee71ee22c800
 ```
 
-Because `main` is a mutable tag, the Deployment uses `pullPolicy: Always`.
+The GitOps consumer is pinned to the verified full-SHA tag and uses
+`pullPolicy: IfNotPresent`.
 
 ### Pull secret
 
@@ -88,7 +98,7 @@ The package is private, so the cluster needs a pull secret. Create it locally
 without printing the token:
 
 ```bash
-GITHUB_USERNAME=goozdu12 ./scripts/configure-ghcr-pull-secret.sh
+GITHUB_USERNAME=goozcena-gnl ./scripts/configure-ghcr-pull-secret.sh
 ```
 
 This creates a `docker-registry` Secret named `ghcr-demo-grpc-pull` in the
@@ -101,21 +111,24 @@ Validate:
 kubectl -n apps get secret ghcr-demo-grpc-pull
 ```
 
-## Validated Kubernetes state
+## Validate publication and consumption
 
-After deploying from GHCR, the following was validated against the
-`kind-idp-local` cluster:
+After a trusted `main` publication, verify the workflow and package metadata,
+then confirm the GitOps consumer references the intended immutable tag:
 
-```text
-demo-grpc Application: Synced / Healthy
-Deployment: rolled out successfully
-gRPC healthcheck: SERVING
+```bash
+gh run list --workflow publish-demo-grpc.yml --branch main --limit 1
+kubectl -n apps get deployment demo-grpc \
+  -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+kubectl -n apps rollout status deployment/demo-grpc
 ```
 
 ## Important limitation
 
-The current deployment uses the mutable tag `main`. This is acceptable for the
-MVP, but production deployments should prefer:
+The current deployment uses an immutable full-SHA tag. The `main` tag remains a
+mutable convenience tag and must not be treated as a release identity.
+
+Further production improvements should prefer:
 
 - immutable commit SHA tags;
 - image digests;
