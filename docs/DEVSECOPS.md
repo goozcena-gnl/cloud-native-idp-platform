@@ -107,6 +107,13 @@ baseline scan did not report:
 - the immutable image tag used a shortened commit; it now uses the full commit
   while retaining the documented mutable `main` convenience tag.
 
+The first hosted run also exposed current HIGH-severity findings in the strict
+existing Trivy gate. They were fixed rather than ignored: vulnerable Backstage
+and Go dependencies were upgraded within compatible release lines, and the
+five affected MinIO, Backstage, and PostgreSQL containers now use read-only
+root filesystems with narrowly scoped writable `emptyDir` mounts. No Trivy
+ignore or severity reduction was added.
+
 Repository-level residual governance risks are not suppressed in Plumber:
 
 - repository Actions policy currently allows all actions and does not itself
@@ -227,10 +234,12 @@ missing.
 
 ## Current limitations
 
-This is intentionally strict and may require tuning later with:
+This is intentionally strict. There are currently no repository suppressions;
+any future exception should be time-bounded, documented, and reviewed. Possible
+future changes include:
 
-- `.trivyignore` for accepted unfixed vulnerabilities;
-- severity threshold adjustments;
+- a documented `.trivyignore` entry only for an explicitly accepted, unfixed
+  vulnerability; and
 - Trivy SARIF upload and Trivy SBOM generation (Plumber produces separate
   pipeline-focused SARIF, PBOM, and CycloneDX reports).
 
