@@ -12,6 +12,11 @@ Workflow file: `.github/workflows/ci.yml`
 
 Concurrent runs for the same ref are cancelled (`concurrency: cancel-in-progress: true`).
 
+A separate `Plumber CI/CD Security` workflow runs on the same branch events and
+manual dispatch. It analyzes the repository's GitHub Actions attack surface,
+uploads SARIF to Code Scanning, produces pipeline inventory artifacts, and
+enforces a minimum score of `A`. See [DevSecOps security scanning](DEVSECOPS.md).
+
 ## Jobs
 
 ### Go test and build
@@ -70,6 +75,11 @@ permissions:
 
 This follows least privilege: the workflow only reads repository contents; it
 does not write, create releases, or push packages.
+
+Every external action is pinned to a full 40-character upstream commit SHA with
+the human-readable release beside it. Checkout steps set
+`persist-credentials: false` so the workflow does not leave the GitHub token in
+the local Git configuration.
 
 The `security` job also explicitly declares `permissions: contents: read` to
 be self-documenting.

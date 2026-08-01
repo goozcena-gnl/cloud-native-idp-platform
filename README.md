@@ -121,6 +121,14 @@ The security layer includes:
 Documentation:
 
 - [Security governance](docs/SECURITY_GOVERNANCE.md)
+- [DevSecOps and CI/CD supply-chain security](docs/DEVSECOPS.md)
+
+The dedicated `Plumber CI/CD Security` workflow analyzes every GitHub Actions
+workflow and local composite action on pull requests, pushes to `main`, and
+manual runs. It enforces a minimum Plumber score of `A`, publishes SARIF to
+GitHub Code Scanning, and retains JSON, SARIF, PBOM, and CycloneDX reports as
+short-lived workflow artifacts. Plumber score publication to the external badge
+service is intentionally disabled.
 
 ### Runtime operations
 

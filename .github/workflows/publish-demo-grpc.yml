@@ -12,38 +12,49 @@ on:
 
 permissions:
   contents: read
-  packages: write
+
+concurrency:
+  group: publish-demo-grpc-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
     name: Build and push to GHCR
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Log in to GHCR
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c  # v4.2.0
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051  # v5.10.0
         with:
+          # This personal GHCR namespace is intentional and documented in docs/GHCR.md.
           images: ghcr.io/goozdu12/cloud-native-idp-platform/demo-grpc
           tags: |
+            # Convenience tag for the latest trusted main build; sha-* is immutable.
             type=raw,value=main
-            type=sha,prefix=sha-,format=short
+            type=sha,prefix=sha-,format=long
 
       - name: Build and push image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a  # v7.3.0
         with:
           context: services/demo-grpc
           file: services/demo-grpc/Dockerfile

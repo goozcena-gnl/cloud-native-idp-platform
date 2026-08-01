@@ -1,0 +1,15 @@
+extends: plumber:default
+version: "2.0"
+
+github:
+  controls:
+    actionsMustBePinnedByCommitSha:
+      enabled: true
+      # Unlike the first-run baseline, this repository requires immutable pins
+      # even for GitHub-maintained actions.
+      trustedOwners: []
+    githubActionMustComeFromAuthorizedSources:
+      enabled: true
+      # Keep Plumber's maintained publisher allowlist. This repository does not
+      # add any owners beyond that curated baseline.
+      includePlumberDefaults: true
