@@ -49,13 +49,27 @@ The `main` tag is intentionally mutable for the local-first MVP. Each trusted
 publish also emits the full commit-derived `sha-*` tag so consumers can select
 an immutable image reference.
 
-The `goozdu12` namespace is retained intentionally because it is the historical
-personal GHCR target used by this project, even though the repository now lives
-under `goozcena-gnl`. During the Plumber integration review, the package was not
-visible through the GitHub Packages API. The next trusted `main` publish must
-confirm that the package exists and grants this repository Actions write access;
-if it does not, migrate the package or namespace in a separate, deliberate
-change together with all deployment references and pull-secret documentation.
+The `goozdu12` namespace is retained because it is the historical personal GHCR
+target used by this project, even though the repository now lives under
+`goozcena-gnl`. Repository history and successful publish workflow runs through
+2026-07-02 confirm that this target was intentional and previously usable.
+
+Current verification did not confirm that the old namespace remains accessible:
+
+- anonymous GHCR access was denied;
+- authenticated registry requests for the old path's tag list and `main`
+  manifest returned 404;
+- the available credential recorded under the former `goozdu12` login now
+  resolves through the GitHub API as `goozcena-gnl`; and
+- GitHub package metadata exposes a private package named
+  `cloud-native-idp-platform/demo-grpc`, linked to this repository, with its
+  package URL under `goozcena-gnl`.
+
+This is evidence of historical intent, but not evidence of current pull or push
+access to `ghcr.io/goozdu12/...`. The reference is intentionally unchanged in
+this security-gate PR. Before relying on the next publish, an owner must confirm
+the namespace in GitHub Packages or migrate it in a separate, deliberate change
+together with all deployment references and pull-secret documentation.
 
 ## GitOps deployment from GHCR
 

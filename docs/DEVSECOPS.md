@@ -37,6 +37,8 @@ The `Plumber gate` job:
 - preserves Plumber's maintained trusted-publisher baseline without adding a
   repository-specific publisher wildcard;
 - enforces score `A` with `soft-fail: false`;
+- sets `fail-warnings: true`, so an unverifiable control fails the gate instead
+  of producing a degraded success;
 - keeps external score publication disabled (`score-push: false`); and
 - cancels obsolete runs and times out after 15 minutes.
 
@@ -53,8 +55,14 @@ The job writes terminal findings and a GitHub job summary. It also generates:
 - `plumber-pbom.json` — Pipeline Bill of Materials;
 - `plumber-cyclonedx-sbom.json` — CycloneDX pipeline inventory.
 
-The files are bundled in the `plumber-security-reports` workflow artifact with
-the official action's 30-day retention. Local copies are ignored by Git.
+The files are bundled in the `plumber-security-reports` workflow artifact.
+This repository workflow does not define `retention-days`, so it does not
+promise a 30-day lifetime. Artifact retention inherits the repository Actions
+artifact-retention setting unless the uploader implements an explicit override;
+any requested duration remains bounded by repository or organization policy.
+The pinned Plumber action currently requests 30 days internally, which is an
+upstream implementation detail rather than a repository-workflow contract.
+Local copies are ignored by Git.
 
 ### Local validation
 
@@ -122,9 +130,14 @@ Repository-level residual governance risks are not suppressed in Plumber:
 - no CodeQL or dependency-review workflow is currently configured; adding them
   is outside this Plumber integration; and
 - the GHCR target remains the historically documented personal namespace
-  `goozdu12`. The package was not visible through the GitHub Packages API during
-  this review, so authorization and repository linkage must be confirmed by the
-  next trusted publish run. It was not changed blindly.
+  `goozdu12`. Repository history and successful publish runs through 2026-07-02
+  confirm that it was intentional and previously usable. Current verification
+  did not confirm accessibility: anonymous access was denied, authenticated
+  registry requests for its tags and `main` manifest returned 404, and current
+  package metadata points to a private package URL under `goozcena-gnl` linked
+  to this repository. The image reference was therefore not changed
+  automatically; namespace ownership and migration must be resolved in a
+  separate, deliberate change.
 
 The Docker Buildx `type=gha` cache remains enabled. Pull requests cannot publish
 an image, and the publishing workflow runs only from trusted `main` pushes or a
@@ -132,11 +145,11 @@ maintainer-triggered manual run. Cache behavior should still be reviewed if the
 repository later introduces privileged pull-request triggers or cross-workflow
 cache sharing.
 
-As part of this rollout, `main` was protected with strict required status check
-`Plumber gate`, administrator enforcement, and force-push and deletion disabled.
-No review-count or linear-history policy was added. After that setting change,
-the authenticated local scan passed all 21 enabled controls with score `A`
-(100/100) and no findings. The only skipped control was
+As part of this rollout, `main` was protected with strict required status checks
+`Plumber gate` and `CI result`, administrator enforcement, and force-push and
+deletion disabled. No review-count or linear-history policy was added. After
+that setting change, the authenticated local scan passed all 21 enabled controls
+with score `A` (100/100) and no findings. The only skipped control was
 `workflowMustIncludeRequiredActions`, which is disabled in Plumber's maintained
 default configuration.
 

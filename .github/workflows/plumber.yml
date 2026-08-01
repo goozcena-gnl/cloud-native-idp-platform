@@ -36,6 +36,7 @@ jobs:
           verify-attestation: true
           config-file: .plumber.yaml
           min-score: A
+          fail-warnings: true
           soft-fail: false
           score-push: false
           upload-sarif: true
