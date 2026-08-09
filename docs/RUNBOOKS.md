@@ -172,7 +172,7 @@ kubectl -n argocd get application demo-grpc
 kubectl -n apps rollout status deploy/demo-grpc
 ```
 
-If the application is out of sync, refresh or sync it through ArgoCD.
+If the application is out of sync, refresh or sync it through Argo CD.
 
 ## GrafanaDown
 
@@ -316,7 +316,7 @@ Validate the full tracing stack:
 
 ### Meaning
 
-At least one ArgoCD application in project `idp-platform` is not synced.
+At least one Argo CD application in project `idp-platform` is not synced.
 
 ### Impact
 
@@ -361,7 +361,7 @@ Then check application status again.
 
 ### Meaning
 
-At least one ArgoCD application in project `idp-platform` is not healthy.
+At least one Argo CD application in project `idp-platform` is not healthy.
 
 ### Impact
 
@@ -397,7 +397,7 @@ kubectl -n <namespace> logs <pod-name> --tail=100
 
 ### Meaning
 
-Prometheus cannot scrape ArgoCD application-controller metrics.
+Prometheus cannot scrape Argo CD application-controller metrics.
 
 ### Investigation
 
@@ -421,7 +421,7 @@ kubectl -n argocd annotate application argocd-monitoring \
 
 ### Meaning
 
-Prometheus cannot scrape ArgoCD repo-server metrics.
+Prometheus cannot scrape Argo CD repo-server metrics.
 
 ### Investigation
 
@@ -442,7 +442,7 @@ kubectl -n argocd logs deploy/argocd-repo-server --tail=100
 
 ### Meaning
 
-Prometheus cannot scrape ArgoCD server metrics.
+Prometheus cannot scrape Argo CD server metrics.
 
 ### Investigation
 

@@ -8,7 +8,7 @@ The goal is to demonstrate that the platform can expose Kubernetes cost allocati
 
 The platform now includes:
 
-- OpenCost deployed through ArgoCD;
+- OpenCost deployed through Argo CD;
 - integration with the existing Prometheus stack;
 - OpenCost namespace managed declaratively;
 - OpenCost exporter and UI;
@@ -29,7 +29,7 @@ Kubernetes workloads
 
 ## GitOps application
 
-OpenCost is deployed as an ArgoCD application:
+OpenCost is deployed as an Argo CD application:
 
 ```text
 opencost
@@ -100,7 +100,7 @@ Run:
 
 The script validates:
 
-- ArgoCD application status;
+- Argo CD application status;
 - namespace labels;
 - deployment rollout;
 - pod and service state;

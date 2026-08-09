@@ -15,9 +15,9 @@
 - Helm structure
 - Optional Cilium baseline
 
-## Phase 2 — GitOps with ArgoCD
+## Phase 2 — GitOps with Argo CD
 
-- ArgoCD installation
+- Argo CD installation
 - App-of-apps pattern
 - Platform apps reconciled from Git
 

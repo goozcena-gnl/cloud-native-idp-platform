@@ -58,7 +58,7 @@ done
 
 required_terms=(
   "Kubernetes"
-  "ArgoCD"
+  "Argo CD"
   "GitOps"
   "Prometheus"
   "Grafana"

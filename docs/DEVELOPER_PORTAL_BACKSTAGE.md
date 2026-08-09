@@ -14,7 +14,7 @@ The platform now includes:
 - a Backstage-compatible service catalog;
 - a local Docker image `backstage:local`;
 - a PostgreSQL backend for Backstage;
-- a Kubernetes deployment managed by ArgoCD;
+- a Kubernetes deployment managed by Argo CD;
 - Backstage configured to import the platform catalog;
 - validation of the `demo-grpc` service through the Backstage catalog API.
 
@@ -41,7 +41,7 @@ ArgoCD Application/backstage
 
 ## GitOps model
 
-Backstage is deployed through ArgoCD:
+Backstage is deployed through Argo CD:
 
 ```text
 platform/argocd/apps/backstage.yaml
@@ -76,7 +76,7 @@ The full stack is validated by:
 
 The validation checks:
 
-- ArgoCD application state;
+- Argo CD application state;
 - namespace labels;
 - Backstage and PostgreSQL workloads;
 - rollout status;
@@ -94,7 +94,7 @@ Backstage stack validated successfully.
 
 ## Evidence
 
-### 1. ArgoCD Backstage application synced and healthy
+### 1. Argo CD Backstage application synced and healthy
 
 ### 2. Backstage stack validation
 
@@ -102,7 +102,7 @@ Backstage stack validated successfully.
 
 ### 4. demo-grpc catalog entity
 
-### 5. ArgoCD Backstage resource tree
+### 5. Argo CD Backstage resource tree
 
 ## Software Template
 
@@ -183,7 +183,7 @@ Possible next steps:
 - add TechDocs;
 - integrate GitHub authentication;
 - add Kubernetes plugin configuration;
-- add ArgoCD plugin integration;
+- add Argo CD plugin integration;
 - publish the Backstage image to GHCR;
 - add a production-style PostgreSQL deployment;
 - expose Backstage through ingress and TLS.

@@ -47,7 +47,7 @@ echo "Checking scorecard references..."
 required_references=(
   "catalog-info.yaml"
   "demo-grpc"
-  "ArgoCD"
+  "Argo CD"
   "GitHub Actions"
   "Prometheus"
   "Loki"

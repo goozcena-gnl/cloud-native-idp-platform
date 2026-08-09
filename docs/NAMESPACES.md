@@ -1,8 +1,8 @@
 # Platform Namespaces (Task 1.2)
 
 This task creates the MVP namespaces for the local IDP from versioned YAML.
-This is the pre-ArgoCD bootstrap step: namespaces are applied manually now,
-and ArgoCD will later become the GitOps reconciler.
+This is the pre-Argo CD bootstrap step: namespaces are applied manually now,
+and Argo CD will later become the GitOps reconciler.
 
 ## Namespaces
 
@@ -25,7 +25,7 @@ All namespaces carry these labels:
 Pod Security Admission (PSA) is intentionally not enforced yet.
 
 The MVP does not immediately enforce strict PSA on all namespaces, because
-components like ArgoCD, observability agents, and security tools may need
+components like Argo CD, observability agents, and security tools may need
 permissions, volumes, or runtime settings that are not compatible with
 immediate `restricted` enforcement. We harden progressively instead of
 breaking the platform early.
@@ -44,8 +44,8 @@ demo workload and platform services are hardened.
 
 ## GitOps transition
 
-During pre-ArgoCD bootstrap, applying namespace manifests manually is
-acceptable. After ArgoCD is installed, namespace changes should be reconciled
+During pre-Argo CD bootstrap, applying namespace manifests manually is
+acceptable. After Argo CD is installed, namespace changes should be reconciled
 through GitOps rather than applied by hand.
 
 ## Apply the Namespaces

@@ -10,7 +10,7 @@ Manual cluster changes create drift and make the platform difficult to audit.
 
 ## Decision
 
-After the initial bootstrap, platform state should be managed through Git and reconciled by ArgoCD.
+After the initial bootstrap, platform state should be managed through Git and reconciled by Argo CD.
 
 ## Consequences
 

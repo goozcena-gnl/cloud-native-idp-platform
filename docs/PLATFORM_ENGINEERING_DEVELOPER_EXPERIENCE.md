@@ -54,7 +54,7 @@ The `demo-grpc` service is documented as a Backstage component.
 It links the service to:
 
 - the GitHub repository;
-- the ArgoCD application;
+- the Argo CD application;
 - Kubernetes workload metadata;
 - observability documentation;
 - security governance documentation;

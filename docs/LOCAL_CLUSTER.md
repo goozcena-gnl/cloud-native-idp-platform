@@ -1,7 +1,7 @@
 # Local Kubernetes Cluster (Phase 1.1)
 
 This phase creates a single reliable local Kubernetes cluster using `kind` and
-Docker Desktop. It does not install ArgoCD, Cilium, or any other add-ons yet.
+Docker Desktop. It does not install Argo CD, Cilium, or any other add-ons yet.
 
 ## Runtime model
 

@@ -35,7 +35,7 @@ ArgoCD
 
 ## GitOps model
 
-Velero and MinIO are managed through ArgoCD applications:
+Velero and MinIO are managed through Argo CD applications:
 
 ```text
 velero-minio   Synced   Healthy
@@ -95,11 +95,11 @@ data:
 
 ## Screenshot evidence
 
-### 1. Velero and MinIO managed by ArgoCD
+### 1. Velero and MinIO managed by Argo CD
 
-![Velero ArgoCD applications synced](assets/backup-disaster-recovery/01-argocd-velero-apps-synced.png)
+![Velero Argo CD applications synced](assets/backup-disaster-recovery/01-argocd-velero-apps-synced.png)
 
-This screenshot proves that both `velero` and `velero-minio` are managed declaratively through ArgoCD and are `Synced` / `Healthy`.
+This screenshot proves that both `velero` and `velero-minio` are managed declaratively through Argo CD and are `Synced` / `Healthy`.
 
 ### 2. BackupStorageLocation available
 
@@ -113,15 +113,15 @@ This screenshot proves that Velero can reach the MinIO S3-compatible backend and
 
 This screenshot proves the complete disaster recovery flow: backup creation, namespace deletion, restore execution, and restored ConfigMap validation.
 
-### 4. Velero resource tree in ArgoCD
+### 4. Velero resource tree in Argo CD
 
-![Velero ArgoCD resource tree](assets/backup-disaster-recovery/04-argocd-velero-resource-tree.png)
+![Velero Argo CD resource tree](assets/backup-disaster-recovery/04-argocd-velero-resource-tree.png)
 
 This screenshot shows the live Velero resources managed by the GitOps application.
 
-### 5. MinIO backend resource tree in ArgoCD
+### 5. MinIO backend resource tree in Argo CD
 
-![Velero MinIO ArgoCD resource tree](assets/backup-disaster-recovery/05-argocd-velero-minio-resource-tree.png)
+![Velero MinIO Argo CD resource tree](assets/backup-disaster-recovery/05-argocd-velero-minio-resource-tree.png)
 
 This screenshot shows the local S3-compatible backend used by Velero, including the MinIO workload and bucket creation job.
 

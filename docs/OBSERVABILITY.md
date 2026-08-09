@@ -18,14 +18,14 @@ observability milestone installs the `kube-prometheus-stack`, which provides:
 kube-prometheus-stack v86.2.2
 ```
 
-The chart is deployed by ArgoCD using the multi-source pattern:
+The chart is deployed by Argo CD using the multi-source pattern:
 
 ```text
 platform/argocd/apps/kube-prometheus-stack-app.yaml
 ```
 
 The chart comes from the Prometheus Community Helm registry. Values are stored
-in the GitOps repository and referenced via the ArgoCD `$values` source:
+in the GitOps repository and referenced via the Argo CD `$values` source:
 
 ```text
 platform/helm-values/kube-prometheus-stack-values.yaml
@@ -55,9 +55,9 @@ admin / admin
 ./scripts/check-observability-stack.sh
 ```
 
-## Multi-source ArgoCD Application
+## Multi-source Argo CD Application
 
-The `kube-prometheus-stack-app.yaml` uses the ArgoCD multi-source feature
+The `kube-prometheus-stack-app.yaml` uses the Argo CD multi-source feature
 (`sources:`) to combine:
 
 1. The chart from the external Helm registry (`prometheus-community.github.io`).
@@ -495,7 +495,7 @@ Main query:
 {namespace="apps", container="demo-grpc"}
 ```
 
-The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from:
+The dashboard is provisioned by the `grafana-dashboards` Argo CD application from:
 
 ```text
 platform/grafana/dashboards/demo-grpc-logs-dashboard.yaml
@@ -780,17 +780,17 @@ Grafana dashboard validation requires a future synthetic check exporter or black
 Alertmanager notification routing is a future improvement.
 ```
 
-The dashboard is provisioned by the `grafana-dashboards` ArgoCD application from:
+The dashboard is provisioned by the `grafana-dashboards` Argo CD application from:
 
 ```text
 platform/grafana/dashboards/demo-grpc-sre-dashboard.yaml
 ```
 
-## ArgoCD metrics
+## Argo CD metrics
 
-The platform scrapes ArgoCD metrics with Prometheus.
+The platform scrapes Argo CD metrics with Prometheus.
 
-The following ArgoCD components expose metrics through dedicated Services:
+The following Argo CD components expose metrics through dedicated Services:
 
 ```text
 argocd-application-controller-metrics : 8082
@@ -844,7 +844,7 @@ The dashboard combines:
 
 - Prometheus application metrics
 - Loki application logs
-- ArgoCD GitOps metrics
+- Argo CD GitOps metrics
 
 ### GitOps signals
 

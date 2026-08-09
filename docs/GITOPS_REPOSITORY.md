@@ -1,10 +1,10 @@
 # GitOps Repository Access Model
 
-ArgoCD will reconcile platform manifests from this Git repository. Before
-creating ArgoCD `Application` resources, confirm which repository URL ArgoCD
+Argo CD will reconcile platform manifests from this Git repository. Before
+creating Argo CD `Application` resources, confirm which repository URL Argo CD
 should use and whether the repository is public or private.
 
-This step is read-only. It does not configure ArgoCD repository credentials.
+This step is read-only. It does not configure Argo CD repository credentials.
 
 ## Check the repository
 
@@ -15,12 +15,12 @@ Run from the repository root:
 ```
 
 The script checks `git remote origin`, normalizes common GitHub SSH remotes to
-HTTPS, and prints the recommended ArgoCD `repoURL`.
+HTTPS, and prints the recommended Argo CD `repoURL`.
 
 It prints:
 
 - The current Git remote
-- The recommended ArgoCD `repoURL`
+- The recommended Argo CD `repoURL`
 - The current branch
 - The latest commit
 - GitHub CLI authentication status
@@ -37,13 +37,13 @@ If GitHub CLI is installed and authenticated, the script also runs
 
 ## Why normalize GitHub SSH to HTTPS?
 
-ArgoCD can use either SSH or HTTPS repository URLs, but HTTPS is simpler for
+Argo CD can use either SSH or HTTPS repository URLs, but HTTPS is simpler for
 the local MVP because public repositories need no credentials and private
 repository credentials can be added later without changing the `repoURL` shape.
 
 Common normalizations:
 
-| Git remote | Recommended ArgoCD `repoURL` |
+| Git remote | Recommended Argo CD `repoURL` |
 |---|---|
 | `git@github.com:OWNER/REPO.git` | `https://github.com/OWNER/REPO.git` |
 | `ssh://git@github.com/OWNER/REPO.git` | `https://github.com/OWNER/REPO.git` |
@@ -51,19 +51,19 @@ Common normalizations:
 | `https://github.com/OWNER/REPO.git` | `https://github.com/OWNER/REPO.git` |
 
 The script redacts embedded HTTP credentials if a remote URL contains them.
-Do not use credential-bearing Git URLs in ArgoCD `Application` manifests.
+Do not use credential-bearing Git URLs in Argo CD `Application` manifests.
 
 ## Public repository implication
 
-If the repository is public, ArgoCD can read it without repository credentials.
-The first ArgoCD `Application` can reference the recommended `repoURL` directly.
+If the repository is public, Argo CD can read it without repository credentials.
+The first Argo CD `Application` can reference the recommended `repoURL` directly.
 
 Public repository access is the simplest path for a portfolio MVP, but still
 do not commit secrets, kubeconfig files, tokens, or generated credentials.
 
 ## Private repository implication
 
-If the repository is private, ArgoCD needs Git credentials configured in the
+If the repository is private, Argo CD needs Git credentials configured in the
 cluster before it can reconcile Applications from the repo.
 
 Configure the credential locally:
@@ -78,7 +78,7 @@ Validate the Secret structure without printing the token:
 ./scripts/check-argocd-repo-secret.sh
 ```
 
-The token is stored only inside the local Kubernetes cluster as an ArgoCD
+The token is stored only inside the local Kubernetes cluster as an Argo CD
 repository Secret.
 
 Do not commit any of the following:
@@ -87,14 +87,14 @@ Do not commit any of the following:
 - GitHub fine-grained tokens
 - Deploy private keys
 - Repository credential Secrets
-- ArgoCD repo credential manifests containing secret material
+- Argo CD repo credential manifests containing secret material
 - Kubeconfig files or cloud credentials
 - Generated Secret YAML
 - Terminal output containing the token
 - Screenshots showing the token
 
 Credential setup is intentionally deferred. For a later task, choose a secure
-local approach such as an ArgoCD CLI repo add command, a manually created
+local approach such as an Argo CD CLI repo add command, a manually created
 Kubernetes Secret excluded from Git, or an encrypted secret workflow such as
 SOPS once secret management is part of the platform.
 
@@ -138,15 +138,15 @@ gh auth login
 ```
 
 If you do not authenticate `gh`, confirm visibility in GitHub before creating
-ArgoCD `Application` resources.
+Argo CD `Application` resources.
 
 ## Next decision before Applications
 
-Use this rule before writing ArgoCD Applications:
+Use this rule before writing Argo CD Applications:
 
 - Public repo: use the recommended `repoURL` directly.
-- Private repo: configure ArgoCD credentials outside Git first, then create
+- Private repo: configure Argo CD credentials outside Git first, then create
   Applications that reference the recommended `repoURL`.
 
 In both cases, Git should become the source of truth for desired Kubernetes
-manifests after ArgoCD starts reconciling them.
+manifests after Argo CD starts reconciling them.

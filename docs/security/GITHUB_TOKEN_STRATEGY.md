@@ -1,6 +1,6 @@
 # GitHub Token Strategy for GitOps
 
-This document describes how ArgoCD authenticates to the **private** GitHub
+This document describes how Argo CD authenticates to the **private** GitHub
 repository, the security implications of the current approach, and the target
 credential strategy. It exists to make the trade-offs explicit and to define a
 clear migration path away from the MVP shortcut.
@@ -9,8 +9,8 @@ clear migration path away from the MVP shortcut.
 
 ## Current state (MVP)
 
-ArgoCD reads the private repository using a **GitHub Personal Access Token
-(PAT)**. The token is provided to ArgoCD as a Kubernetes `Secret` of type
+Argo CD reads the private repository using a **GitHub Personal Access Token
+(PAT)**. The token is provided to Argo CD as a Kubernetes `Secret` of type
 `repository`, created out-of-band with:
 
 ```bash
@@ -25,7 +25,7 @@ The Secret structure can be validated without revealing the token:
 
 ### Why a PAT for the MVP
 
-- It is the fastest way to grant ArgoCD read access to a private repository.
+- It is the fastest way to grant Argo CD read access to a private repository.
 - It requires no GitHub organization-level configuration.
 - It keeps the local-first bootstrap simple and reproducible.
 
@@ -57,7 +57,7 @@ These rules are non-negotiable for this project:
   containing secret material is committed. The repository `.gitignore` and
   review discipline enforce this. Specifically, never commit:
   - GitHub tokens;
-  - ArgoCD repository Secret manifests containing credentials;
+  - Argo CD repository Secret manifests containing credentials;
   - SSH private keys;
   - kubeconfig files;
   - `.env` files;
@@ -69,7 +69,7 @@ These rules are non-negotiable for this project:
   - Fine-grained PAT: select only this repository, with
     *Contents: Read-only* (Metadata read is included automatically).
   - Classic PAT: limit to the `repo` scope and remove it after migration.
-- **Store only in the Kubernetes Secret.** The token lives in the ArgoCD
+- **Store only in the Kubernetes Secret.** The token lives in the Argo CD
   `repository` Secret and nowhere else (no `.env`, no notes, no chat).
 - **Rotate on suspicion.** Any suspected exposure means immediate revocation
   and rotation.
@@ -89,7 +89,7 @@ kubectl -n argocd annotate application idp-root \
 
 Then revoke the old token in GitHub.
 
-> Note: ArgoCD only needs to **read** the repository. GitHub may report
+> Note: Argo CD only needs to **read** the repository. GitHub may report
 > `Write access to repository not granted` when a credential cannot **read** a
 > private repo. That message indicates a missing read permission or an expired
 > token, not a need for write access.
@@ -105,15 +105,15 @@ order of operational maturity, are:
 
 - An SSH key pair scoped to a **single repository**, added as a
   **read-only** deploy key on GitHub.
-- The private key is stored as an ArgoCD `repository` Secret (SSH type).
+- The private key is stored as an Argo CD `repository` Secret (SSH type).
 - **Pros:** narrow blast radius (one repo), not tied to a human user.
 - **Cons:** per-repository management; key rotation is manual.
 
 ### 2. GitHub App installation
 
-- A GitHub App installed on the repository/organization, granting ArgoCD a
+- A GitHub App installed on the repository/organization, granting Argo CD a
   dedicated machine identity with **read-only Contents** permission.
-- ArgoCD exchanges the App credentials for short-lived installation tokens.
+- Argo CD exchanges the App credentials for short-lived installation tokens.
 - **Pros:** least-privilege, auditable as a distinct identity,
   short-lived tokens, scalable across many repositories.
 - **Cons:** more initial setup (App registration, private key handling).

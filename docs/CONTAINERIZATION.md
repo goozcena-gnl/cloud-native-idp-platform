@@ -1,7 +1,7 @@
 # Containerization (Task 2.2)
 
 This task containerizes the `demo-grpc` service and validates it locally with
-Docker. No image is pushed, and no Kubernetes, Helm, ArgoCD, CI, or registry
+Docker. No image is pushed, and no Kubernetes, Helm, Argo CD, CI, or registry
 integration is added yet.
 
 ## Goals
@@ -124,4 +124,4 @@ docker image rm demo-grpc:local
 - Add a Helm chart and Kubernetes deployment.
 - Add a Trivy image scan.
 - Wire a Kubernetes gRPC health probe to the same `healthcheck` logic.
-- Deploy through ArgoCD as a GitOps child Application.
+- Deploy through Argo CD as a GitOps child Application.

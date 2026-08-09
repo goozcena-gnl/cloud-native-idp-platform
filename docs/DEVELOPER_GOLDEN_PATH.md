@@ -4,14 +4,14 @@
 
 This document describes the recommended path for adding a new service to the cloud-native IDP platform.
 
-The objective is to provide a clear, repeatable and production-oriented developer experience.
+The objective is to provide a clear, repeatable developer workflow with explicit operational and security gates.
 
 A developer should be able to understand:
 
 - where to place service code;
 - how to containerize the service;
 - how to expose it through Helm;
-- how to deploy it with ArgoCD;
+- how to deploy it with Argo CD;
 - how to add observability;
 - how to meet security requirements;
 - how to document ownership, runbooks and readiness.
@@ -29,7 +29,7 @@ It demonstrates the expected platform integration model:
 - Go service;
 - Docker image;
 - Helm chart;
-- ArgoCD application;
+- Argo CD application;
 - CI pipeline;
 - Kubernetes security context;
 - Prometheus metrics;
@@ -114,7 +114,7 @@ The Helm chart should define:
 - Deployment;
 - Service;
 - ServiceMonitor if metrics are exposed;
-- labels compatible with ArgoCD and Backstage;
+- labels compatible with Argo CD and Backstage;
 - resource requests and limits;
 - hardened pod and container security contexts;
 - configurable image repository and tag.
@@ -133,7 +133,7 @@ Recommended location:
 platform/argocd/apps/<service-name>-app.yaml
 ```
 
-Each service should be deployed through ArgoCD.
+Each service should be deployed through Argo CD.
 
 Expected requirements:
 
@@ -240,7 +240,7 @@ Reference validation:
 
 ## 8. Runtime operations integration
 
-A production-oriented service should integrate with platform runtime capabilities.
+A service following the complete golden path should integrate with the platform's locally validated runtime capabilities.
 
 Expected integrations:
 
@@ -276,7 +276,7 @@ A service should declare:
 - provided APIs;
 - dependencies;
 - links to documentation;
-- ArgoCD application annotation;
+- Argo CD application annotation;
 - Kubernetes identifier annotation.
 
 ## 10. Runbook and ownership
@@ -318,7 +318,7 @@ A new service is ready to be onboarded when it has:
 
 A new service is considered platform-ready when it has:
 
-- ArgoCD application Synced and Healthy;
+- Argo CD application Synced and Healthy;
 - CI green;
 - metrics visible in Prometheus;
 - logs visible in Loki;
