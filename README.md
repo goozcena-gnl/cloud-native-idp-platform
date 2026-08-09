@@ -1,8 +1,15 @@
-# Cloud Native IDP Platform
+# Cloud-Native Internal Developer Platform
 
-Local-first Internal Developer Platform built with Kubernetes, GitOps, observability, security, runtime operations and developer experience.
+> A local-first Kubernetes IDP that turns Backstage golden paths into GitOps-delivered services with observable, policy-governed runtime operations.
 
-This project is a professional DevOps / Platform Engineering portfolio project. It demonstrates how to build and operate a cloud-native platform progressively, with real validation scripts, GitOps delivery and documented evidence.
+Validated with Argo CD state, executable checks, and screenshots across service delivery, SRE, security governance, backup/restore, Vault, cost visibility, and the developer portal.
+
+[![CI](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/ci.yml)
+[![Plumber CI/CD Security](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/plumber.yml/badge.svg?branch=main)](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/plumber.yml)
+[![Publish demo-grpc](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/publish-demo-grpc.yml/badge.svg?branch=main)](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/publish-demo-grpc.yml)
+[![Release](https://img.shields.io/github/v/release/goozcena-gnl/cloud-native-idp-platform?display_name=tag&sort=semver)](https://github.com/goozcena-gnl/cloud-native-idp-platform/releases/latest)
+
+Evidence: [validation model](#validation-model) and [indexed screenshots](docs/EVIDENCE_INDEX.md).
 
 ## What this project demonstrates
 
