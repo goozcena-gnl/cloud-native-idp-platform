@@ -26,8 +26,8 @@ required_sections=(
   "## Validation strategy"
   "## Local-first design choices"
   "## Production-grade improvements"
-  "## Interview talking points"
-  "## Outcome"
+  "## Architecture review guide"
+  "## Capability boundary"
 )
 
 for section in "${required_sections[@]}"; do
@@ -81,6 +81,25 @@ fi
 
 echo
 echo "OK: documentation index references architecture summary."
+
+if ! grep -qF "**Canonical architecture reference.**" "${DOC}"; then
+  echo "ERROR: architecture summary is not identified as canonical."
+  exit 1
+fi
+
+if ! grep -qF "[Architecture and Capabilities Summary](ARCHITECTURE_AND_CAPABILITIES.md)" docs/ARCHITECTURE.md; then
+  echo "ERROR: architecture overview does not reference the canonical summary."
+  exit 1
+fi
+
+adr_count="$(grep -cF "adr/000" docs/DOCUMENTATION_INDEX.md)"
+
+if [[ "${adr_count}" != "4" ]]; then
+  echo "ERROR: documentation index must reference exactly four ADRs; found ${adr_count}."
+  exit 1
+fi
+
+echo "OK: canonical architecture marker, overview link, and four ADR routes are present."
 
 echo
 echo "============================================================"

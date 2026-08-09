@@ -1,14 +1,17 @@
 # Documentation Index
 
-## Portfolio overview
+## Start here
 
-- [Portfolio closeout](PORTFOLIO_CLOSEOUT.md)
+- [Architecture and capabilities summary](ARCHITECTURE_AND_CAPABILITIES.md) — canonical architecture reference
+- [Architecture overview](ARCHITECTURE.md) — concise target and MVP boundary
+- [Evidence index](EVIDENCE_INDEX.md) — validation evidence and retained screenshots
 
-- [Final release checklist](FINAL_RELEASE_CHECKLIST.md)
+## Architecture decisions
 
-- [Architecture and capabilities summary](ARCHITECTURE_AND_CAPABILITIES.md)
-- [Portfolio project overview](PORTFOLIO_PROJECT_OVERVIEW.md)
-- [Milestones](MILESTONES.md)
+- [ADR 0001: Local-first platform strategy](adr/0001-local-first-platform-strategy.md)
+- [ADR 0002: GitOps as source of truth](adr/0002-gitops-as-source-of-truth.md)
+- [ADR 0003: Hybrid repository strategy](adr/0003-hybrid-repository-strategy.md)
+- [ADR 0004: Local execution strategy](adr/0004-local-execution-strategy.md)
 
 ## Platform foundation
 
@@ -23,6 +26,8 @@
 ## Security and governance
 
 - [Security governance](SECURITY_GOVERNANCE.md)
+- [DevSecOps and CI/CD supply-chain security](DEVSECOPS.md)
+- [Security policy](../SECURITY.md)
 
 ## Runtime operations
 
@@ -37,9 +42,16 @@
 - [Production Readiness Scorecard](PRODUCTION_READINESS_SCORECARD.md)
 - [Developer Portal with Backstage](DEVELOPER_PORTAL_BACKSTAGE.md)
 
-## Evidence assets
+## Validation and evidence
 
 - [Evidence index](EVIDENCE_INDEX.md)
+- [Final release checklist](FINAL_RELEASE_CHECKLIST.md)
+
+## Project history
+
+- [Portfolio project overview](PORTFOLIO_PROJECT_OVERVIEW.md)
+- [Milestones](MILESTONES.md)
+- [Portfolio closeout](PORTFOLIO_CLOSEOUT.md)
 
 Screenshots and visual evidence are stored under:
 
