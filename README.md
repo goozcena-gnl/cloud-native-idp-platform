@@ -11,6 +11,19 @@ Validated with Argo CD state, executable checks, and screenshots across service 
 
 Evidence: [validation model](#validation-model) and [indexed screenshots](docs/EVIDENCE_INDEX.md).
 
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/assets/portfolio/backstage-catalog-evidence.webp" alt="Retained Backstage catalog evidence showing the demo gRPC service, platform ownership, lifecycle, and observability tags" />
+      <br /><sub><strong>Developer experience evidence.</strong> The retained Backstage catalog shows the demo service registered to the platform team with its Kubernetes and telemetry metadata.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/assets/portfolio/grafana-sre-evidence.webp" alt="Retained Grafana SRE dashboard evidence showing service health, request rate, latency, logs, and GitOps health" />
+      <br /><sub><strong>Observability evidence.</strong> The retained Grafana dashboard correlates service health, golden signals, logs, build identity, and GitOps state from the local validation run.</sub>
+    </td>
+  </tr>
+</table>
+
 ## What this project demonstrates
 
 This repository demonstrates practical skills around:
