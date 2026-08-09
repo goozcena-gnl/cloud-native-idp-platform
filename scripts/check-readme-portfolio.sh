@@ -14,7 +14,7 @@ if [[ ! -f "${README}" ]]; then
 fi
 
 required_sections=(
-  "# Cloud Native IDP Platform"
+  "# Cloud-Native Internal Developer Platform"
   "## What this project demonstrates"
   "## Target roles"
   "## Architecture overview"
