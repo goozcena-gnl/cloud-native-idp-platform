@@ -8,6 +8,7 @@ Validated with Argo CD state, executable checks, and screenshots across service 
 [![Plumber CI/CD Security](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/plumber.yml/badge.svg?branch=main)](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/plumber.yml)
 [![Publish demo-grpc](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/publish-demo-grpc.yml/badge.svg?branch=main)](https://github.com/goozcena-gnl/cloud-native-idp-platform/actions/workflows/publish-demo-grpc.yml)
 [![Release](https://img.shields.io/github/v/release/goozcena-gnl/cloud-native-idp-platform?display_name=tag&sort=semver)](https://github.com/goozcena-gnl/cloud-native-idp-platform/releases/latest)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 Evidence: [validation model](#validation-model) and [indexed screenshots](docs/EVIDENCE_INDEX.md).
 
@@ -317,3 +318,9 @@ This project demonstrates the ability to:
 - document trade-offs and limitations clearly.
 
 The repository is intended to support technical discussions for DevOps, Cloud, Platform Engineering, SRE and DevSecOps roles.
+
+## License
+
+Original project content is licensed under the [Apache License 2.0](LICENSE).
+Third-party and upstream components remain subject to their own licenses and
+retained copyright notices.
