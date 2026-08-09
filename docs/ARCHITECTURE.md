@@ -1,4 +1,9 @@
-# Architecture
+# Architecture Overview
+
+This page is the concise entry point for the target and MVP boundaries. The
+[Architecture and Capabilities Summary](ARCHITECTURE_AND_CAPABILITIES.md) is the
+canonical technical reference for platform layers, GitOps delivery, validation,
+local-first choices, and production improvements.
 
 ## Target architecture
 
@@ -27,3 +32,9 @@ The MVP focuses on:
 ## Architecture principle
 
 Start simple, prove the platform loop, then add production-grade capabilities incrementally.
+
+## Architecture decisions
+
+The accepted decisions behind this architecture are indexed in the
+[Architecture decisions](DOCUMENTATION_INDEX.md#architecture-decisions) section
+of the documentation index.

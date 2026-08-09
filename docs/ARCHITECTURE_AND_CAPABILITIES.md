@@ -1,14 +1,20 @@
 # Architecture and Capabilities Summary
 
+> **Canonical architecture reference.** For the concise target and MVP boundary,
+> see the [Architecture Overview](ARCHITECTURE.md). Use the
+> [Documentation Index](DOCUMENTATION_INDEX.md) for detailed operational,
+> security, evidence, and architecture-decision routes.
+
 ## Purpose
 
-This document summarizes the architecture and capabilities of the Cloud Native IDP Platform.
+This document is the canonical technical reference for the architecture and
+capabilities of the Cloud Native IDP Platform.
 
-It is designed as a technical interview support document for explaining:
+It defines:
 
 - what the platform does;
 - how the components interact;
-- which DevOps, SRE, security and platform engineering capabilities are demonstrated;
+- which DevOps, SRE, security and platform engineering capabilities are implemented;
 - what is intentionally local-first;
 - what would change for a production-grade deployment.
 
@@ -55,7 +61,7 @@ flowchart TD
 
 | Layer | Tools | Purpose |
 | --- | --- | --- |
-| Source control | GitHub | Repository, versioning and portfolio evidence |
+| Source control | GitHub | Repository, versioning and retained evidence |
 | CI/CD | GitHub Actions | Test, build and validation workflows |
 | GitOps | ArgoCD | Declarative platform delivery |
 | Kubernetes | kind | Local Kubernetes runtime |
@@ -264,9 +270,9 @@ For production, the main improvements would be:
 - high availability;
 - disaster recovery across failure domains.
 
-## Interview talking points
+## Architecture review guide
 
-This project can be explained around five main points:
+Review the architecture across five connected concerns:
 
 1. **GitOps platform delivery**
 
@@ -284,11 +290,12 @@ The platform includes runtime detection, cost visibility, backup and restore, an
 
 Backstage provides service discovery and a first self-service software template aligned with a documented golden path.
 
-## Outcome
+## Capability boundary
 
-The platform demonstrates the ability to design, implement, validate and document a cloud-native Internal Developer Platform.
+The repository implements and documents a local-first cloud-native Internal
+Developer Platform with executable validation and retained evidence.
 
-It is suitable for technical discussion around:
+Its technical scope includes:
 
 - Kubernetes;
 - GitOps;

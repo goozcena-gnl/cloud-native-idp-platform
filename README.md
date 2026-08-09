@@ -25,36 +25,14 @@ Evidence: [validation model](#validation-model) and [indexed screenshots](docs/E
   </tr>
 </table>
 
-## What this project demonstrates
+## Architecture and technical navigation
 
-This repository demonstrates practical skills around:
-
-- Kubernetes platform engineering;
-- GitOps with ArgoCD;
-- Go gRPC service delivery;
-- CI/CD with GitHub Actions;
-- observability with Prometheus, Grafana, Loki, Tempo and OpenTelemetry;
-- SRE practices with alerts, SLOs and incident drills;
-- Kubernetes security governance with Kyverno and NetworkPolicies;
-- runtime security with Falco;
-- cost visibility with OpenCost;
-- backup and restore with Velero and MinIO;
-- secrets management with Vault and Kubernetes authentication;
-- developer experience with Backstage;
-- production readiness documentation and scorecards.
-
-## Target roles
-
-This project is relevant for:
-
-- DevOps Engineer;
-- Cloud Engineer;
-- Platform Engineer;
-- Site Reliability Engineer;
-- DevSecOps Engineer;
-- Kubernetes / GitOps Engineer.
-
-## Architecture overview
+[Architecture and Capabilities Summary](docs/ARCHITECTURE_AND_CAPABILITIES.md)
+is the canonical technical reference for platform layers, GitOps delivery,
+capabilities, validation, local-first decisions, and production improvements.
+Use the shorter [Architecture Overview](docs/ARCHITECTURE.md) for the target and
+MVP boundary, then follow the [documentation index](docs/DOCUMENTATION_INDEX.md)
+for detailed operations, security, evidence, and architecture decisions.
 
 ```text
 Developer
@@ -84,7 +62,13 @@ Secrets            Vault + Kubernetes Auth
 Developer Portal   Backstage
 ```
 
-## Current platform capabilities
+## Capabilities and boundaries
+
+The sections below describe the implemented platform surfaces and their
+executable or retained evidence. The deployment is intentionally
+[local-first](#local-first-design); [production improvements](#production-note)
+remain explicit design considerations rather than claims about the current
+runtime.
 
 ### GitOps
 
@@ -225,9 +209,17 @@ Screenshots are stored under `docs/assets/`.
 
 Start here:
 
-- [Portfolio project overview](docs/PORTFOLIO_PROJECT_OVERVIEW.md)
+- [Canonical architecture and capabilities](docs/ARCHITECTURE_AND_CAPABILITIES.md)
+- [Concise architecture overview](docs/ARCHITECTURE.md)
 - [Documentation index](docs/DOCUMENTATION_INDEX.md)
-- [Milestones](docs/MILESTONES.md)
+- [Evidence index](docs/EVIDENCE_INDEX.md)
+
+Architecture decisions:
+
+- [ADR 0001: Local-first platform strategy](docs/adr/0001-local-first-platform-strategy.md)
+- [ADR 0002: GitOps as source of truth](docs/adr/0002-gitops-as-source-of-truth.md)
+- [ADR 0003: Hybrid repository strategy](docs/adr/0003-hybrid-repository-strategy.md)
+- [ADR 0004: Local execution strategy](docs/adr/0004-local-execution-strategy.md)
 
 ## Evidence assets
 
@@ -302,22 +294,6 @@ Production improvements would include:
 - hardened supply chain and image signing;
 - cloud billing integration;
 - high availability and disaster recovery across failure domains.
-
-## Portfolio outcome
-
-This project demonstrates the ability to:
-
-- design a platform roadmap;
-- deliver Kubernetes workloads through GitOps;
-- build observability and SRE evidence;
-- enforce security governance;
-- validate backup and restore;
-- integrate workload identity with Vault;
-- build a Backstage developer portal;
-- expose a self-service software template;
-- document trade-offs and limitations clearly.
-
-The repository is intended to support technical discussions for DevOps, Cloud, Platform Engineering, SRE and DevSecOps roles.
 
 ## License
 

@@ -15,10 +15,8 @@ fi
 
 required_sections=(
   "# Cloud-Native Internal Developer Platform"
-  "## What this project demonstrates"
-  "## Target roles"
-  "## Architecture overview"
-  "## Current platform capabilities"
+  "## Architecture and technical navigation"
+  "## Capabilities and boundaries"
   "## Validation model"
   "## Key validation scripts"
   "## Documentation index"
@@ -26,7 +24,6 @@ required_sections=(
   "## Repository structure"
   "## Local-first design"
   "## Production note"
-  "## Portfolio outcome"
 )
 
 for section in "${required_sections[@]}"; do
@@ -36,6 +33,27 @@ for section in "${required_sections[@]}"; do
   fi
 
   echo "OK: ${section}"
+done
+
+required_navigation=(
+  "[Architecture and Capabilities Summary](docs/ARCHITECTURE_AND_CAPABILITIES.md)"
+  "[Architecture Overview](docs/ARCHITECTURE.md)"
+  "[ADR 0001: Local-first platform strategy](docs/adr/0001-local-first-platform-strategy.md)"
+  "[ADR 0002: GitOps as source of truth](docs/adr/0002-gitops-as-source-of-truth.md)"
+  "[ADR 0003: Hybrid repository strategy](docs/adr/0003-hybrid-repository-strategy.md)"
+  "[ADR 0004: Local execution strategy](docs/adr/0004-local-execution-strategy.md)"
+)
+
+echo
+echo "Checking architecture navigation..."
+
+for link in "${required_navigation[@]}"; do
+  if ! grep -qF "${link}" "${README}"; then
+    echo "ERROR: README missing architecture navigation: ${link}"
+    exit 1
+  fi
+
+  echo "OK: ${link}"
 done
 
 required_terms=(
