@@ -52,7 +52,7 @@ Score:
 
 Expected:
 
-- service is deployed through ArgoCD;
+- service is deployed through Argo CD;
 - application is `Synced`;
 - application is `Healthy`;
 - auto-sync, prune and self-heal are configured where appropriate.
@@ -264,7 +264,7 @@ demo-grpc
 | Category | Score | Evidence |
 |---|---|---|
 | Ownership and catalog | 3 | `catalog-info.yaml` |
-| GitOps deployment | 3 | `demo-grpc` ArgoCD app Synced/Healthy |
+| GitOps deployment | 3 | `demo-grpc` Argo CD app Synced/Healthy |
 | CI/CD | 3 | GitHub Actions CI and publish workflow |
 | Container and runtime baseline | 3 | hardened Dockerfile and runtime config |
 | Kubernetes reliability | 3 | probes, resources, graceful shutdown |

@@ -82,7 +82,7 @@ blob, and first layer all succeeded.
 
 ## GitOps deployment from GHCR
 
-The ArgoCD Application `platform/argocd/apps/demo-grpc-app.yaml` deploys the
+The Argo CD Application `platform/argocd/apps/demo-grpc-app.yaml` deploys the
 GHCR image:
 
 ```

@@ -24,7 +24,7 @@ It defines:
 flowchart TD
     Dev[Developer] --> GitHub[GitHub Repository]
     GitHub --> CI[GitHub Actions CI]
-    GitHub --> ArgoCD[ArgoCD GitOps]
+    GitHub --> ArgoCD[Argo CD GitOps]
 
     ArgoCD --> K8s[kind Kubernetes Cluster]
 
@@ -63,7 +63,7 @@ flowchart TD
 | --- | --- | --- |
 | Source control | GitHub | Repository, versioning and retained evidence |
 | CI/CD | GitHub Actions | Test, build and validation workflows |
-| GitOps | ArgoCD | Declarative platform delivery |
+| GitOps | Argo CD | Declarative platform delivery |
 | Kubernetes | kind | Local Kubernetes runtime |
 | Workload | Go gRPC service | Reference application for platform validation |
 | Packaging | Docker, Helm | Container and Kubernetes release packaging |
@@ -77,7 +77,7 @@ flowchart TD
 
 ## GitOps model
 
-The platform uses ArgoCD as the control plane for delivery.
+The platform uses Argo CD as the control plane for delivery.
 
 Capabilities demonstrated:
 
@@ -216,7 +216,7 @@ Validation layers:
 - green CI.
 2. GitOps state:
 
-- ArgoCD applications are `Synced` and `Healthy`.
+- Argo CD applications are `Synced` and `Healthy`.
 3. Capability scripts:
 
 - each important platform capability has a validation script.
@@ -276,7 +276,7 @@ Review the architecture across five connected concerns:
 
 1. **GitOps platform delivery**
 
-ArgoCD continuously reconciles the desired state of the platform.
+Argo CD continuously reconciles the desired state of the platform.
 2. **Observable service lifecycle**
 
 The `demo-grpc` service proves metrics, logs, traces, dashboards, alerts and incident drills.

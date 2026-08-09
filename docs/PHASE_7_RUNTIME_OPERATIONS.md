@@ -4,7 +4,7 @@
 
 Phase 7 adds operational capabilities around cost visibility, runtime security, disaster recovery, and secrets management.
 
-The objective is to move the platform beyond deployment and observability by proving that it can also support production-oriented operational concerns.
+The objective is to move the platform beyond deployment and observability by validating local workflows for operational concerns relevant to production design.
 
 ## Delivered capabilities
 
@@ -14,7 +14,7 @@ OpenCost provides Kubernetes cost allocation visibility for the local platform.
 
 Delivered:
 
-- OpenCost deployed through ArgoCD;
+- OpenCost deployed through Argo CD;
 - Prometheus integration;
 - allocation API validation;
 - GitOps-managed application;
@@ -30,7 +30,7 @@ Falco provides runtime detection for suspicious activity inside Kubernetes workl
 
 Delivered:
 
-- Falco deployed through ArgoCD;
+- Falco deployed through Argo CD;
 - privileged runtime security namespace documented;
 - ServiceMonitor integration;
 - runtime detection test using `/etc/shadow`;
@@ -46,7 +46,7 @@ Velero provides backup and restore capabilities for Kubernetes resources.
 
 Delivered:
 
-- Velero deployed through ArgoCD;
+- Velero deployed through Argo CD;
 - local MinIO object storage backend;
 - BackupStorageLocation validation;
 - real backup and restore drill;
@@ -63,7 +63,7 @@ Vault provides workload identity-based secrets access through Kubernetes authent
 
 Delivered:
 
-- Vault deployed through ArgoCD;
+- Vault deployed through Argo CD;
 - Vault Agent Injector deployed;
 - Kubernetes auth configured;
 - ServiceAccount-bound Vault role;
@@ -90,7 +90,7 @@ The phase is validated through executable scripts:
 
 ## GitOps applications
 
-The following ArgoCD applications are part of this phase:
+The following Argo CD applications are part of this phase:
 
 ```text
 opencost

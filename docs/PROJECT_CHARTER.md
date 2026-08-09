@@ -12,7 +12,7 @@ Create a professional portfolio project that demonstrates DevOps, Platform Engin
 
 The MVP proves the core delivery loop:
 
-Developer code change -> CI -> image build and scan -> GitOps manifest update -> ArgoCD deployment -> observable Kubernetes workload.
+Developer code change -> CI -> image build and scan -> GitOps manifest update -> Argo CD deployment -> observable Kubernetes workload.
 
 ## Advanced scope
 

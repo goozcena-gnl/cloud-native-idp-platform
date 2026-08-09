@@ -41,7 +41,7 @@ done
 
 required_terms=(
   "Kubernetes"
-  "ArgoCD"
+  "Argo CD"
   "GitOps"
   "GitHub Actions"
   "demo-grpc"

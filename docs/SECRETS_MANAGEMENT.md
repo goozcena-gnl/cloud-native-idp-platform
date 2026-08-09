@@ -10,7 +10,7 @@ The goal is to demonstrate how workloads can authenticate to Vault using Kuberne
 
 The platform now includes:
 
-- Vault deployed through ArgoCD;
+- Vault deployed through Argo CD;
 - Vault Agent Injector deployed through the official Helm chart;
 - Vault running in controlled dev mode for local portfolio validation;
 - Kubernetes authentication enabled in Vault;
@@ -31,7 +31,7 @@ Kubernetes ServiceAccount
 
 ## GitOps applications
 
-Vault is managed through ArgoCD:
+Vault is managed through Argo CD:
 
 ```text
 vault                   Synced   Healthy
@@ -102,7 +102,7 @@ Run:
 
 The validation proves that:
 
-1. ArgoCD applications are Synced and Healthy.
+1. Argo CD applications are Synced and Healthy.
 2. A short-lived Kubernetes token is generated.
 3. The token authenticates to Vault through the Kubernetes auth method.
 4. Vault returns a scoped client token.
@@ -118,9 +118,9 @@ Vault Kubernetes auth validated successfully.
 
 ## Evidence
 
-### 1. ArgoCD Vault applications synced and healthy
+### 1. Argo CD Vault applications synced and healthy
 
-![ArgoCD Vault apps synced](assets/secrets-management/01-argocd-vault-apps-synced.png)
+![Argo CD Vault apps synced](assets/secrets-management/01-argocd-vault-apps-synced.png)
 
 ### 2. Vault stack validation
 
@@ -130,13 +130,13 @@ Vault Kubernetes auth validated successfully.
 
 ![Vault Kubernetes auth validation](assets/secrets-management/03-vault-kubernetes-auth-validation.png)
 
-### 4. Vault ArgoCD resource tree
+### 4. Vault Argo CD resource tree
 
-![ArgoCD Vault resource tree](assets/secrets-management/04-argocd-vault-resource-tree.png)
+![Argo CD Vault resource tree](assets/secrets-management/04-argocd-vault-resource-tree.png)
 
-### 5. Vault Kubernetes Auth ArgoCD resource tree
+### 5. Vault Kubernetes Auth Argo CD resource tree
 
-![ArgoCD Vault Kubernetes Auth resource tree](assets/secrets-management/05-argocd-vault-kubernetes-auth-resource-tree.png)
+![Argo CD Vault Kubernetes Auth resource tree](assets/secrets-management/05-argocd-vault-kubernetes-auth-resource-tree.png)
 
 ## Security value
 

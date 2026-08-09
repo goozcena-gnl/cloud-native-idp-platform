@@ -8,7 +8,7 @@ The goal is to demonstrate runtime threat detection for Kubernetes workloads usi
 
 The platform now includes:
 
-- Falco deployed through ArgoCD;
+- Falco deployed through Argo CD;
 - Falco running as a DaemonSet on all Kubernetes nodes;
 - syscall runtime event monitoring;
 - Falco metrics service;
@@ -29,7 +29,7 @@ Kubernetes nodes
 
 ## GitOps application
 
-Falco is deployed as an ArgoCD application:
+Falco is deployed as an Argo CD application:
 
 ```text
 falco
@@ -92,7 +92,7 @@ Run:
 
 The script validates:
 
-- ArgoCD application status;
+- Argo CD application status;
 - Falco namespace labels;
 - DaemonSet rollout;
 - Falco startup logs;

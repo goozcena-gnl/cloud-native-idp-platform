@@ -17,7 +17,7 @@ The platform now includes:
 - RuntimeDefault seccomp profile;
 - CPU and memory requests and limits;
 - Pod Security Admission warnings and audit labels;
-- Kyverno admission controller deployed through ArgoCD;
+- Kyverno admission controller deployed through Argo CD;
 - Kyverno baseline policies in Audit mode;
 - Kyverno PolicyReport validation;
 - NetworkPolicy ingress isolation for the `apps` namespace;
@@ -72,7 +72,7 @@ learning and validation phase.
 
 ## Kyverno
 
-Kyverno is deployed through ArgoCD as a GitOps-managed platform application.
+Kyverno is deployed through Argo CD as a GitOps-managed platform application.
 
 Validated components:
 
@@ -173,7 +173,7 @@ Validation script:
 
 ## GitOps applications
 
-Security applications managed by ArgoCD:
+Security applications managed by Argo CD:
 
 ```text
 kyverno
@@ -252,7 +252,7 @@ Potential next improvements:
 
 ![NetworkPolicy baseline validation](assets/security-governance/04-network-policy-baseline-validation.png)
 
-### ArgoCD security applications
+### Argo CD security applications
 
-![ArgoCD security applications synced](assets/security-governance/05-argocd-security-apps-synced.png)
+![Argo CD security applications synced](assets/security-governance/05-argocd-security-apps-synced.png)
 

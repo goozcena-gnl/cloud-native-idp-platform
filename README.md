@@ -72,7 +72,7 @@ runtime.
 
 ### GitOps
 
-- ArgoCD AppProject;
+- Argo CD AppProject;
 - app-of-apps pattern;
 - automated sync;
 - prune and self-heal;
@@ -179,7 +179,7 @@ This project is validated through three evidence layers:
 
 1. **GitOps state**
 
-ArgoCD applications must be `Synced` and `Healthy`.
+Argo CD applications must be `Synced` and `Healthy`.
 2. **Executable validation scripts**
 
 Each important platform capability has a validation script under `scripts/`.

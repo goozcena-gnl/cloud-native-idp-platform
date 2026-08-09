@@ -8,7 +8,7 @@ The goal of this phase was to build a GitOps-managed observability stack capable
 Kubernetes-based platform, validating application health, exposing logs, tracking GitOps status,
 and surfacing operational risks through Prometheus alerts and Grafana dashboards.
 
-The implementation runs locally on a kind Kubernetes cluster and is managed through ArgoCD using
+The implementation runs locally on a kind Kubernetes cluster and is managed through Argo CD using
 an app-of-apps GitOps model.
 
 ## Objectives
@@ -20,7 +20,7 @@ The Observability/SRE phase was designed to demonstrate the following capabiliti
 - Collect structured application logs with Grafana Alloy.
 - Store and query logs with Loki.
 - Build Grafana dashboards for application, GitOps, and logging backend health.
-- Scrape ArgoCD metrics to observe GitOps state.
+- Scrape Argo CD metrics to observe GitOps state.
 - Scrape Loki metrics to monitor the logging backend itself.
 - Define Prometheus alerts for platform availability and GitOps health.
 - Validate the whole stack with repeatable shell scripts.
@@ -80,7 +80,7 @@ Prometheus
 
 | Area        | Component          | Purpose                                                       |
 |-------------|--------------------|---------------------------------------------------------------|
-| GitOps      | ArgoCD             | Manages platform applications from Git                        |
+| GitOps      | Argo CD             | Manages platform applications from Git                        |
 | Metrics     | Prometheus         | Scrapes and stores metrics                                    |
 | Dashboards  | Grafana            | Visualizes application, GitOps, and logging backend health    |
 | Logs        | Grafana Alloy      | Collects Kubernetes pod logs                                  |
@@ -94,7 +94,7 @@ Prometheus
 
 ## GitOps Applications
 
-The platform currently includes the following ArgoCD applications:
+The platform currently includes the following Argo CD applications:
 
 ```text
 alloy-logs              Synced   Healthy
@@ -161,19 +161,19 @@ Grafana SRE summary dashboard is provisioned and reachable.
 
 ## GitOps Observability
 
-ArgoCD metrics are scraped by Prometheus through dedicated metrics services and a ServiceMonitor.
+Argo CD metrics are scraped by Prometheus through dedicated metrics services and a ServiceMonitor.
 
 The SRE dashboard includes GitOps health panels:
 
-- Total ArgoCD applications.
+- Total Argo CD applications.
 - Synced applications.
 - Healthy applications.
 - OutOfSync applications.
 - Unhealthy applications.
-- ArgoCD version.
+- Argo CD version.
 - Git request rate.
 - Git request P95 latency.
-- ArgoCD applications table.
+- Argo CD applications table.
 
 Example signals:
 
@@ -320,13 +320,13 @@ sum(rate(loki_distributor_bytes_received_total{namespace="observability", servic
 sum(rate(loki_distributor_lines_received_total{namespace="observability", service="loki"}[5m]))
 ```
 
-### ArgoCD OutOfSync applications
+### Argo CD OutOfSync applications
 
 ```promql
 sum(argocd_app_info{project="idp-platform", sync_status!="Synced"}) > 0
 ```
 
-### ArgoCD unhealthy applications
+### Argo CD unhealthy applications
 
 ```promql
 sum(argocd_app_info{project="idp-platform", health_status!="Healthy"}) > 0
@@ -343,7 +343,7 @@ The following scripts were created to make the platform easy to validate:
 | `scripts/check-platform-alerts.sh`       | Validates Prometheus alert rules and live alert expressions          |
 | `scripts/check-demo-grpc-metrics.sh`     | Validates application metrics                                        |
 | `scripts/check-demo-grpc-logs.sh`        | Validates application logs in Loki                                   |
-| `scripts/check-argocd-metrics.sh`                     | Validates ArgoCD metrics scraping                                    |
+| `scripts/check-argocd-metrics.sh`                     | Validates Argo CD metrics scraping                                    |
 | `scripts/check-tempo-stack.sh`                        | Validates Tempo stack and tracing backend health                     |
 | `scripts/check-demo-grpc-log-trace-correlation.sh`    | Validates log/trace correlation through Loki and Tempo               |
 
@@ -452,7 +452,7 @@ Recommended screenshots for the portfolio:
 
 | Screenshot                                   | What it proves                                                   |
 |----------------------------------------------|------------------------------------------------------------------|
-| ArgoCD applications Synced/Healthy           | GitOps state is healthy                                          |
+| Argo CD applications Synced/Healthy           | GitOps state is healthy                                          |
 | Grafana SRE Summary overview                 | Application metrics, logs, and GitOps signals are centralized    |
 | Grafana Loki metrics section                 | Logging backend is monitored                                     |
 | Prometheus `idp-platform.availability` rules | Availability alerts are loaded                                   |
@@ -464,11 +464,11 @@ Recommended screenshots for the portfolio:
 
 ## Evidence Screenshots
 
-### 1. ArgoCD applications Synced and Healthy
+### 1. Argo CD applications Synced and Healthy
 
-This screenshot shows that all platform applications are synchronized and healthy through ArgoCD.
+This screenshot shows that all platform applications are synchronized and healthy through Argo CD.
 
-![ArgoCD applications Synced and Healthy](assets/observability-sre/01-argocd-apps-synced-healthy.png)
+![Argo CD applications Synced and Healthy](assets/observability-sre/01-argocd-apps-synced-healthy.png)
 
 ### 2. Grafana SRE Summary dashboard
 
@@ -490,7 +490,7 @@ This screenshot shows the platform availability alerts, including `DemoGrpcDown`
 
 ### 5. Prometheus GitOps alert rules
 
-This screenshot shows the GitOps-related alerts for ArgoCD application health, sync drift, and ArgoCD metrics availability.
+This screenshot shows the GitOps-related alerts for Argo CD application health, sync drift, and Argo CD metrics availability.
 
 ![Prometheus GitOps rules](assets/observability-sre/05-prometheus-gitops-rules.png)
 
@@ -811,7 +811,7 @@ This completes the observability correlation loop from logs to traces inside Gra
 This phase demonstrates practical DevOps and SRE skills:
 
 - Kubernetes observability design.
-- GitOps with ArgoCD app-of-apps.
+- GitOps with Argo CD app-of-apps.
 - Prometheus ServiceMonitor usage.
 - Grafana dashboard provisioning.
 - Loki and Alloy log pipeline.
@@ -829,7 +829,7 @@ This implementation can be explained in an interview as follows:
 
 - I built a GitOps-managed observability layer for a Kubernetes platform.
 - The application exposes metrics and structured JSON logs.
-- Prometheus scrapes application, ArgoCD, Grafana, and Loki metrics.
+- Prometheus scrapes application, Argo CD, Grafana, and Loki metrics.
 - Alloy collects pod logs and forwards them to Loki.
 - Grafana provides dashboards for application health, logs, GitOps state, and logging backend health.
 - PrometheusRule objects define alerts for service availability, Loki availability, and GitOps drift.

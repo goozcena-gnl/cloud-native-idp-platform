@@ -39,7 +39,7 @@ It explains how a developer should add a new service with:
 - service source code;
 - Dockerfile;
 - Helm chart;
-- ArgoCD application;
+- Argo CD application;
 - CI validation;
 - observability;
 - security baseline;
@@ -131,7 +131,7 @@ Phase 8 is validated through:
 ./scripts/check-backstage-software-template.sh
 ```
 
-## ArgoCD applications
+## Argo CD applications
 
 Phase 8 introduced:
 
@@ -155,11 +155,11 @@ docs/DEVELOPER_PORTAL_BACKSTAGE.md
 
 It includes:
 
-- ArgoCD Backstage application synced and healthy;
+- Argo CD Backstage application synced and healthy;
 - Backstage stack validation;
 - Backstage UI;
 - `demo-grpc` service catalog entity;
-- ArgoCD resource tree;
+- Argo CD resource tree;
 - software template validation;
 - Go gRPC Service template in the Create page.
 
@@ -185,7 +185,7 @@ Potential next improvements:
 - configure GitHub authentication;
 - enable Backstage Kubernetes plugin properly;
 - enable TechDocs;
-- add ArgoCD plugin integration;
+- add Argo CD plugin integration;
 - add service scorecards directly in Backstage;
 - add more software templates;
 - expose Backstage through ingress and TLS.

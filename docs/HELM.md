@@ -1,7 +1,7 @@
 # Helm Chart: demo-grpc (Task 2.3)
 
 This task packages the `demo-grpc` Go gRPC service as a Helm chart and
-validates it locally against the kind cluster. No ArgoCD deployment happens
+validates it locally against the kind cluster. No Argo CD deployment happens
 at this stage.
 
 ## Design
@@ -115,7 +115,7 @@ helm template demo-grpc charts/demo-grpc --namespace apps \
 
 ## Deploy locally (optional, not required by this task)
 
-The chart is not deployed through ArgoCD at this stage. To install manually
+The chart is not deployed through Argo CD at this stage. To install manually
 for local exploration:
 
 ```bash
@@ -150,7 +150,7 @@ helm -n apps uninstall demo-grpc
 
 ## Future improvements
 
-- GitOps deployment via ArgoCD (child Application under `platform/argocd/apps/`).
+- GitOps deployment via Argo CD (child Application under `platform/argocd/apps/`).
 - Image published to GHCR with a SHA-based tag.
 - GitHub Actions CI running `helm lint` and `helm template` on every PR.
 - Trivy scan of the chart and image.
@@ -158,14 +158,14 @@ helm -n apps uninstall demo-grpc
 
 ## GitOps deployment
 
-The `demo-grpc` chart is deployed by ArgoCD through:
+The `demo-grpc` chart is deployed by Argo CD through:
 
 ```text
 platform/argocd/apps/demo-grpc-app.yaml
 ```
 
 For the local MVP, the image is `demo-grpc:local` and must be loaded into
-kind before ArgoCD deploys the workload:
+kind before Argo CD deploys the workload:
 
 ```bash
 ./scripts/load-demo-grpc-kind-image.sh
@@ -175,7 +175,7 @@ See [GITOPS.md](GITOPS.md) for the full GitOps deployment flow.
 
 ## Pulling from a private registry (GHCR)
 
-The chart supports `imagePullSecrets` for private registries. The ArgoCD
+The chart supports `imagePullSecrets` for private registries. The Argo CD
 Application deploys the verified immutable GHCR image and references a pull
 secret:
 

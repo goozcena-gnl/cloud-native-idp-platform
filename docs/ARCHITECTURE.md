@@ -10,7 +10,7 @@ local-first choices, and production improvements.
 The long-term target is an Internal Developer Platform composed of:
 
 - Developer Control Plane: Backstage
-- Integration and Delivery Plane: GitHub Actions and ArgoCD
+- Integration and Delivery Plane: GitHub Actions and Argo CD
 - Kubernetes Execution Plane: Kubernetes, Helm, Cilium
 - Security Plane: Trivy, Kyverno, Vault, Falco
 - Observability Plane: OpenTelemetry, Prometheus, Loki, Tempo, Grafana
@@ -21,7 +21,7 @@ The long-term target is an Internal Developer Platform composed of:
 The MVP focuses on:
 
 - Local Kubernetes
-- ArgoCD GitOps
+- Argo CD GitOps
 - One Go gRPC microservice
 - Helm deployment
 - GitHub Actions CI
