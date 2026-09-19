@@ -101,8 +101,9 @@ jobs:
           if [ "${RUN_FULL_CI}" != "true" ]; then
             while IFS= read -r file; do
               case "${file}" in
-                .github/workflows/ci.yml|\
+                .github/workflows/*|\
                 .github/actions/*|\
+                developer-portal/backstage/*|\
                 services/demo-grpc/*|\
                 charts/demo-grpc/*|\
                 go.work|\
