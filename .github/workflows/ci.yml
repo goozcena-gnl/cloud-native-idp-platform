@@ -100,27 +100,18 @@ jobs:
 
           if [ "${RUN_FULL_CI}" != "true" ]; then
             while IFS= read -r file; do
-              case "${file}" in
-                .github/workflows/ci.yml|\
-                .github/actions/*|\
-                services/demo-grpc/*|\
-                charts/demo-grpc/*|\
-                go.work|\
-                go.work.sum|\
-                .trivyignore|\
-                .trivy.yaml|\
-                .trivy.yml|\
-                trivy.yaml|\
-                trivy.yml|\
-                k8s/*|\
-                manifests/*|\
-                deploy/*|\
-                scripts/ci/*)
-                  RUN_FULL_CI="true"
-                  REASON="CI-relevant file changed: ${file}"
-                  break
-                  ;;
-              esac
+              if [[ "${file}" =~ ^(\.github/workflows/|\.github/actions/|developer-portal/backstage/|services/demo-grpc/|charts/demo-grpc/|k8s/|manifests/|deploy/|scripts/ci/) ]] || \
+                 [ "${file}" = "go.work" ] || \
+                 [ "${file}" = "go.work.sum" ] || \
+                 [ "${file}" = ".trivyignore" ] || \
+                 [ "${file}" = ".trivy.yaml" ] || \
+                 [ "${file}" = ".trivy.yml" ] || \
+                 [ "${file}" = "trivy.yaml" ] || \
+                 [ "${file}" = "trivy.yml" ]; then
+                RUN_FULL_CI="true"
+                REASON="CI-relevant file changed: ${file}"
+                break
+              fi
             done < "${CHANGED_FILES}"
           fi
 
