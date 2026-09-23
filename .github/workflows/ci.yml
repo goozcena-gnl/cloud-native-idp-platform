@@ -144,6 +144,9 @@ jobs:
             --exit-code 1 \
             .
 
+      - name: Check pinned images and repository references
+        run: bash scripts/ci/check-supply-chain-refs.sh
+
   go:
     name: Go test and build
     runs-on: ubuntu-latest

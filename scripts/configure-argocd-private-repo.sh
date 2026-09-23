@@ -5,7 +5,7 @@ set -euo pipefail
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-idp-local}"
 NAMESPACE="${ARGOCD_NAMESPACE:-argocd}"
 SECRET_NAME="${ARGOCD_REPO_SECRET_NAME:-argocd-repo-cloud-native-idp-platform}"
-REPO_URL="${ARGOCD_REPO_URL:-https://github.com/goozdu12/cloud-native-idp-platform.git}"
+REPO_URL="${ARGOCD_REPO_URL:-https://github.com/goozcena-gnl/cloud-native-idp-platform.git}"
 GITHUB_USERNAME="${GITHUB_USERNAME:-}"
 
 echo "============================================================"

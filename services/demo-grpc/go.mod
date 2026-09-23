@@ -1,4 +1,4 @@
-module github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc
+module github.com/goozcena-gnl/cloud-native-idp-platform/services/demo-grpc
 
 go 1.26.4
 
