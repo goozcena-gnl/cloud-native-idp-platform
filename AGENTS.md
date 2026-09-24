@@ -21,8 +21,8 @@ cd services/demo-grpc
 go mod tidy
 go vet ./...
 go test -race ./...
-go build ./cmd/server
-go build ./cmd/healthcheck
+go build -o /tmp/demo-grpc-server ./cmd/server
+go build -o /tmp/demo-grpc-healthcheck ./cmd/healthcheck
 cd ../..
 helm lint charts/demo-grpc
 helm template demo-grpc charts/demo-grpc --namespace apps >/tmp/demo-grpc.yaml
