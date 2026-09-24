@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/config"
+	"github.com/goozcena-gnl/cloud-native-idp-platform/services/demo-grpc/internal/config"
 )
 
 func TestLoad_Defaults(t *testing.T) {

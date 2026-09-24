@@ -99,10 +99,10 @@ clusterResourceWhitelist:
     kind: '*'
 ```
 
-This is acceptable for a controlled local portfolio environment.
-
-Future hardening should replace this wildcard with an explicit allowlist for
-only the required observability resources.
+The destination namespaces are now explicit. The resource wildcards remain for
+the local lab because the project also reconciles Kyverno, Velero, Vault,
+Falco, and other pinned operator charts. See `APP_PROJECT_SCOPE.md` for the
+inventory and the validation needed before narrowing these permissions.
 
 ## Validated observability milestone
 

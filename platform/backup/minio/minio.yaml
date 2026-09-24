@@ -49,7 +49,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: minio
-          image: quay.io/minio/minio:latest
+          image: quay.io/minio/minio:RELEASE.2024-10-29T16-01-48Z@sha256:ebd2af76d40ff25ccc630533615f7ccd55fbe83d629a4b7c7a1b6311c1af3d6c
           args:
             - server
             - /data
@@ -141,7 +141,7 @@ spec:
           emptyDir: {}
       containers:
         - name: mc
-          image: quay.io/minio/mc:latest
+          image: quay.io/minio/mc:RELEASE.2024-10-29T15-34-59Z@sha256:fb8e220caa54eed0847f7e48d4af83997e3308008261ae1612a0179f8d849ee9
           command:
             - sh
             - -c

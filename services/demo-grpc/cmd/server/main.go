@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/config"
-	"github.com/goozdu12/cloud-native-idp-platform/services/demo-grpc/internal/telemetry"
+	"github.com/goozcena-gnl/cloud-native-idp-platform/services/demo-grpc/internal/config"
+	"github.com/goozcena-gnl/cloud-native-idp-platform/services/demo-grpc/internal/telemetry"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/trace"

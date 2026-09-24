@@ -29,7 +29,7 @@ It prints:
 Example recommended shape:
 
 ```text
-https://github.com/goozdu12/cloud-native-idp-platform.git
+https://github.com/goozcena-gnl/cloud-native-idp-platform.git
 ```
 
 If GitHub CLI is installed and authenticated, the script also runs

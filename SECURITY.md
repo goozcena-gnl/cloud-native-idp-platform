@@ -13,4 +13,9 @@ This project follows a defense-in-depth approach:
 
 ## Reporting issues
 
-For this portfolio project, security issues are tracked as GitHub issues or TODO items until the project becomes public.
+Report suspected vulnerabilities privately to the maintainers through a channel
+already established with them. If you do not have a private channel, open a
+public issue requesting one without including vulnerability details. Never put
+exploit steps, credentials, tokens, or other sensitive information in a public
+issue. General security improvements without sensitive details may be discussed
+in public issues.

@@ -15,8 +15,8 @@ integration is added yet.
 | Aspect | Choice |
 |---|---|
 | Build | Multi-stage Docker build |
-| Builder image | `golang:1.26-alpine` |
-| Runtime image | `gcr.io/distroless/static-debian12:nonroot` |
+| Builder image | `golang:1.26-alpine`, pinned by digest in the Dockerfile |
+| Runtime image | `gcr.io/distroless/static-debian12:nonroot`, pinned by digest in the Dockerfile |
 | Binaries | `server` and `healthcheck`, static (`CGO_ENABLED=0`) |
 | User | Non-root (`nonroot`, uid 65532) |
 | Port | `50051` (exposed) |
