@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
 
       - name: Analyze GitHub Actions security
-        uses: getplumber/plumber@d37150cee04d6627497cb4c6a553ef9a2d6c7548  # v0.5.2
+        uses: getplumber/plumber@e9ad2dc6d6faa2dfd84395aac18e461284062640  # v0.7.16
         with:
           version: v0.5.2
           verify-attestation: true
